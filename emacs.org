@@ -27,6 +27,7 @@
     - [[#magit][Magit]]
     - [[#projectile][Projectile]]
     - [[#org][Org]]
+    - [[#restart-emacs][Restart Emacs]]
   - [[#themes][Themes]]
     - [[#custom][Custom]]
     - [[#gruv-box][Gruv-box]]
@@ -40,6 +41,7 @@
     - [[#smartparens][smartparens]]
   - [[#keybindings][Keybindings]]
     - [[#leader-keys][Leader keys]]
+    - [[#general][General]]
   - [[#doom-macros][DOOM! Macros]]
     - [[#after][after!]]
     - [[#map][map!]]
@@ -236,7 +238,6 @@ functions we invoke regularly outside of magit is called.
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :bind (("SPC-g s" . magit-status))
   :commands (magit-status magit-blame magit-log-buffer-file magit-log-all))
 #+END_SRC
 
@@ -274,6 +275,11 @@ package that automatically generates an up to date table of contents for us.
   :init (add-hook 'org-mode-hook #'toc-org-enable))
 #+END_SRC
 
+*** Restart Emacs
+#+BEGIN_SRC emacs-lisp
+(use-package restart-emacs
+    :commands (restart-emacs))
+#+END_SRC
 ** Themes
 This section for themes and colors
 *** Custom
@@ -370,6 +376,37 @@ Auto-close delimiters and blocks as you type.
   (defvar my-localleader-key "SPC m"
     "The localleader prefix key, for major-mode specific commands."))
 #+END_SRC
+*** General
+#+BEGIN_SRC emacs-lisp
+(use-package general :ensure t
+  :config
+  (general-define-key
+   :states '(normal visual insert emacs)
+   :prefix "SPC"
+   :non-normal-prefix "C-SPC"
+
+    ;; simple command
+    "'"   '(iterm-focus :which-key "iterm")
+    "?"   '(iterm-goto-filedir-or-home :which-key "iterm - goto dir")
+    "/"   'counsel-ag
+    "TAB" '(switch-to-prev-buffer :which-key "prev buffer")
+    "SPC" '(avy-goto-word-or-subword-1  :which-key "go to char")
+
+    ;; Applications
+    "a" '(:ignore t :which-key "Applications")
+    "ar" 'ranger
+    "ad" 'dired
+    
+   ;; Magit
+   "g" '(:ignore t :which-key "Git")
+   "gs" 'magit-status
+   
+   ;; Quit
+   "q" '(:ignore t :which-key "Quit")
+   "qr" 'restart-emacs))
+   
+#+END_SRC
+
 ** DOOM! Macros
 
 A set of fantastic macros written by [[https://github.com/hlissner][hlissner]]. There won't be much
