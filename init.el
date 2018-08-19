@@ -9,8 +9,8 @@
 ;; Don't attempt to find/apply special file handlers to files loaded during startup.
 (let ((file-name-handler-alist nil))
   ;; If config is pre-compiled, then load that
-  (if (file-exists-p (expand-file-name "emacs.elc" user-emacs-directory))
-      (load-file (expand-file-name "emacs.elc" user-emacs-directory))
+  (if (file-exists-p (expand-file-name "README.elc" user-emacs-directory))
+      (load-file (expand-file-name "README.elc" user-emacs-directory))
     ;; Otherwise use org-babel to tangle and load the configuration
     (require 'org)
     (org-babel-load-file (expand-file-name "README.org" user-emacs-directory))))

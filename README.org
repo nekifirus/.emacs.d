@@ -560,6 +560,7 @@ Auto-close delimiters and blocks as you type.
 
     ;; Windows
     "w" '(:ignore t :which-key "Windows")
+    "wTAB" 'other-window
     "wh" 'evil-window-left
     "wH" 'evil-window-move-far-left
     "wj" 'evil-window-down

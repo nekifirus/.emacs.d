@@ -1,5 +1,5 @@
 clean:
-	@rm -f init.elc emacs.el emacs.elc
+	@rm -f init.elc README.el README.elc
 
-compile: init.el emacs.org clean
+compile: init.el README.org clean
 	@emacs -Q --batch -l 'lisp/compile.el'
