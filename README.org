@@ -18,6 +18,7 @@
   - [[#emacs-initialization][Emacs Initialization]]
     - [[#settings][Settings]]
     - [[#package-management][Package Management]]
+    - [[#startup][Startup]]
   - [[#packages][Packages]]
     - [[#evil][Evil]]
     - [[#which-key][Which-key]]
@@ -33,7 +34,6 @@
   - [[#themes][Themes]]
     - [[#custom][Custom]]
     - [[#gruv-box][Gruv-box]]
-    - [[#dashboard][Dashboard]]
   - [[#completion][Completion]]
     - [[#company][Company]]
   - [[#programming-languages][Programming languages]]
@@ -192,6 +192,34 @@ previously compiled manually then all of the package initialization will still t
     (setq use-package-always-ensure t))
 #+END_SRC
 
+*** Startup
+**** Minimal GUI
+Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
+#+BEGIN_SRC emacs-lisp
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+#+END_SRC
+**** Scratch buffer
+#+BEGIN_SRC emacs-lisp
+(setq initial-scratch-message (format ";; Scratch buffer - started on %s\n\n" (current-time-string)))
+#+END_SRC
+
+**** Disable bip
+#+BEGIN_SRC emacs-lisp
+(setq ring-bell-function 'ignore)
+#+END_SRC
+**** Disable startup message
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t)
+#+END_SRC
+**** Just use ‘y’ or ‘n’ instead of ‘yes’ or ‘no’
+#+BEGIN_SRC emacs-lisp
+(fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+**** Start maximized
+**** Disable unneded
 ** Packages
 
 *** Evil
@@ -382,22 +410,6 @@ This section for themes and colors
   :config
   (load-theme 'gruvbox-dark-medium))
 #+END_SRC
-*** Dashboard
-#+BEGIN_SRC emacs-lisp
-(use-package dashboard
-  :config
-  (dashboard-setup-startup-hook)
-  :custom
-  (initial-buffer-choice '(lambda ()
-                            (setq initial-buffer-choice nil)
-                            (get-buffer "*dashboard*")))
-  (dashboard-items '((recents  . 5)
-                     (bookmarks . 5)
-                     (projects . 5)
-                     (agenda . 5)
-                     (registers . 5))))
-#+END_SRC
-
 ** Completion
 *** Company
 #+BEGIN_SRC emacs-lisp
@@ -449,11 +461,7 @@ This section for themes and colors
 (use-package clojure-mode)
 (use-package clojure-mode-extra-font-locking)
 (use-package clojure-snippets)
-(use-package cider
-  :config
-  ;; sadly, we can't use :diminish keyword here, yet
-  (diminish 'cider-mode
-            '(:eval (format "%s" (cider--modeline-info)))))
+(use-package cider)
 
 #+END_SRC
 ** Editing
@@ -532,72 +540,72 @@ Auto-close delimiters and blocks as you type.
 #+END_SRC
 *** General
 #+BEGIN_SRC emacs-lisp
-(use-package general :ensure t
-  :config  
-  (general-evil-setup t)
+  (use-package general :ensure t
+    :config  
+    (general-evil-setup t)
 
-  (general-define-key
-   :states '(normal visual insert emacs)
-   :prefix "SPC"
-   :non-normal-prefix "C-SPC"
+    (general-define-key
+     :states '(normal visual insert emacs)
+     :prefix "SPC"
+     :non-normal-prefix "C-SPC"
 
-    ;; simple command
-    "/"   'swiper
-    "TAB" '(switch-to-prev-buffer :which-key "prev buffer")
-    "SPC" 'counsel-M-x
+      ;; simple command
+      "/"   'swiper
+      "TAB" '(switch-to-prev-buffer :which-key "prev buffer")
+      "SPC" 'counsel-M-x
 
-    ;; Applications
-    "a" '(:ignore t :which-key "Applications")
-    "ar" 'ranger
-    "ad" 'dired
-    
-    ;; Buffers
-    "b" '(:ignore t :which-key "Buffers")
-    "bn" 'evil-buffer-new
-    "bb" 'ivy-switch-buffer
-    "bd" 'kill-this-buffer
-    "bo" 'kill-over-buffers
+      ;; Applications
+      "a" '(:ignore t :which-key "Applications")
+      "ar" 'ranger
+      "ad" 'dired
 
-    ;; Windows
-    "w" '(:ignore t :which-key "Windows")
-    "wTAB" 'other-window
-    "wh" 'evil-window-left
-    "wH" 'evil-window-move-far-left
-    "wj" 'evil-window-down
-    "wJ" 'evil-window-move-very-bottom
-    "wk" 'evil-window-up
-    "wK" 'evil-window-very-top
-    "wl" 'evil-window-right
-    "wL" 'evil-window-move-far-right
-    "ws" 'evil-window-split
-    "wv" 'evil-window-vsplit
-    "ww" 'evil-window-next
-    "wW" 'evil-window-prev
-    "wd" 'delete-window
-    "wm" 'delete-other-windows
-    "wu" 'winner-undo
-    "wr" 'winner-redo
+      ;; Buffers
+      "b" '(:ignore t :which-key "Buffers")
+      "bn" 'evil-buffer-new
+      "bb" 'ivy-switch-buffer
+      "bd" 'kill-this-buffer
+      "bo" 'kill-over-buffers
 
-    ;; Files
-    "f" '(:ignore t :which-key "Files")
-    "ff" 'counsel-find-file
-    "fs" 'save-buffer
-    
-    ;; Magit
-    "g" '(:ignore t :which-key "Git")
-    "gs" 'magit-status
-   
-    ; Projectile
-    "p" '(:ignore t :which-key "Projectile")
-    "pp" 'projectile-switch-project
-    "pT" 'projectile-test-project
-    "pf" 'counsel-projectile
-   
-    ;; Quit
-    "q" '(:ignore t :which-key "Quit")
-    "qr" 'restart-emacs
-    "qq" 'kill-emacs))
-   
+      ;; Windows
+      "w" '(:ignore t :which-key "Windows")
+      "wo" 'other-window
+      "wh" 'evil-window-left
+      "wH" 'evil-window-move-far-left
+      "wj" 'evil-window-down
+      "wJ" 'evil-window-move-very-bottom
+      "wk" 'evil-window-up
+      "wK" 'evil-window-very-top
+      "wl" 'evil-window-right
+      "wL" 'evil-window-move-far-right
+      "ws" 'evil-window-split
+      "wv" 'evil-window-vsplit
+      "ww" 'evil-window-next
+      "wW" 'evil-window-prev
+      "wd" 'delete-window
+      "wm" 'delete-other-windows
+      "wu" 'winner-undo
+      "wr" 'winner-redo
+
+      ;; Files
+      "f" '(:ignore t :which-key "Files")
+      "ff" 'counsel-find-file
+      "fs" 'save-buffer
+
+      ;; Magit
+      "g" '(:ignore t :which-key "Git")
+      "gs" 'magit-status
+
+      ; Projectile
+      "p" '(:ignore t :which-key "Projectile")
+      "pp" 'projectile-switch-project
+      "pT" 'projectile-test-project
+      "pf" 'counsel-projectile
+
+      ;; Quit
+      "q" '(:ignore t :which-key "Quit")
+      "qr" 'restart-emacs
+      "qq" 'kill-emacs))
+
 #+END_SRC
 
 ** Functions
