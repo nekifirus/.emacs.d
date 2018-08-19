@@ -1,0 +1,15 @@
+emacs.el
+emacs.elc
+init.elc
+company-statistics-cache.el
+emacs.:tangle
+projectile-bookmarks.eld
+projectile.cache
+
+recentf
+recentf~
+
+company-statistics-cache.el
+elpa/*
+llsp/*
+auto-save-list/* 

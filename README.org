@@ -1,0 +1,636 @@
+#+TITLE: Emacs Literate Configuration
+#+Author: Nikita Mistyukov
+#+PROPERTY: header-args :tangle yes
+
+* Configuration
+:PROPERTIES:
+:VISIBILITY: children
+:END:
+
+** Table of Contents :TOC_3_gh:
+- [[#configuration][Configuration]]
+  - [[#about-this-file][About this file]]
+  - [[#org-file-tweaks][Org File Tweaks]]
+    - [[#automatically-tangle][Automatically Tangle]]
+    - [[#visibility-settings][Visibility Settings]]
+    - [[#table-of-contents][Table of Contents]]
+  - [[#personal-information][Personal Information]]
+  - [[#emacs-initialization][Emacs Initialization]]
+    - [[#settings][Settings]]
+    - [[#package-management][Package Management]]
+  - [[#packages][Packages]]
+    - [[#evil][Evil]]
+    - [[#which-key][Which-key]]
+    - [[#ivy][Ivy]]
+    - [[#winner][Winner]]
+    - [[#counsel][Counsel]]
+    - [[#swiper][Swiper]]
+    - [[#magit][Magit]]
+    - [[#projectile][Projectile]]
+    - [[#org][Org]]
+    - [[#path-from-shell][Path from shell]]
+    - [[#restart-emacs][Restart Emacs]]
+  - [[#themes][Themes]]
+    - [[#custom][Custom]]
+    - [[#gruv-box][Gruv-box]]
+    - [[#dashboard][Dashboard]]
+  - [[#completion][Completion]]
+    - [[#company][Company]]
+  - [[#programming-languages][Programming languages]]
+    - [[#elixir][Elixir]]
+  - [[#editing][Editing]]
+    - [[#disable-autosave][Disable autosave]]
+    - [[#linum][Linum]]
+    - [[#rainbowdelimiters][RainbowDelimiters]]
+    - [[#highligt-matcing-parenthesis][Highligt matcing parenthesis]]
+    - [[#highligt-trailing-space][Highligt trailing space]]
+    - [[#indent-with-spaces-by-default][Indent with spaces by default]]
+    - [[#auto-update-changed-files][Auto-update changed files]]
+    - [[#smartparens][smartparens]]
+  - [[#keybindings][Keybindings]]
+    - [[#leader-keys][Leader keys]]
+    - [[#general][General]]
+  - [[#functions][Functions]]
+    - [[#buffers][Buffers]]
+  - [[#post-initialization][Post Initialization]]
+  - [[#old-readme-file][Old readme file]]
+    - [[#usage][Usage]]
+    - [[#make-commands][Make Commands]]
+    - [[#motivation][Motivation]]
+    - [[#notes][Notes]]
+    - [[#sources][Sources]]
+
+** About this file
+This is an Emacs literate configuration template. It contains the basic structure
+of a literate config along with some optimizations to ensure a fast load time.
+
+** Org File Tweaks
+There are a few tweaks included in this org file that make it a little easier to
+work with.
+
+*** Automatically Tangle
+First there is a property defined on the file:
+
+#+BEGIN_SRC :tangle no
+header-args :tangle yes
+#+END_SRC
+
+This tells emacs to automatically tangle (include) all code blocks in this file when
+generating the code for the config, unless the code block explicitly includes
+=:tangle no= as the above code block does.
+
+*** Visibility Settings
+Next we have a property defined on the [[Configuration][Configuration]] heading that defines the visibility
+that tells org to show it's direct children on startup. This way a clean outline of all
+sub headings under Configuration is shown each time this file is opened in org-mode.
+
+*** Table of Contents
+Finally, there is a [[Table of Contents][Table of Contents]] heading that includes the tag: =:TOC_3_gh:=. This
+tells an org-mode package =toc-org= to generate a table of contents under this heading
+that has a max depth of 3 and is created using Github-style hrefs. This table of contents
+is updated everytime the file is saved and makes for a functional table of contents that
+works property directly on github.
+
+** Personal Information
+Let's set some variables with basic user information.
+
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Nikita Mistyukov"
+      user-mail-address "nekifirus@gmail.com")
+#+END_SRC
+
+** Emacs Initialization
+
+*** Settings
+We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
+We'll lower this value significantly after initialization has completed. We don't want to keep this value
+too high or it will result in long GC pauses during normal usage.
+
+#+BEGIN_SRC emacs-lisp
+(eval-and-compile
+  (setq gc-cons-threshold 402653184
+        gc-cons-percentage 0.6))
+#+END_SRC
+
+Disable certain byte compiler warnings to cut down on the noise. This is a personal choice and can be removed
+if you would like to see any and all byte compiler warnings.
+
+#+BEGIN_SRC emacs-lisp
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+#+END_SRC
+
+*** Package Management
+
+**** Package Settings
+We're going to set the =load-path= ourselves and avoid calling =(package-initilize)= (for
+performance reasons) so we need to set =package--init-file-ensured= to true to tell =package.el=
+to not automatically call it on our behalf. Additionally we're setting
+=package-enable-at-startup= to nil so that packages will not automatically be loaded for us since
+=use-package= will be handling that.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-and-compile
+    (setq load-prefer-newer t
+          package-user-dir "~/.emacs.d/elpa"
+          package--init-file-ensured t
+          package-enable-at-startup nil)
+
+    (unless (file-directory-p package-user-dir)
+      (make-directory package-user-dir t)))
+#+END_SRC
+
+**** Use-Package Settings
+Tell =use-package= to always defer loading packages unless explicitly told otherwise. This speeds up
+initialization significantly as many packages are only loaded later when they are explicitly used.
+
+#+BEGIN_SRC emacs-lisp
+  (setq use-package-always-defer t
+        use-package-verbose t)
+#+END_SRC
+
+**** Manually Set Load Path
+We're going to set the load path ourselves so that we don't have to call =package-initialize= at
+runtime and incur a large performance hit. This load-path will actually be faster than the one
+created by =package-initialize= because it appends the elpa packages to the end of the load path.
+Otherwise any time a builtin package was required it would have to search all of third party paths
+first.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-and-compile
+    (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
+#+END_SRC
+
+**** Initialize Package Management
+Next we are going to require =package.el= and add our additional package archives, 'melpa' and 'org'.
+Afterwards we need to initialize our packages and then ensure that =use-package= is installed, which
+we promptly install if it's missing. Finally we load =use-package= and tell it to always install any
+missing packages.
+
+Note that this entire block is wrapped in =eval-when-compile=. The effect of this is to perform all
+of the package initialization during compilation so that when byte compiled, all of this time consuming
+code is skipped. This can be done because the result of byte compiling =use-package= statements results
+in the macro being fully expanded at which point =use-package= isn't actually required any longer.
+
+Since the code is automatically compiled during runtime, if the configuration hasn't already been
+previously compiled manually then all of the package initialization will still take place at startup.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-when-compile
+    (require 'package)
+
+    (unless (assoc-default "melpa" package-archives)
+      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+    (unless (assoc-default "org" package-archives)
+      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+
+    (package-initialize)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (require 'use-package)
+    (setq use-package-always-ensure t))
+#+END_SRC
+
+** Packages
+
+*** Evil
+Install, automatically load, and enable evil. It's like vim, but better!
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration nil)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :ensure t
+  :custom (evil-collection-company-use-tng nil)
+  :config (evil-collection-init))
+
+(use-package evil-magit
+  :ensure t
+  :after magit
+  :init (setq evil-magit-want-horizontal-movement t))
+
+(use-package evil-commentary
+  :ensure t
+  :config (evil-commentary-mode 1))
+
+#+END_SRC
+
+*** Which-key
+Shows keybindings
+
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  ;:diminish which-key-mode
+  :config
+  (setq which-key-sort-order #'which-key-prefix-then-key-order
+        which-key-sort-uppercase-first nil
+        which-key-add-column-padding 1
+        which-key-max-display-columns nil
+        which-key-min-display-lines 5)
+  (which-key-mode))
+#+END_SRC
+
+*** Ivy
+Generic completion frontend that's just awesome! Let's install and enable it.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ivy
+  :diminish (ivy-mode . "")
+  :demand t
+  :config
+  (ivy-mode 1)
+;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+  (setq ivy-use-virtual-buffers t)
+  ;; number of result lines to display
+  (setq ivy-height 10)
+  ;; does not count candidates
+  (setq ivy-count-format "")
+  ;; no regexp by default
+  (setq ivy-initial-inputs-alist nil)
+  ;; configure regexp engine.
+  (setq ivy-re-builders-alist
+	;; allow input not in order
+        '((t   . ivy--regex-plus))))
+#+END_SRC
+*** Winner
+#+BEGIN_SRC emacs-lisp
+(use-package winner
+  :diminish winner-mode
+  :init
+  (winner-mode))
+#+END_SRC
+*** Counsel
+Counsel allows us to utilize ivy by replacing many built-in and common functions
+with richer versions. Let's install it!
+
+#+BEGIN_SRC emacs-lisp
+(use-package counsel-projectile)
+(use-package counsel
+  :demand t)
+#+END_SRC
+
+*** Swiper
+Swiper is an awesome searching utility with a quick preview. Let's install it and
+load it when =swiper= or =swiper-all= is called.
+
+#+BEGIN_SRC emacs-lisp
+(use-package swiper
+  :commands (swiper swiper-all))
+#+END_SRC
+
+*** Magit
+The magical git client. Let's load magit only when one of the several entry pont
+functions we invoke regularly outside of magit is called.
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :commands (magit-status magit-blame magit-log-buffer-file magit-log-all))
+
+(use-package gitignore-mode
+  :mode "/\\.gitignore$")
+#+END_SRC
+
+*** Projectile
+Projectile is a quick and easy project management package that "just works". We're
+going to install it and make sure it's loaded immediately.
+
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :diminish projectile-mode
+  :demand t
+  :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode +1)
+  :custom
+  (projectile-completion-system 'ivy))
+#+END_SRC
+
+*** Org
+Let's include a newer version of org-mode than the one that is built in. We're going
+to manually remove the org directories from the load path, to ensure the version we
+want is prioritized instead.
+
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :ensure org-plus-contrib
+  :pin org
+  :defer t)
+
+;; Ensure ELPA org is prioritized above built-in org.
+(require 'cl)
+(setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+#+END_SRC
+
+Let's install and load the =toc-org= package after org mode is loaded. This is the
+package that automatically generates an up to date table of contents for us.
+
+#+BEGIN_SRC emacs-lisp
+(use-package toc-org
+  :after org
+  :init (add-hook 'org-mode-hook #'toc-org-enable))
+#+END_SRC
+
+*** Path from shell
+#+BEGIN_SRC emacs-lisp
+(use-package exec-path-from-shell
+  :ensure t
+  :config (when (memq window-system '(mac ns))
+	    (exec-path-from-shell-initialize)))
+#+END_SRC
+*** Restart Emacs
+#+BEGIN_SRC emacs-lisp
+(use-package restart-emacs
+    :commands (restart-emacs))
+#+END_SRC
+** Themes
+This section for themes and colors
+*** Custom
+#+BEGIN_SRC emacs-lisp
+(use-package custom
+  :ensure nil
+  :custom
+  (custom-safe-themes t))
+#+END_SRC
+
+*** Gruv-box
+#+BEGIN_SRC emacs-lisp
+(use-package gruvbox-theme
+  :config
+  (load-theme 'gruvbox-dark-medium))
+#+END_SRC
+*** Dashboard
+#+BEGIN_SRC emacs-lisp
+(use-package dashboard
+  :config
+  (dashboard-setup-startup-hook)
+  :custom
+  (initial-buffer-choice '(lambda ()
+                            (setq initial-buffer-choice nil)
+                            (get-buffer "*dashboard*")))
+  (dashboard-items '((recents  . 5)
+                     (bookmarks . 5)
+                     (projects . 5)
+                     (agenda . 5)
+                     (registers . 5))))
+#+END_SRC
+
+** Completion
+*** Company
+#+BEGIN_SRC emacs-lisp
+(use-package company
+  :ensure t
+  :diminish ""
+  :config
+  (global-company-mode)
+  (setq company-tooltip-limit 10)
+  (setq company-dabbrev-downcase 0)
+  (setq company-idle-delay 0)
+  (setq company-echo-delay 0)
+  (setq company-minimum-prefix-length 2)
+  (setq company-require-match nil)
+  (setq company-selection-wrap-around t)
+  (setq company-tooltip-align-annotations t)
+  ;; (setq company-tooltip-flip-when-above t)
+  (setq company-transformers '(company-sort-by-occurrence)) ; weight by frequency
+  (define-key company-active-map [tab] 'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+  (use-package company-statistics
+    :ensure t
+    :config
+    (add-hook 'after-init-hook 'company-statistics-mode)))
+#+END_SRC
+
+** Programming languages
+*** Elixir
+#+BEGIN_SRC emacs-lisp
+;; Set up the basic Elixir mode.
+
+(use-package elixir-mode
+  :commands elixir-mode
+  :mode (("\\.ex\\'" . elixir-mode)
+         ("\\.exs\\'" . elixir-mode))
+  :config
+  (add-hook 'elixir-mode-hook 'alchemist-mode)
+  (add-hook 'elixir-mode-hook
+          (lambda () (add-hook 'before-save-hook 'elixir-format nil t))))
+
+;; Alchemist offers integration with the Mix tool.
+(use-package alchemist
+  :commands alchemist-mode)
+#+END_SRC
+
+** Editing
+The section for good tools for editing text and code
+*** Disable autosave
+#+BEGIN_SRC emacs-lisp
+(setq-default auto-save-default nil
+              create-lockfiles nil
+              make-backup-files nil)
+#+END_SRC
+*** Linum
+#+BEGIN_SRC emacs-lisp
+(global-linum-mode 1)
+#+END_SRC
+*** RainbowDelimiters
+#+BEGIN_SRC emacs-lisp
+  (use-package rainbow-delimiters
+    :commands (rainbow-delimiters-mode)
+    :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+#+END_SRC
+*** Highligt matcing parenthesis
+#+BEGIN_SRC emacs-lisp
+ (custom-set-variables '(show-paren-delay 0.0))
+ (show-paren-mode t)
+#+END_SRC
+*** Highligt trailing space
+#+BEGIN_SRC emacs-lisp
+(defun my/buf-show-trailing-whitespace ()
+  (interactive)
+  (setq show-trailing-whitespace t))
+(add-hook 'prog-mode-hook #'my/buf-show-trailing-whitespace)
+(custom-set-faces '(trailing-whitespace ((t (:background "dim gray")))))
+#+END_SRC
+*** Indent with spaces by default
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+*** Auto-update changed files
+#+BEGIN_SRC emacs-lisp
+(global-auto-revert-mode t)
+#+END_SRC
+*** smartparens
+
+Auto-close delimiters and blocks as you type.
+
+#+BEGIN_SRC emacs-lisp
+(use-package smartparens
+  :demand t
+  :config
+  (setq sp-autowrap-region nil) ; let evil-surround handle this
+
+  (require 'smartparens-config)
+
+  ;; disable smartparens in evil-mode's replace state (they conflict)
+  (add-hook 'evil-replace-state-entry-hook #'turn-off-smartparens-mode)
+  (add-hook 'evil-replace-state-exit-hook  #'turn-on-smartparens-mode)
+
+  (sp-local-pair '(xml-mode nxml-mode php-mode) "<!--" "-->"
+                 :post-handlers '(("| " "SPC")))
+
+  ;; disable global pairing for `
+  (sp-pair "`" nil :actions :rem)
+
+  (smartparens-global-mode))
+#+END_SRC
+** Keybindings
+*** Leader keys
+#+BEGIN_SRC emacs-lisp
+(eval-and-compile
+  (defvar my-leader-key "SPC"
+    "The leader prefix key, for global commands.")
+
+  (defvar my-localleader-key "SPC m"
+    "The localleader prefix key, for major-mode specific commands."))
+#+END_SRC
+*** General
+#+BEGIN_SRC emacs-lisp
+(use-package general :ensure t
+  :config  
+  (general-evil-setup t)
+
+  (general-define-key
+   :states '(normal visual insert emacs)
+   :prefix "SPC"
+   :non-normal-prefix "C-SPC"
+
+    ;; simple command
+    "/"   'swiper
+    "TAB" '(switch-to-prev-buffer :which-key "prev buffer")
+    "SPC" '(avy-goto-word-or-subword-1  :which-key "go to char")
+
+    ;; Applications
+    "a" '(:ignore t :which-key "Applications")
+    "ar" 'ranger
+    "ad" 'dired
+    
+    ;; Buffers
+    "b" '(:ignore t :which-key "Buffers")
+    "bn" 'evil-buffer-new
+    "bb" 'ivy-switch-buffer
+    "bd" 'kill-this-buffer
+    "bo" 'kill-over-buffers
+
+    ;; Windows
+    "w" '(:ignore t :which-key "Windows")
+    "wd" 'delete-window
+    "wu" 'winner-undo
+    "wr" 'winner-redo
+
+    ;; Files
+    "f" '(:ignore t :which-key "Files")
+    "ff" 'counsel-find-file
+    "fs" 'save-buffer
+    
+    ;; Magit
+    "g" '(:ignore t :which-key "Git")
+    "gs" 'magit-status
+   
+    ; Projectile
+    "p" '(:ignore t :which-key "Projectile")
+    "pp" 'projectile-switch-project
+    "pT" 'projectile-test-project
+    "pf" 'counsel-projectile
+   
+    ;; Quit
+    "q" '(:ignore t :which-key "Quit")
+    "qr" 'restart-emacs
+    "qq" 'kill-emacs))
+   
+#+END_SRC
+
+** Functions
+*** Buffers
+**** Kill other buffers
+#+BEGIN_SRC emacs-lisp
+(defun kill-other-buffers ()
+      "Kill all other buffers."
+      (interactive)
+      (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+#+END_SRC
+** Post Initialization
+Let's lower our GC thresholds back down to a sane level.
+
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold 16777216
+      gc-cons-percentage 0.1)
+#+END_SRC
+
+** Old readme file
+I'm get template from starter kit and save it here
+
+Emacs Literate Starter
+======================
+
+This is a simple starter template that provides everything needed to begin writing a literate
+configuration for Emacs. It includes several optimizations that ensures that the config is
+loaded very quickly. It benefits heavily from being byte compiled.
+
+
+*** Usage
+
+Install
+
+    git clone https://github.com/gilbertw1/emacs-literate-starter.git ~/.emacs.d
+
+Compile (not required, but recommended)
+
+    cd ~/.emacs.d
+    make compile
+
+Run
+
+    emacs
+
+
+*** Make Commands
+
+**clean**: Delete compiled files
+
+    make clean
+
+**compile**: Byte compile for performance (Recompile required when new changes are made)
+
+    make compile
+
+
+*** Motivation
+
+When I got started with my own literate configuration I had a difficult time figuring out
+exactly what I needed to do to create and load it properly. While not being overly difficult
+and having a large number of examples available, I still found it a bit challenging to get
+a literate configuration up and running initially.
+
+Additionally, once I got started with my own literate configuration running it was much slower
+to load than I was used to. After a fair bit of research I was able to find a number of ways to
+speed up the load time of Emacs significantly. As a result, I'd like to pass on these optimizations
+to others and save them a similar amount of time and experiementation.
+
+
+*** Notes
+**** Configuration can be run without being byte compiled first, but will load slower as a result.
+**** If configuration has been byte compiled then recompilation is required to pick up new config changes.
+
+*** Sources
+A majority of the optimizations used in this config were sourced from:
+
+**** https://github.com/hlissner/doom-emacs
+**** https://github.com/nilcons/emacs-use-package-fast
+**** https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/

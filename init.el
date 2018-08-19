@@ -13,7 +13,7 @@
       (load-file (expand-file-name "emacs.elc" user-emacs-directory))
     ;; Otherwise use org-babel to tangle and load the configuration
     (require 'org)
-    (org-babel-load-file (expand-file-name "emacs.org" user-emacs-directory))))
+    (org-babel-load-file (expand-file-name "README.org" user-emacs-directory))))
 
 ;;; init.el ends here
 (custom-set-variables
