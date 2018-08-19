@@ -1,8 +1,8 @@
-emacs.el
-emacs.elc
+README.el
+README.elc
+README.:tangle
 init.elc
 company-statistics-cache.el
-emacs.:tangle
 projectile-bookmarks.eld
 projectile.cache
 
