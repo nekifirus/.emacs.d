@@ -473,8 +473,9 @@ The section for good tools for editing text and code
               make-backup-files nil)
 #+END_SRC
 *** Linum
+    try to disable linum.
 #+BEGIN_SRC emacs-lisp
-(global-linum-mode 1)
+  ;; (global-linum-mode 1)
 #+END_SRC
 *** RainbowDelimiters
 #+BEGIN_SRC emacs-lisp
