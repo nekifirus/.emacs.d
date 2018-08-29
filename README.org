@@ -31,6 +31,7 @@
     - [[#org][Org]]
     - [[#path-from-shell][Path from shell]]
     - [[#restart-emacs][Restart Emacs]]
+    - [[#wakatime][Wakatime]]
   - [[#themes][Themes]]
     - [[#custom][Custom]]
     - [[#gruv-box][Gruv-box]]
@@ -393,6 +394,11 @@ package that automatically generates an up to date table of contents for us.
 #+BEGIN_SRC emacs-lisp
 (use-package restart-emacs
     :commands (restart-emacs))
+#+END_SRC
+*** Wakatime
+#+BEGIN_SRC emacs-lisp
+(use-package wakatime-mode :ensure t :demand t
+  :config (global-wakatime-mode))
 #+END_SRC
 ** Themes
 This section for themes and colors
