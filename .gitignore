@@ -13,3 +13,4 @@ company-statistics-cache.el
 elpa/*
 llsp/*
 auto-save-list/* 
+url/*
