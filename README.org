@@ -27,6 +27,7 @@
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
     - [[#magit][Magit]]
+    - [[#github-gist][Github Gist]]
     - [[#projectile][Projectile]]
     - [[#org][Org]]
     - [[#path-from-shell][Path from shell]]
@@ -341,6 +342,12 @@ functions we invoke regularly outside of magit is called.
   :hook ((magit-post-refresh . diff-hl-magit-post-refresh)
          (dired-mode . diff-hl-dired-mode))
   :config (global-diff-hl-mode 1))
+#+END_SRC
+
+*** Github Gist
+#+BEGIN_SRC emacs-lisp
+(use-package gist
+:ensure t)
 #+END_SRC
 
 *** Projectile
