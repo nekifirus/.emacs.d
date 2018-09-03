@@ -366,37 +366,45 @@ going to install it and make sure it's loaded immediately.
 #+END_SRC
 
 *** Org
+**** Latest version
 Let's include a newer version of org-mode than the one that is built in. We're going
-to manually remove the org directories from the load path, to ensure the version we
-want is prioritized instead.
+   to manually remove the org directories from the load path, to ensure the version we
+   want is prioritized instead.
 
-#+BEGIN_SRC emacs-lisp
-(use-package org
-  :ensure org-plus-contrib
-  :pin org
-  :defer t)
+   #+BEGIN_SRC emacs-lisp
+   (use-package org
+     :ensure org-plus-contrib
+     :pin org
+     :defer t)
 
-;; Ensure ELPA org is prioritized above built-in org.
-(require 'cl)
-(setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
-#+END_SRC
+   ;; Ensure ELPA org is prioritized above built-in org.
+   (require 'cl)
+   (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+   #+END_SRC
 
-Let's install and load the =toc-org= package after org mode is loaded. This is the
-package that automatically generates an up to date table of contents for us.
+**** toc-org
+Let's install and load the =toc-org= package after org mode is loaded. This is the package that automatically generates an up to date table of contents for us.
 
-#+BEGIN_SRC emacs-lisp
-(use-package toc-org
-  :after org
-  :init (add-hook 'org-mode-hook #'toc-org-enable))
-#+END_SRC
+      #+BEGIN_SRC emacs-lisp
+      (use-package toc-org
+        :after org
+        :init (add-hook 'org-mode-hook #'toc-org-enable))
+      #+END_SRC
 
+**** calendar
+ #+BEGIN_SRC emacs-lisp
+   (use-package calendar
+  :ensure nil
+  :custom
+  (calendar-week-start-day 1))
+ #+END_SRC
 *** Path from shell
-#+BEGIN_SRC emacs-lisp
-(use-package exec-path-from-shell
-  :ensure t
-  :config (when (memq window-system '(mac ns))
-	    (exec-path-from-shell-initialize)))
-#+END_SRC
+ #+BEGIN_SRC emacs-lisp
+ (use-package exec-path-from-shell
+   :ensure t
+   :config (when (memq window-system '(mac ns))
+	     (exec-path-from-shell-initialize)))
+ #+END_SRC
 *** Restart Emacs
 #+BEGIN_SRC emacs-lisp
 (use-package restart-emacs
