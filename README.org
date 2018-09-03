@@ -339,8 +339,7 @@ functions we invoke regularly outside of magit is called.
 (use-package diff-hl
   :ensure t
   ;; Integrate with Magit and highlight changed files in the fringe of dired
-  :hook ((magit-post-refresh . diff-hl-magit-post-refresh)
-         (dired-mode . diff-hl-dired-mode))
+  :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
   :config (global-diff-hl-mode 1))
 #+END_SRC
 
