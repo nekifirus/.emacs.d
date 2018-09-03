@@ -398,6 +398,12 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
   :custom
   (calendar-week-start-day 1))
  #+END_SRC
+**** Capture
+ #+BEGIN_SRC emacs-lisp
+ (setq org-default-notes-file (concat org-directory "/default.org"))
+ (define-key global-map "\C-cc" 'org-capture)
+ #+END_SRC
+
 *** Path from shell
  #+BEGIN_SRC emacs-lisp
  (use-package exec-path-from-shell
