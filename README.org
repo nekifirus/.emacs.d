@@ -400,8 +400,13 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
  #+END_SRC
 **** Capture
  #+BEGIN_SRC emacs-lisp
- (setq org-default-notes-file (concat org-directory "/default.org"))
- (define-key global-map "\C-cc" 'org-capture)
+ (setq org-default-notes-file "~/org/default.org")
+ (define-key global-map "\C-cc" 'counsel-org-capture)
+ #+END_SRC
+**** Agenda
+ #+BEGIN_SRC emacs-lisp
+(setq org-agenda-files '("~/org"))
+(global-set-key "\C-ca" 'org-agenda)
  #+END_SRC
 
 *** Path from shell
