@@ -33,7 +33,7 @@
     - [[#path-from-shell][Path from shell]]
     - [[#restart-emacs][Restart Emacs]]
     - [[#wakatime][Wakatime]]
-    - [[#httpsgithubcoma13reverse-imelreverseim][[[https://github.com/a13/reverse-im.el][Reverse.im]]
+    - [[#reverseim][Reverse.im]]
     - [[#markdown][Markdown]]
   - [[#themes][Themes]]
     - [[#custom][Custom]]
@@ -427,8 +427,8 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 (use-package wakatime-mode :ensure t :demand t
   :config (global-wakatime-mode))
 #+END_SRC
-*** [[https://github.com/a13/reverse-im.el][Reverse.im
-]]This is beatiful thing for users with non-latin kbd layouts
+*** [[https://github.com/a13/reverse-im.el][Reverse.im]]
+This is beatiful thing for users with non-latin kbd layouts
 #+BEGIN_SRC emacs-lisp
 (use-package reverse-im
   :config
