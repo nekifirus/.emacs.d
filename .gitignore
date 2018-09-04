@@ -14,5 +14,8 @@ elpa/*
 llsp/*
 auto-save-list/* 
 url/*
+eshell/
+var/
 
 bookmarks
+diary
