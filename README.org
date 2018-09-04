@@ -34,6 +34,7 @@
     - [[#restart-emacs][Restart Emacs]]
     - [[#wakatime][Wakatime]]
     - [[#httpsgithubcoma13reverse-imelreverseim][[[https://github.com/a13/reverse-im.el][Reverse.im]]
+    - [[#markdown][Markdown]]
   - [[#themes][Themes]]
     - [[#custom][Custom]]
     - [[#gruv-box][Gruv-box]]
@@ -434,6 +435,16 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
   (add-to-list 'reverse-im-modifiers 'super)
   (add-to-list 'reverse-im-input-methods "russian-computer")
   (reverse-im-mode t))
+#+END_SRC
+*** Markdown
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 ** Themes
 This section for themes and colors
