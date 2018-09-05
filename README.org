@@ -343,6 +343,12 @@ functions we invoke regularly outside of magit is called.
   ;; Integrate with Magit and highlight changed files in the fringe of dired
   :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
   :config (global-diff-hl-mode 1))
+  
+(use-package magithub
+  :after magit
+  :config
+  (magithub-feature-autoinject t)
+  (setq magithub-clone-default-directory "~/projects/github"))
 #+END_SRC
 
 *** Github Gist
