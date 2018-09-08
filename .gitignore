@@ -1,21 +1,18 @@
-README.el
-README.elc
-README.:tangle
-init.elc
-company-statistics-cache.el
-projectile-bookmarks.eld
-projectile.cache
+# .gitignore
 
-recentf
-recentf~
+# Ignore everything
 
-company-statistics-cache.el
-elpa/*
-llsp/*
-auto-save-list/* 
-url/*
-eshell/
-var/
+*
 
-bookmarks
-diary
+
+# But not these files
+
+!lisp/
+
+!.gitignore
+
+!Makefile
+
+!README.org
+
+!init.el
