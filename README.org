@@ -36,8 +36,11 @@
     - [[#reverseim][Reverse.im]]
     - [[#markdown][Markdown]]
   - [[#themes][Themes]]
+    - [[#fonts][Fonts]]
     - [[#custom][Custom]]
     - [[#gruv-box][Gruv-box]]
+    - [[#time][Time]]
+    - [[#spaceline-and-over][Spaceline and over]]
   - [[#completion][Completion]]
     - [[#company][Company]]
   - [[#programming-languages][Programming languages]]
@@ -105,7 +108,6 @@ Let's set some variables with basic user information.
 #+END_SRC
 
 ** Emacs Initialization
-
 *** Settings
 We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
 We'll lower this value significantly after initialization has completed. We don't want to keep this value
@@ -195,7 +197,22 @@ previously compiled manually then all of the package initialization will still t
     (require 'use-package)
     (setq use-package-always-ensure t))
 #+END_SRC
+**** Extend use-package functionality
+#+BEGIN_SRC emacs-lisp
+(use-package system-packages
+  :custom
+  (system-packages-noconfirm t))
 
+(use-package use-package-ensure-system-package)
+
+;; :diminish keyword
+(use-package diminish)
+
+;; :bind keyword
+(use-package bind-key)
+(use-package quelpa)
+(use-package quelpa-use-package)
+#+END_SRC
 *** Startup
 **** Minimal GUI
 Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
@@ -223,9 +240,11 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 #+END_SRC
 
 **** Start maximized
-**** Disable unneded
+     TODO this is not working(
+    #+BEGIN_SRC emacs-list
+   (add-hook 'window-setup-hook 'toggle-frame-maximized t)
+    #+END_SRC
 ** Packages
-
 *** Evil
 Install, automatically load, and enable evil. It's like vim, but better!
 
@@ -263,7 +282,10 @@ Install, automatically load, and enable evil. It's like vim, but better!
   :ensure t
   :config (global-evil-matchit-mode 1))
 #+END_SRC
-
+**** Disable evil in some modes
+  #+BEGIN_SRC emacs-lisp
+   (evil-set-initial-state 'help-mode 'emacs)
+  #+END_SRC
 *** Which-key
 Shows keybindings
 
@@ -343,12 +365,12 @@ functions we invoke regularly outside of magit is called.
   ;; Integrate with Magit and highlight changed files in the fringe of dired
   :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
   :config (global-diff-hl-mode 1))
-  
-(use-package magithub
-  :after magit
-  :config
-  (magithub-feature-autoinject t)
-  (setq magithub-clone-default-directory "~/projects/github"))
+
+;(use-package magithub
+;  :after magit
+;  :config
+;  (magithub-feature-autoinject t)
+;  (setq magithub-clone-default-directory "~/projects/github"))
 #+END_SRC
 
 *** Github Gist
@@ -454,6 +476,25 @@ This is beatiful thing for users with non-latin kbd layouts
 #+END_SRC
 ** Themes
 This section for themes and colors
+*** Fonts
+From a13/.emacs.d
+#+BEGIN_SRC emacs-lisp
+(use-package faces
+  :ensure nil
+  :defer t
+  :custom
+  (face-font-family-alternatives '(("Consolas" "Monaco" "Monospace")))
+  :config
+  (set-face-attribute 'default
+                      nil
+                      :family (caar face-font-family-alternatives)
+                      :weight 'regular
+                      :width 'semi-condensed
+                      ;; (/ (* 19 (display-pixel-height)) (display-mm-height))
+                      :height (if (> (display-pixel-height) 1000) 160 120))
+  (set-fontset-font "fontset-default" 'cyrillic
+                    (font-spec :registry "iso10646-1" :script 'cyrillic)))
+#+END_SRC
 *** Custom
 #+BEGIN_SRC emacs-lisp
 (use-package custom
@@ -468,12 +509,58 @@ This section for themes and colors
   :config
   (load-theme 'gruvbox-dark-medium))
 #+END_SRC
+*** Time
+#+BEGIN_SRC emacs-lisp
+(use-package time
+  :ensure nil
+  :custom
+  (display-time-default-load-average nil)
+  (display-time-24hr-format t)
+  :config
+  (display-time-mode t))
+#+END_SRC
+*** Spaceline and over
+#+BEGIN_SRC emacs-lisp
+(use-package spaceline
+  :config
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme))
+
+(use-package font-lock+
+  :ensure t
+  :quelpa
+  (font-lock+ :repo "emacsmirror/font-lock-plus" :fetcher github))
+
+(use-package all-the-icons
+  :config
+  (add-to-list
+   'all-the-icons-mode-icon-alist
+   '(package-menu-mode all-the-icons-octicon "package" :v-adjust 0.0)))
+
+(use-package all-the-icons-dired
+  :hook
+  (dired-mode . all-the-icons-dired-mode))
+
+(use-package spaceline-all-the-icons
+  :after spaceline
+  :config
+  (spaceline-all-the-icons-theme)
+  (spaceline-all-the-icons--setup-package-updates)
+  (spaceline-all-the-icons--setup-git-ahead))
+
+(use-package all-the-icons-ivy
+  :after ivy projectile
+  :custom
+  (all-the-icons-ivy-buffer-commands '() "Don't use for buffers.")
+  :config
+  (all-the-icons-ivy-setup))
+#+END_SRC
 ** Completion
 *** Company
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure t
-  :diminish ""
+  :diminish company-mode
   :config
   (global-company-mode)
   (setq company-tooltip-limit 10)
@@ -537,10 +624,18 @@ The section for good tools for editing text and code
 #+END_SRC
 *** RainbowDelimiters
 #+BEGIN_SRC emacs-lisp
-  (use-package rainbow-delimiters
-    :commands (rainbow-delimiters-mode)
-    :init
-    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :commands (rainbow-delimiters-mode)
+  :init
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
+
+(use-package rainbow-identifiers
+  :hook
+  (prog-mode . rainbow-identifiers-mode))
+
+(use-package rainbow-mode
+  :diminish rainbow-mode
+  :hook prog-mode)
 #+END_SRC
 *** Highligt matcing parenthesis
 #+BEGIN_SRC emacs-lisp
@@ -601,7 +696,7 @@ Auto-close delimiters and blocks as you type.
 *** General
 #+BEGIN_SRC emacs-lisp
   (use-package general :ensure t
-    :config  
+    :config
     (general-evil-setup t)
 
     (general-define-key

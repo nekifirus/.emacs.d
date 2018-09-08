@@ -21,12 +21,26 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(calendar-week-start-day 1)
  '(custom-safe-themes
    (quote
-    ("a5956ec25b719bf325e847864e16578c61d8af3e8a3d95f60f9040d02497e408" default))))
+    ("a5956ec25b719bf325e847864e16578c61d8af3e8a3d95f60f9040d02497e408" default)))
+ '(evil-collection-company-use-tng nil)
+ '(face-font-family-alternatives (quote (("Consolas" "Monaco" "Monospace"))))
+ '(package-selected-packages (quote (font-lock+)))
+ '(projectile-completion-system (quote ivy))
+ '(show-paren-delay 0.0)
+ '(system-packages-noconfirm t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(evil-goggles-change-face ((t (:inherit diff-removed))))
+ '(evil-goggles-delete-face ((t (:inherit diff-removed))))
+ '(evil-goggles-paste-face ((t (:inherit diff-added))))
+ '(evil-goggles-undo-redo-add-face ((t (:inherit diff-added))))
+ '(evil-goggles-undo-redo-change-face ((t (:inherit diff-changed))))
+ '(evil-goggles-undo-redo-remove-face ((t (:inherit diff-removed))))
+ '(evil-goggles-yank-face ((t (:inherit diff-changed))))
+ '(trailing-whitespace ((t (:background "dim gray")))))
