@@ -28,6 +28,7 @@
     ("a5956ec25b719bf325e847864e16578c61d8af3e8a3d95f60f9040d02497e408" default)))
  '(evil-collection-company-use-tng nil)
  '(face-font-family-alternatives (quote (("Consolas" "Monaco" "Monospace"))))
+ '(no-littering-var-directory "/Users/Nekifirus/.emacs.d/data/" t)
  '(package-selected-packages (quote (font-lock+)))
  '(projectile-completion-system (quote ivy))
  '(show-paren-delay 0.0)
