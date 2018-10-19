@@ -251,10 +251,12 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 Install, automatically load, and enable evil. It's like vim, but better!
 
 #+BEGIN_SRC emacs-lisp
+(setq evil-want-keybinding nil)
+
 (use-package evil
   :ensure t
   :init
-  (setq evil-want-integration nil)
+  (setq evil-want-integration t)
   :config
   (evil-mode 1))
 
@@ -361,7 +363,7 @@ functions we invoke regularly outside of magit is called.
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :commands (magit-status magit-blame magit-log-buffer-file magit-log-all))
+  :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all))
 
 (use-package gitignore-mode
   :mode "/\\.gitignore$")
@@ -407,14 +409,14 @@ Let's include a newer version of org-mode than the one that is built in. We're g
    want is prioritized instead.
 
    #+BEGIN_SRC emacs-lisp
-   (use-package org
-     :ensure org-plus-contrib
-     :pin org
-     :defer t)
+ ;;  (use-package org
+ ;;    :ensure org-plus-contrib
+ ;;    :pin org
+ ;;    :defer t)
 
-   ;; Ensure ELPA org is prioritized above built-in org.
-   (require 'cl)
-   (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+ ;;  ;; Ensure ELPA org is prioritized above built-in org.
+ ;;  (require 'cl-lib)
+ ;;  (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
    #+END_SRC
 
 **** toc-org
@@ -539,10 +541,10 @@ From a13/.emacs.d
   (require 'spaceline-config)
   (spaceline-spacemacs-theme))
 
-(use-package font-lock+
-  :ensure t
-  :quelpa
-  (font-lock+ :repo "emacsmirror/font-lock-plus" :fetcher github))
+;; (use-package font-lock
+;;   :ensure t
+;;   :config
+;;   (setq font-lock-maximum-decoration t))
 
 (use-package all-the-icons
   :config
@@ -618,10 +620,10 @@ From a13/.emacs.d
 
 *** Clojure
 #+BEGIN_SRC emacs-lisp
-(use-package clojure-mode)
-(use-package clojure-mode-extra-font-locking)
-(use-package clojure-snippets)
-(use-package cider)
+;; (use-package clojure-mode)
+;; (use-package clojure-mode-extra-font-locking)
+;; (use-package clojure-snippets)
+;; (use-package cider)
 
 #+END_SRC
 ** Editing
