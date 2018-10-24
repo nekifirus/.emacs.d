@@ -512,7 +512,7 @@ From a13/.emacs.d
                       :weight 'regular
                       :width 'semi-condensed
                       ;; (/ (* 19 (display-pixel-height)) (display-mm-height))
-                      :height (if (> (display-pixel-height) 1000) 160 120))
+                      :height (if (> (display-pixel-height) 1000) 120 120))
   (set-fontset-font "fontset-default" 'cyrillic
                     (font-spec :registry "iso10646-1" :script 'cyrillic)))
 #+END_SRC
