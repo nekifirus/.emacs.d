@@ -36,6 +36,7 @@
     - [[#reverseim][Reverse.im]]
     - [[#markdown][Markdown]]
     - [[#ag][Ag]]
+    - [[#nixos][Nixos]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -488,6 +489,11 @@ This is beatiful thing for users with non-latin kbd layouts
   :ensure-system-package (ag . silversearcher-ag)
   :custom
   (ag-highlight-search t "Highlight the current search term."))
+#+END_SRC
+*** Nixos
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode
+  :mode ("\\.nix\\'" "\\.nix.in\\'"))
 #+END_SRC
 ** Themes
 This section for themes and colors
