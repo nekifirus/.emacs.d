@@ -37,6 +37,7 @@
     - [[#markdown][Markdown]]
     - [[#ag][Ag]]
     - [[#nixos][Nixos]]
+    - [[#direnv][Direnv]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -495,6 +496,13 @@ This is beatiful thing for users with non-latin kbd layouts
 (use-package nix-mode
   :mode ("\\.nix\\'" "\\.nix.in\\'"))
 #+END_SRC
+*** Direnv
+    How I lived without it?
+    #+BEGIN_SRC emacs-lisp
+    (use-package direnv
+      :config
+      (direnv-mode))
+    #+END_SRC
 ** Themes
 This section for themes and colors
 *** Fonts
