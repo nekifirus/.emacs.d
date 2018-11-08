@@ -39,6 +39,7 @@
     - [[#docker][Docker]]
     - [[#nolitering][Nolitering]]
     - [[#htmlize][Htmlize]]
+    - [[#direnv][Direnv]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -524,6 +525,13 @@ Copypasted from a13
 (use-package htmlize)
 
 #+END_SRC
+*** Direnv
+    How I lived without it?
+    #+BEGIN_SRC emacs-lisp
+    (use-package direnv
+      :config
+      (direnv-mode))
+    #+END_SRC
 ** Themes
 This section for themes and colors
 *** Fonts
