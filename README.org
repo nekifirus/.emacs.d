@@ -206,19 +206,17 @@ previously compiled manually then all of the package initialization will still t
 #+END_SRC
 **** Extend use-package functionality
 #+BEGIN_SRC emacs-lisp
-(use-package system-packages
-  :custom
-  (system-packages-noconfirm t))
+  (use-package system-packages
+    :custom
+    (system-packages-noconfirm t))
 
-(use-package use-package-ensure-system-package)
+  (use-package use-package-ensure-system-package)
 
-;; :diminish keyword
-(use-package diminish)
+  ;; :diminish keyword
+  (use-package diminish)
 
-;; :bind keyword
-(use-package bind-key)
-(use-package quelpa)
-(use-package quelpa-use-package)
+  ;; :bind keyword
+  (use-package bind-key)
 #+END_SRC
 *** Startup
 **** Minimal GUI
