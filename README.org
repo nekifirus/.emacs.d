@@ -38,6 +38,7 @@
     - [[#ag][Ag]]
     - [[#docker][Docker]]
     - [[#nolitering][Nolitering]]
+    - [[#htmlize][Htmlize]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -512,6 +513,11 @@ Copypasted from a13
   :ensure t
   :custom
   (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
+#+END_SRC
+*** Htmlize
+#+BEGIN_SRC emacs-lisp
+(use-package htmlize)
+
 #+END_SRC
 ** Themes
 This section for themes and colors
