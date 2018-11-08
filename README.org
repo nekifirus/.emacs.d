@@ -584,11 +584,6 @@ From a13/.emacs.d
   (require 'spaceline-config)
   (spaceline-spacemacs-theme))
 
-(use-package font-lock+
-  :ensure t
-  :quelpa
-  (font-lock+ :repo "emacsmirror/font-lock-plus" :fetcher github))
-
 (use-package all-the-icons
   :config
   (add-to-list
