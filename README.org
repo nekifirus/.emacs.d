@@ -433,24 +433,24 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 **** calendar
  #+BEGIN_SRC emacs-lisp
    (use-package calendar
-  :ensure nil
-  :custom
-  (calendar-week-start-day 1))
+     :ensure nil
+     :custom
+     (calendar-week-start-day 1))
  #+END_SRC
 **** Capture
  #+BEGIN_SRC emacs-lisp
- (setq org-default-notes-file "~/org/default.org")
- (define-key global-map "\C-cc" 'counsel-org-capture)
+   (setq org-default-notes-file "~/org/default.org")
+   (define-key global-map "\C-cc" 'counsel-org-capture)
  #+END_SRC
 **** Agenda
  #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("~/org"))
-(global-set-key "\C-ca" 'org-agenda)
+   (setq org-agenda-files '("~/org"))
+   (global-set-key "\C-ca" 'org-agenda)
  #+END_SRC
 **** Refile
 #+BEGIN_SRC emacs-lisp
-(setq org-refile-targets '((nil :maxlevel . 9)
-  (org-agenda-files :maxlevel . 9)))
+  (setq org-refile-targets '((nil :maxlevel . 9)
+    (org-agenda-files :maxlevel . 9)))
 #+END_SRC
 
 *** Path from shell
@@ -462,107 +462,107 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
  #+END_SRC
 *** Restart Emacs
 #+BEGIN_SRC emacs-lisp
-(use-package restart-emacs
-    :commands (restart-emacs))
+  (use-package restart-emacs
+      :commands (restart-emacs))
 #+END_SRC
 *** Wakatime
 #+BEGIN_SRC emacs-lisp
-(use-package wakatime-mode :ensure t :demand t
-  :config (global-wakatime-mode))
+  (use-package wakatime-mode :ensure t :demand t
+    :config (global-wakatime-mode))
 #+END_SRC
 *** [[https://github.com/a13/reverse-im.el][Reverse.im]]
 This is beatiful thing for users with non-latin kbd layouts
 #+BEGIN_SRC emacs-lisp
-(use-package reverse-im
-  :config
-  (add-to-list 'reverse-im-modifiers 'super)
-  (add-to-list 'reverse-im-input-methods "russian-computer")
-  (reverse-im-mode t))
+  (use-package reverse-im
+    :config
+    (add-to-list 'reverse-im-modifiers 'super)
+    (add-to-list 'reverse-im-input-methods "russian-computer")
+    (reverse-im-mode t))
 #+END_SRC
 *** Markdown
 #+BEGIN_SRC emacs-lisp
-(use-package markdown-mode
-  :ensure t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :init (setq markdown-command "multimarkdown"))
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 *** Ag
 #+BEGIN_SRC emacs-lisp
-(use-package ag
-  :ensure-system-package (ag . silversearcher-ag)
-  :custom
-  (ag-highlight-search t "Highlight the current search term."))
+  (use-package ag
+    :ensure-system-package (ag . silversearcher-ag)
+    :custom
+    (ag-highlight-search t "Highlight the current search term."))
 #+END_SRC
 *** Docker
 
 Copypasted from a13
 #+BEGIN_SRC emacs-lisp
-(use-package docker
-  :ensure t
-  :bind
-  (:map mode-specific-map
-        ("d" . docker)))
+  (use-package docker
+    :ensure t
+    :bind
+    (:map mode-specific-map
+          ("d" . docker)))
 
-;; not sure if these two should be here
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
+  ;; not sure if these two should be here
+  (use-package dockerfile-mode
+    :mode "Dockerfile\\'")
 
-(use-package docker-compose-mode)
+  (use-package docker-compose-mode)
 #+END_SRC
 *** Nolitering
     Beatiful feature from Wiedzmin config. Save all emacs package's files in data dir
 #+BEGIN_SRC emacs-lisp
-(use-package no-littering
-  :ensure t
-  :custom
-  (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
+  (use-package no-littering
+    :ensure t
+    :custom
+    (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
 #+END_SRC
 *** Htmlize
 #+BEGIN_SRC emacs-lisp
-(use-package htmlize)
+  (use-package htmlize)
 
 #+END_SRC
 *** Direnv
     How I lived without it?
     #+BEGIN_SRC emacs-lisp
-    (use-package direnv
-      :config
-      (direnv-mode))
+      (use-package direnv
+        :config
+        (direnv-mode))
     #+END_SRC
 *** Haml mode
 #+BEGIN_SRC emacs-lisp
-(use-package haml-mode)
+  (use-package haml-mode)
 #+END_SRC
 ** Themes
 This section for themes and colors
 *** Fonts
 From a13/.emacs.d
 #+BEGIN_SRC emacs-lisp
-(use-package faces
-  :ensure nil
-  :defer t
-  :custom
-  (face-font-family-alternatives '(("Consolas" "Monaco" "Monospace")))
-  :config
-  (set-face-attribute 'default
-                      nil
-                      :family (caar face-font-family-alternatives)
-                      :weight 'regular
-                      :width 'semi-condensed
-                      ;; (/ (* 19 (display-pixel-height)) (display-mm-height))
-                      :height (if (> (display-pixel-height) 1079) 120 160))
-  (set-fontset-font "fontset-default" 'cyrillic
-                    (font-spec :registry "iso10646-1" :script 'cyrillic)))
+  (use-package faces
+    :ensure nil
+    :defer t
+    :custom
+    (face-font-family-alternatives '(("Consolas" "Monaco" "Monospace")))
+    :config
+    (set-face-attribute 'default
+                        nil
+                        :family (caar face-font-family-alternatives)
+                        :weight 'regular
+                        :width 'semi-condensed
+                        ;; (/ (* 19 (display-pixel-height)) (display-mm-height))
+                        :height (if (> (display-pixel-height) 1079) 120 160))
+    (set-fontset-font "fontset-default" 'cyrillic
+                      (font-spec :registry "iso10646-1" :script 'cyrillic)))
 #+END_SRC
 *** Custom
 #+BEGIN_SRC emacs-lisp
-(use-package custom
-  :ensure nil
-  :custom
-  (custom-safe-themes t))
+  (use-package custom
+    :ensure nil
+    :custom
+    (custom-safe-themes t))
 #+END_SRC
 
 *** Gruv-box
@@ -573,44 +573,44 @@ From a13/.emacs.d
 #+END_SRC
 *** Time
 #+BEGIN_SRC emacs-lisp
-(use-package time
-  :ensure nil
-  :custom
-  (display-time-default-load-average nil)
-  (display-time-24hr-format t)
-  :config
-  (display-time-mode t))
+  (use-package time
+    :ensure nil
+    :custom
+    (display-time-default-load-average nil)
+    (display-time-24hr-format t)
+    :config
+    (display-time-mode t))
 #+END_SRC
 *** Spaceline and over
 #+BEGIN_SRC emacs-lisp
-(use-package spaceline
-  :config
-  (require 'spaceline-config)
-  (spaceline-spacemacs-theme))
+  (use-package spaceline
+    :config
+    (require 'spaceline-config)
+    (spaceline-spacemacs-theme))
 
-(use-package all-the-icons
-  :config
-  (add-to-list
-   'all-the-icons-mode-icon-alist
-   '(package-menu-mode all-the-icons-octicon "package" :v-adjust 0.0)))
+  (use-package all-the-icons
+    :config
+    (add-to-list
+     'all-the-icons-mode-icon-alist
+     '(package-menu-mode all-the-icons-octicon "package" :v-adjust 0.0)))
 
-(use-package all-the-icons-dired
-  :hook
-  (dired-mode . all-the-icons-dired-mode))
+  (use-package all-the-icons-dired
+    :hook
+    (dired-mode . all-the-icons-dired-mode))
 
-(use-package spaceline-all-the-icons
-  :after spaceline
-  :config
-  (spaceline-all-the-icons-theme)
-  (spaceline-all-the-icons--setup-package-updates)
-  (spaceline-all-the-icons--setup-git-ahead))
+  (use-package spaceline-all-the-icons
+    :after spaceline
+    :config
+    (spaceline-all-the-icons-theme)
+    (spaceline-all-the-icons--setup-package-updates)
+    (spaceline-all-the-icons--setup-git-ahead))
 
-(use-package all-the-icons-ivy
-  :after ivy projectile
-  :custom
-  (all-the-icons-ivy-buffer-commands '() "Don't use for buffers.")
-  :config
-  (all-the-icons-ivy-setup))
+  (use-package all-the-icons-ivy
+    :after ivy projectile
+    :custom
+    (all-the-icons-ivy-buffer-commands '() "Don't use for buffers.")
+    :config
+    (all-the-icons-ivy-setup))
 #+END_SRC
 ** Completion
 *** Company
@@ -672,12 +672,13 @@ From a13/.emacs.d
 The section for good tools for editing text and code
 *** Disable autosave
 #+BEGIN_SRC emacs-lisp
-(setq-default auto-save-default nil
-              create-lockfiles nil
-              make-backup-files nil)
+  (setq-default auto-save-default nil create-lockfiles nil
+                make-backup-files nil)
 #+END_SRC
 *** Recursive minibuffers
-(enable-recursive-minibuffers t)
+#+BEGIN_SRC emacs-lisp
+  (enable-recursive-minibuffers t)
+#+END_SRC
 *** Linum
     try to disable linum.
 #+BEGIN_SRC emacs-lisp
@@ -700,25 +701,25 @@ The section for good tools for editing text and code
 #+END_SRC
 *** Highligt matcing parenthesis
 #+BEGIN_SRC emacs-lisp
- (custom-set-variables '(show-paren-delay 0.0))
- (show-paren-mode t)
+  (custom-set-variables '(show-paren-delay 0.0))
+  (show-paren-mode t)
 #+END_SRC
 *** Highligt and delete trailing space
 #+BEGIN_SRC emacs-lisp
-(defun my/buf-show-trailing-whitespace ()
-  (interactive)
-  (setq show-trailing-whitespace t))
-(add-hook 'prog-mode-hook #'my/buf-show-trailing-whitespace)
-(custom-set-faces '(trailing-whitespace ((t (:background "dim gray")))))
-(add-hook 'write-file-hooks 'delete-trailing-whitespace)
+  (defun my/buf-show-trailing-whitespace ()
+    (interactive)
+    (setq show-trailing-whitespace t))
+  (add-hook 'prog-mode-hook #'my/buf-show-trailing-whitespace)
+  (custom-set-faces '(trailing-whitespace ((t (:background "dim gray")))))
+  (add-hook 'write-file-hooks 'delete-trailing-whitespace)
 #+END_SRC
 *** Indent with spaces by default
 #+BEGIN_SRC emacs-lisp
-(setq-default indent-tabs-mode nil)
+  (setq-default indent-tabs-mode nil)
 #+END_SRC
 *** Auto-update changed files
 #+BEGIN_SRC emacs-lisp
-(global-auto-revert-mode t)
+  (global-auto-revert-mode t)
 #+END_SRC
 *** smartparens
 
@@ -763,7 +764,7 @@ Auto-close delimiters and blocks as you type.
     (general-define-key
      :states '(normal visual insert emacs)
      :prefix "SPC"
-     :non-normal-prefix "C-SPC"
+     ;; :non-normal-prefix "C-SPC"
 
       ;; simple command
       "/"   'swiper
