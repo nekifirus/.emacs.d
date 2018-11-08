@@ -256,38 +256,38 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 Install, automatically load, and enable evil. It's like vim, but better!
 
 #+BEGIN_SRC emacs-lisp
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-integration nil)
-  :config
-  (evil-mode 1))
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-integration nil)
+    :config
+    (evil-mode 1))
 
-(use-package evil-collection
-  :after evil
-  :ensure t
-  :custom (evil-collection-company-use-tng nil)
-  :config (evil-collection-init))
+  (use-package evil-collection
+    :after evil
+    :ensure t
+    :custom (evil-collection-company-use-tng nil)
+    :config (evil-collection-init))
 
-(use-package evil-magit
-  :ensure t
-  :after magit
-  :init (setq evil-magit-want-horizontal-movement t))
+  (use-package evil-magit
+    :ensure t
+    :after magit
+    :init (setq evil-magit-want-horizontal-movement t))
 
-(use-package evil-commentary
-  :ensure t
-  :config (evil-commentary-mode 1))
+  (use-package evil-commentary
+    :ensure t
+    :config (evil-commentary-mode 1))
 
-(use-package evil-goggles
-  :ensure t
-  :config (progn
-            (setq evil-goggles-duration 0.1)
-            (evil-goggles-mode 1)
-            (evil-goggles-use-diff-faces)))
+  (use-package evil-goggles
+    :ensure t
+    :config (progn
+              (setq evil-goggles-duration 0.1)
+              (evil-goggles-mode 1)
+              (evil-goggles-use-diff-faces)))
 
-(use-package evil-matchit
-  :ensure t
-  :config (global-evil-matchit-mode 1))
+  (use-package evil-matchit
+    :ensure t
+    :config (global-evil-matchit-mode 1))
 #+END_SRC
 **** Disable evil in some modes
   #+BEGIN_SRC emacs-lisp
@@ -407,20 +407,21 @@ going to install it and make sure it's loaded immediately.
 
 *** Org
 **** Latest version
-Let's include a newer version of org-mode than the one that is built in. We're going
-   to manually remove the org directories from the load path, to ensure the version we
-   want is prioritized instead.
+   #   Let's include a newer version of org-mode than the one that is
+   # built in. We're going to manually remove the org directories from
+   # the load path, to ensure the version we want is prioritized
+   # instead.
 
-   #+BEGIN_SRC emacs-lisp
-   (use-package org
-     :ensure org-plus-contrib
-     :pin org
-     :defer t)
+   # #+BEGIN_SRC emacs-lisp
+   # (use-package org
+   #   :ensure org-plus-contrib
+   #   :pin org
+   #   :defer t)
 
-   ;; Ensure ELPA org is prioritized above built-in org.
-   (require 'cl)
-   (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
-   #+END_SRC
+   # ;; Ensure ELPA org is prioritized above built-in org.
+   # (require 'cl)
+   # (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+   # #+END_SRC
 
 **** toc-org
 Let's install and load the =toc-org= package after org mode is loaded. This is the package that automatically generates an up to date table of contents for us.
