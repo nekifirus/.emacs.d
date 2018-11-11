@@ -35,6 +35,7 @@
     - [[#wakatime][Wakatime]]
     - [[#reverseim][Reverse.im]]
     - [[#markdown][Markdown]]
+    - [[#csv][CSV]]
     - [[#ag][Ag]]
     - [[#docker][Docker]]
     - [[#nolitering][Nolitering]]
@@ -496,6 +497,15 @@ This is beatiful thing for users with non-latin kbd layouts
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
+#+END_SRC
+*** CSV
+    csv mode
+#+BEGIN_SRC emacs-lisp
+  (use-package csv-mode
+    :ensure t
+    :mode "\\.csv$"
+    :config
+      (setq csv-separators '(";")))
 #+END_SRC
 *** Ag
 #+BEGIN_SRC emacs-lisp
