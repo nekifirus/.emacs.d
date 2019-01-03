@@ -42,6 +42,9 @@
     - [[#htmlize][Htmlize]]
     - [[#direnv][Direnv]]
     - [[#haml-mode][Haml mode]]
+    - [[#yasnippet][Yasnippet]]
+    - [[#flyspell][Flyspell]]
+    - [[#copy-as-format][Copy-as-format]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -53,6 +56,7 @@
   - [[#programming-languages][Programming languages]]
     - [[#elixir][Elixir]]
     - [[#clojure][Clojure]]
+    - [[#flycheck][Flycheck]]
   - [[#editing][Editing]]
     - [[#disable-autosave][Disable autosave]]
     - [[#recursive-minibuffers][Recursive minibuffers]]
@@ -247,9 +251,19 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 
 **** Start maximized
      TODO this is not working(
-    #+BEGIN_SRC emacs-list
+    #+BEGIN_SRC emacs-lisp
    (add-hook 'window-setup-hook 'toggle-frame-maximized t)
     #+END_SRC
+
+**** Hippie
+#+BEGIN_SRC emacs-lisp
+  (global-set-key [remap dabbrev-expand] 'hippie-expand)
+#+END_SRC
+
+**** M-o to change window
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "M-o") 'other-window)
+#+END_SRC
 ** Packages
 *** Evil
 Install, automatically load, and enable evil. It's like vim, but better!
@@ -546,13 +560,52 @@ Copypasted from a13
 *** Direnv
     How I lived without it?
     #+BEGIN_SRC emacs-lisp
-      (use-package direnv
-        :config
-        (direnv-mode))
+      (use-package direnv)
     #+END_SRC
 *** Haml mode
 #+BEGIN_SRC emacs-lisp
   (use-package haml-mode)
+#+END_SRC
+*** Yasnippet
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :config
+    (yas-global-mode 1))
+  (use-package yasnippet-snippets)
+#+END_SRC
+*** Flyspell
+#+BEGIN_SRC emacs-lisp
+(use-package flyspell
+  :ensure t
+  :defer t
+  :init
+  (progn (add-hook 'prog-mode-hook 'flyspell-mode)))
+#+END_SRC
+*** Copy-as-format
+#+BEGIN_SRC emacs-lisp
+(use-package copy-as-format
+  :custom
+  (copy-as-format-default "slack")
+  :bind
+  (:map mode-specific-map
+        :prefix-map copy-as-format-prefix-map
+        :prefix "f"
+        ("f" . copy-as-format)
+        ("a" . copy-as-format-asciidoc)
+        ("b" . copy-as-format-bitbucket)
+        ("d" . copy-as-format-disqus)
+        ("g" . copy-as-format-github)
+        ("l" . copy-as-format-gitlab)
+        ("c" . copy-as-format-hipchat)
+        ("h" . copy-as-format-html)
+        ("j" . copy-as-format-jira)
+        ("m" . copy-as-format-markdown)
+        ("w" . copy-as-format-mediawiki)
+        ("o" . copy-as-format-org-mode)
+        ("p" . copy-as-format-pod)
+        ("r" . copy-as-format-rst)
+        ("s" . copy-as-format-slack)))
+
 #+END_SRC
 ** Themes
 This section for themes and colors
@@ -619,9 +672,7 @@ From a13/.emacs.d
   (use-package spaceline-all-the-icons
     :after spaceline
     :config
-    (spaceline-all-the-icons-theme)
-    (spaceline-all-the-icons--setup-package-updates)
-    (spaceline-all-the-icons--setup-git-ahead))
+    (spaceline-all-the-icons-theme))
 
   (use-package all-the-icons-ivy
     :after ivy projectile
@@ -676,6 +727,15 @@ From a13/.emacs.d
   (use-package alchemist
     :commands alchemist-mode)
   (add-hook 'alchemist-test-report-mode-hook 'auto-fill-mode)
+
+  ;; To use this you need to localy install credo and bunt. See package repo for instructions
+  ;; (use-package flycheck-elixir-credo
+  ;;            :init (add-hook 'elixir-mode-hook 'flycheck-elixir-credo-setup))
+
+
+  ;; (use-package flycheck-credo
+  ;;   :defer t
+  ;;   :init (add-hook 'flycheck-mode-hook #'flycheck-credo-setup))
 #+END_SRC
 
 *** Clojure
@@ -686,6 +746,13 @@ From a13/.emacs.d
 (use-package cider)
 
 #+END_SRC
+
+*** Flycheck
+#+BEGIN_SRC emacs-lisp
+  (use-package flycheck
+    :ensure t)
+    (global-flycheck-mode)
+#+END_SRC
 ** Editing
 The section for good tools for editing text and code
 *** Disable autosave
@@ -694,9 +761,9 @@ The section for good tools for editing text and code
                 make-backup-files nil)
 #+END_SRC
 *** Recursive minibuffers
-#+BEGIN_SRC emacs-lisp
-  (enable-recursive-minibuffers t)
-#+END_SRC
+# #+BEGIN_SRC emacs-lisp
+#   (enable-recursive-minibuffers t)
+# #+END_SRC
 *** Linum
     try to disable linum.
 #+BEGIN_SRC emacs-lisp
@@ -782,7 +849,7 @@ Auto-close delimiters and blocks as you type.
     (general-define-key
      :states '(normal visual insert emacs)
      :prefix "SPC"
-     ;; :non-normal-prefix "C-SPC"
+     :non-normal-prefix "C-M-SPC"
 
       ;; simple command
       "/"   'swiper
