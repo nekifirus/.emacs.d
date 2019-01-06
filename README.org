@@ -767,6 +767,7 @@ From a13/.emacs.d
   ;; Alchemist offers integration with the Mix tool.
   (use-package alchemist
     :config
+    (setq alchemist-key-command-prefix (kbd "C-c ,"))
     (setq alchemist-test-truncate-lines nil)
     :commands alchemist-mode)
 
