@@ -503,7 +503,7 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 **** Agenda
  #+BEGIN_SRC emacs-lisp
    (setq org-agenda-files '("~/org"))
-   (global-set-key "\C-ca" 'org-agenda)
+   (global-set-key "\C-c\C-a" 'org-agenda)
  #+END_SRC
 **** Refile
 #+BEGIN_SRC emacs-lisp
