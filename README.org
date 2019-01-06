@@ -316,7 +316,7 @@ Shows keybindings
 
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
-  ;:diminish which-key-mode
+  :diminish which-key-mode
   :config
   (setq which-key-sort-order #'which-key-prefix-then-key-order
         which-key-sort-uppercase-first nil
@@ -366,6 +366,7 @@ with richer versions. Let's install it!
   (counsel-projectile-mode))
 
 (use-package counsel
+  :diminish counsel-mode
   :bind
   (([remap menu-bar-open] . counsel-tmm)
    ([remap insert-char] . counsel-unicode-char)
@@ -420,7 +421,7 @@ functions we invoke regularly outside of magit is called.
 
 #+BEGIN_SRC emacs-lisp
 (use-package magit
-  :commands (magit-status magit-blame magit-log-buffer-file magit-log-all))
+  :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all))
 
 (use-package gitignore-mode
   :mode "/\\.gitignore$")
@@ -525,7 +526,10 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 #+END_SRC
 *** Wakatime
 #+BEGIN_SRC emacs-lisp
-  (use-package wakatime-mode :ensure t :demand t
+  (use-package wakatime-mode
+    :ensure t
+    :demand t
+    :diminish wakatime-mode
     :config (global-wakatime-mode))
 #+END_SRC
 *** [[https://github.com/a13/reverse-im.el][Reverse.im]]
@@ -604,6 +608,7 @@ Copypasted from a13
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
+    :diminish yas-minor-mode
     :config
     (yas-global-mode 1))
   (use-package yasnippet-snippets)
@@ -613,6 +618,7 @@ Copypasted from a13
 (use-package flyspell
   :ensure t
   :defer t
+  :diminish flyspell-mode
   :init
   (progn (add-hook 'prog-mode-hook 'flyspell-mode)))
 #+END_SRC
@@ -689,10 +695,10 @@ From a13/.emacs.d
 #+END_SRC
 *** Spaceline and over
 #+BEGIN_SRC emacs-lisp
-  (use-package spaceline
-    :config
-    (require 'spaceline-config)
-    (spaceline-spacemacs-theme))
+  ;; (use-package spaceline
+  ;;   :config
+  ;;   (require 'spaceline-config)
+  ;;   (spaceline-spacemacs-theme))
 
   (use-package all-the-icons
     :config
@@ -704,10 +710,10 @@ From a13/.emacs.d
     :hook
     (dired-mode . all-the-icons-dired-mode))
 
-  (use-package spaceline-all-the-icons
-    :after spaceline
-    :config
-    (spaceline-all-the-icons-theme))
+  ;; (use-package spaceline-all-the-icons
+  ;;   :after spaceline
+  ;;   :config
+  ;;   (spaceline-all-the-icons-theme))
 
   (use-package all-the-icons-ivy
     :after ivy projectile
@@ -764,7 +770,9 @@ From a13/.emacs.d
     (setq alchemist-test-truncate-lines nil)
     :commands alchemist-mode)
 
-
+  (use-package flycheck-mix
+    :config
+    (flycheck-mix-setup))
   ;; To use this you need to localy install credo and bunt. See package repo for instructions
   ;; (use-package flycheck-elixir-credo
   ;;            :init (add-hook 'elixir-mode-hook 'flycheck-elixir-credo-setup))
@@ -787,6 +795,7 @@ From a13/.emacs.d
 *** Flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
+    :diminish flycheck-mode
     :ensure t)
     (global-flycheck-mode)
 #+END_SRC
@@ -850,6 +859,7 @@ Auto-close delimiters and blocks as you type.
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :demand t
+  :diminish smartparens-mode
   :config
   (setq sp-autowrap-region nil) ; let evil-surround handle this
 
