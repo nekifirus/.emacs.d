@@ -67,8 +67,8 @@
     - [[#indent-with-spaces-by-default][Indent with spaces by default]]
     - [[#auto-update-changed-files][Auto-update changed files]]
     - [[#smartparens][smartparens]]
+    - [[#whole-line-kill][whole-line-kill]]
   - [[#keybindings][Keybindings]]
-    - [[#leader-keys][Leader keys]]
     - [[#general][General]]
   - [[#functions][Functions]]
     - [[#buffers][Buffers]]
@@ -268,49 +268,49 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 *** Evil
 Install, automatically load, and enable evil. It's like vim, but better!
 
-#+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :ensure t
-    :init
-    (setq evil-want-integration nil)
-    :config
-    (evil-mode 1))
+# #+BEGIN_SRC emacs-lisp
+#   (use-package evil
+#     :ensure t
+#     :init
+#     (setq evil-want-integration nil)
+#     :config
+#     (evil-mode 1))
 
-  (use-package evil-collection
-    :after evil
-    :ensure t
-    :custom (evil-collection-company-use-tng nil)
-    :config (evil-collection-init))
+#   (use-package evil-collection
+#     :after evil
+#     :ensure t
+#     :custom (evil-collection-company-use-tng nil)
+#     :config (evil-collection-init))
 
-  (use-package evil-magit
-    :ensure t
-    :after magit
-    :init (setq evil-magit-want-horizontal-movement t))
+#   (use-package evil-magit
+#     :ensure t
+#     :after magit
+#     :init (setq evil-magit-want-horizontal-movement t))
 
-  (use-package evil-commentary
-    :ensure t
-    :config (evil-commentary-mode 1))
+#   (use-package evil-commentary
+#     :ensure t
+#     :config (evil-commentary-mode 1))
 
-  (use-package evil-goggles
-    :ensure t
-    :config (progn
-              (setq evil-goggles-duration 0.1)
-              (evil-goggles-mode 1)
-              (evil-goggles-use-diff-faces)))
+#   (use-package evil-goggles
+#     :ensure t
+#     :config (progn
+#               (setq evil-goggles-duration 0.1)
+#               (evil-goggles-mode 1)
+#               (evil-goggles-use-diff-faces)))
 
-  (use-package evil-matchit
-    :ensure t
-    :config (global-evil-matchit-mode 1))
+#   (use-package evil-matchit
+#     :ensure t
+#     :config (global-evil-matchit-mode 1))
 
-  (use-package evil-surround
-  :ensure t
-  :config
-  (global-evil-surround-mode 1))
-#+END_SRC
-**** Disable evil in some modes
-  #+BEGIN_SRC emacs-lisp
-   (evil-set-initial-state 'help-mode 'emacs)
-  #+END_SRC
+#   (use-package evil-surround
+#   :ensure t
+#   :config
+#   (global-evil-surround-mode 1))
+# #+END_SRC
+# **** Disable evil in some modes
+#   #+BEGIN_SRC emacs-lisp
+#    (evil-set-initial-state 'help-mode 'emacs)
+#   #+END_SRC
 *** Which-key
 Shows keybindings
 
@@ -366,7 +366,43 @@ with richer versions. Let's install it!
   (counsel-projectile-mode))
 
 (use-package counsel
-  :demand t)
+  :bind
+  (([remap menu-bar-open] . counsel-tmm)
+   ([remap insert-char] . counsel-unicode-char)
+   ([remap isearch-forward] . counsel-grep-or-swiper)
+   :map mode-specific-map
+   :prefix-map counsel-prefix-map
+   :prefix "c"
+   ("a" . counsel-apropos)
+   ("b" . counsel-bookmark)
+   ("B" . counsel-bookmarked-directory)
+   ("c" . counsel-org-capture)
+   ("d" . counsel-dired-jump)
+   ("f" . counsel-file-jump)
+   ("F" . counsel-faces)
+   ("g" . counsel-org-goto)
+   ("h" . counsel-command-history)
+   ("H" . counsel-minibuffer-history)
+   ("i" . counsel-imenu)
+   ("j" . counsel-find-symbol)
+   ("l" . counsel-locate)
+   ("L" . counsel-find-library)
+   ("m" . counsel-mark-ring)
+   ("o" . counsel-outline)
+   ("O" . counsel-find-file-extern)
+   ("p" . counsel-package)
+   ("r" . counsel-recentf)
+   ("s g" . counsel-grep)
+   ("s r" . counsel-rg)
+   ("s s" . counsel-ag)
+   ("t" . counsel-org-tag)
+   ("v" . counsel-set-variable)
+   ("w" . counsel-wmctrl)
+   :map help-map
+   ("F" . counsel-describe-face))
+  :config
+  (counsel-mode))
+
 #+END_SRC
 
 *** Swiper
@@ -463,7 +499,6 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 **** Capture
  #+BEGIN_SRC emacs-lisp
    (setq org-default-notes-file "~/org/default.org")
-   (define-key global-map "\C-cc" 'counsel-org-capture)
  #+END_SRC
 **** Agenda
  #+BEGIN_SRC emacs-lisp
@@ -725,8 +760,10 @@ From a13/.emacs.d
 
   ;; Alchemist offers integration with the Mix tool.
   (use-package alchemist
+    :config
+    (setq alchemist-test-truncate-lines nil)
     :commands alchemist-mode)
-  (add-hook 'alchemist-test-report-mode-hook 'auto-fill-mode)
+
 
   ;; To use this you need to localy install credo and bunt. See package repo for instructions
   ;; (use-package flycheck-elixir-credo
@@ -830,94 +867,91 @@ Auto-close delimiters and blocks as you type.
 
   (smartparens-global-mode))
 #+END_SRC
-** Keybindings
-*** Leader keys
+*** whole-line-kill
 #+BEGIN_SRC emacs-lisp
-(eval-and-compile
-  (defvar my-leader-key "SPC"
-    "The leader prefix key, for global commands.")
-
-  (defvar my-localleader-key "SPC m"
-    "The localleader prefix key, for major-mode specific commands."))
+(use-package whole-line-or-region
+  :diminish whole-line-or-region-local-mode
+  :config (whole-line-or-region-global-mode))
 #+END_SRC
+** Keybindings
 *** General
 #+BEGIN_SRC emacs-lisp
-  (use-package general :ensure t
-    :config
-    (general-evil-setup t)
+  ;; (use-package general :ensure t
+  ;;   :config
+  ;;   (general-evil-setup t)
 
-    (general-define-key
-     :states '(normal visual insert emacs)
-     :prefix "SPC"
-     :non-normal-prefix "C-M-SPC"
+  ;;   (general-define-key
+  ;;    :states '(normal visual insert emacs)
+  ;;    :prefix "SPC"
+  ;;    :non-normal-prefix "C-M-SPC"
 
-      ;; simple command
-      "/"   'swiper
-      "TAB" '(switch-to-prev-buffer :which-key "prev buffer")
-      "SPC" 'counsel-M-x
+  ;;     ;; simple command
+  ;;     "/"   'swiper
+  ;;     "TAB" '(switch-to-prev-buffer :which-key "prev buffer")
+  ;;     "SPC" 'counsel-M-x
 
-      ;; Applications
-      "a" '(:ignore t :which-key "Applications")
-      "ar" 'ranger
-      "ad" 'dired
+  ;;     ;; Applications
+  ;;     "a" '(:ignore t :which-key "Applications")
+  ;;     "ar" 'ranger
+  ;;     "ad" 'dired
 
-      ;; Buffers
-      "b" '(:ignore t :which-key "Buffers")
-      "bn" 'evil-buffer-new
-      "bb" 'ivy-switch-buffer
-      "bd" 'kill-this-buffer
-      "bo" 'kill-over-buffers
+  ;;     ;; Buffers
+  ;;     "b" '(:ignore t :which-key "Buffers")
+  ;;     "bn" 'evil-buffer-new
+  ;;     "bb" 'ivy-switch-buffer
+  ;;     "bd" 'kill-this-buffer
+  ;;     "bo" 'kill-over-buffers
 
-      ;; Windows
-      "w" '(:ignore t :which-key "Windows")
-      "wo" 'other-window
-      "wh" 'evil-window-left
-      "wH" 'evil-window-move-far-left
-      "wj" 'evil-window-down
-      "wJ" 'evil-window-move-very-bottom
-      "wk" 'evil-window-up
-      "wK" 'evil-window-very-top
-      "wl" 'evil-window-right
-      "wL" 'evil-window-move-far-right
-      "ws" 'evil-window-split
-      "wv" 'evil-window-vsplit
-      "ww" 'evil-window-next
-      "wW" 'evil-window-prev
-      "wd" 'delete-window
-      "wm" 'delete-other-windows
-      "wu" 'winner-undo
-      "wr" 'winner-redo
+  ;;     ;; Windows
+  ;;     "w" '(:ignore t :which-key "Windows")
+  ;;     "wo" 'other-window
+  ;;     "wh" 'evil-window-left
+  ;;     "wH" 'evil-window-move-far-left
+  ;;     "wj" 'evil-window-down
+  ;;     "wJ" 'evil-window-move-very-bottom
+  ;;     "wk" 'evil-window-up
+  ;;     "wK" 'evil-window-very-top
+  ;;     "wl" 'evil-window-right
+  ;;     "wL" 'evil-window-move-far-right
+  ;;     "ws" 'evil-window-split
+  ;;     "wv" 'evil-window-vsplit
+  ;;     "ww" 'evil-window-next
+  ;;     "wW" 'evil-window-prev
+  ;;     "wd" 'delete-window
+  ;;     "wm" 'delete-other-windows
+  ;;     "wu" 'winner-undo
+  ;;     "wr" 'winner-redo
 
-      ;; Files
-      "f" '(:ignore t :which-key "Files")
-      "ff" 'counsel-find-file
-      "fs" 'save-buffer
+  ;;     ;; Files
+  ;;     "f" '(:ignore t :which-key "Files")
+  ;;     "ff" 'counsel-find-file
+  ;;     "fs" 'save-buffer
 
-      ;; Magit
-      "g" '(:ignore t :which-key "Git")
-      "gs" 'magit-status
+  ;;     ;; Magit
+  ;;     "g" '(:ignore t :which-key "Git")
+  ;;     "gs" 'magit-status
 
-      ; Projectile
-      "p" '(:ignore t :which-key "Projectile")
-      "pp" 'projectile-switch-project
-      "pT" 'projectile-test-project
-      "pf" 'counsel-projectile
+  ;;     ; Projectile
+  ;;     "p" '(:ignore t :which-key "Projectile")
+  ;;     "pp" 'projectile-switch-project
+  ;;     "pT" 'projectile-test-project
+  ;;     "pf" 'counsel-projectile
 
-      ;; Search
-      "s" '(:ignore t :which-key "Search")
-      "sb" 'counsel-bookmark
-      "sd" 'counsel-dired-jump
-      "sh" 'counsel-command-history
-      "si" 'counsel-imenu
-      "sl" 'counsel-locate
-      "sr" 'counsel-recentf
-      "ss" 'counsel-ag
-      "sv" 'counsel-set-variable
+  ;;     ;; Search
+  ;;     "s" '(:ignore t :which-key "Search")
+  ;;     "sb" 'counsel-bookmark
+  ;;     "sd" 'counsel-dired-jump
+  ;;     "sh" 'counsel-command-history
+  ;;     "si" 'counsel-imenu
+  ;;     "sl" 'counsel-locate
+  ;;     "sr" 'counsel-recentf
+  ;;     "ss" 'counsel-ag
+  ;;     "sv" 'counsel-set-variable
 
-      ;; Quit
-      "q" '(:ignore t :which-key "Quit")
-      "qr" 'restart-emacs
-      "qq" 'kill-emacs))
+  ;;     ;; Quit
+  ;;     "q" '(:ignore t :which-key "Quit")
+  ;;     "qr" 'restart-emacs
+  ;;     "qq" 'kill-emacs))
 
 #+END_SRC
 
