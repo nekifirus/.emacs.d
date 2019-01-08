@@ -512,7 +512,10 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
   (setq org-refile-targets '((nil :maxlevel . 9)
     (org-agenda-files :maxlevel . 9)))
 #+END_SRC
-
+**** Habit
+  #+BEGIN_SRC emacs-lisp
+  (use-package org-habit)
+  #+END_SRC
 *** Path from shell
  #+BEGIN_SRC emacs-lisp
  (use-package exec-path-from-shell
