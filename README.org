@@ -69,6 +69,7 @@
     - [[#auto-update-changed-files][Auto-update changed files]]
     - [[#smartparens][smartparens]]
     - [[#whole-line-kill][whole-line-kill]]
+    - [[#expand-region][expand-region]]
   - [[#keybindings][Keybindings]]
     - [[#general][General]]
   - [[#functions][Functions]]
@@ -897,6 +898,12 @@ Auto-close delimiters and blocks as you type.
 (use-package whole-line-or-region
   :diminish whole-line-or-region-local-mode
   :config (whole-line-or-region-global-mode))
+#+END_SRC
+*** expand-region
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :bind
+  ("C-=" . er/expand-region))
 #+END_SRC
 ** Keybindings
 *** General
