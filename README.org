@@ -49,6 +49,7 @@
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
     - [[#gruv-box][Gruv-box]]
+    - [[#base16][Base16]]
     - [[#time][Time]]
     - [[#spaceline-and-over][Spaceline and over]]
   - [[#completion][Completion]]
@@ -679,9 +680,19 @@ From a13/.emacs.d
 
 *** Gruv-box
 #+BEGIN_SRC emacs-lisp
-(use-package gruvbox-theme
+  ;; (use-package gruvbox-theme)
+  ;; ;
+  ;; :config
+  ;; ;
+  ;; (load-theme 'gruvbox-dark-medium))
+#+END_SRC
+
+*** Base16
+#+BEGIN_SRC emacs-lisp
+(use-package base16-theme
+  :ensure t
   :config
-  (load-theme 'gruvbox-dark-medium))
+  (load-theme 'base16-gruvbox-dark-hard t))
 #+END_SRC
 *** Time
 #+BEGIN_SRC emacs-lisp
