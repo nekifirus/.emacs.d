@@ -969,25 +969,25 @@ The section for good tools for editing text and code
 Auto-close delimiters and blocks as you type.
 
 #+BEGIN_SRC emacs-lisp
-(use-package smartparens
-  :demand t
-  :diminish smartparens-mode
-  :config
-  (setq sp-autowrap-region nil) ; let evil-surround handle this
+  (use-package smartparens
+    :demand t
+    :diminish smartparens-mode
+    :config
+    ;; (setq sp-autowrap-region nil) ; let evil-surround handle this
 
-  (require 'smartparens-config)
+    (require 'smartparens-config)
 
-  ;; disable smartparens in evil-mode's replace state (they conflict)
-  (add-hook 'evil-replace-state-entry-hook #'turn-off-smartparens-mode)
-  (add-hook 'evil-replace-state-exit-hook  #'turn-on-smartparens-mode)
+    ;; disable smartparens in evil-mode's replace state (they conflict)
+    ;; (add-hook 'evil-replace-state-entry-hook #'turn-off-smartparens-mode)
+    ;; (add-hook 'evil-replace-state-exit-hook  #'turn-on-smartparens-mode)
 
-  (sp-local-pair '(xml-mode nxml-mode php-mode) "<!--" "-->"
-                 :post-handlers '(("| " "SPC")))
+    (sp-local-pair '(xml-mode nxml-mode php-mode) "<!--" "-->"
+                   :post-handlers '(("| " "SPC")))
 
-  ;; disable global pairing for `
-  (sp-pair "`" nil :actions :rem)
+    ;; disable global pairing for `
+    (sp-pair "`" nil :actions :rem)
 
-  (smartparens-global-mode))
+    (smartparens-global-mode))
 #+END_SRC
 *** whole-line-kill
 #+BEGIN_SRC emacs-lisp
