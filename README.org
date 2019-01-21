@@ -1,6 +1,7 @@
 #+TITLE: Emacs Literate Configuration
 #+Author: Nikita Mistyukov
 #+PROPERTY: header-args :tangle yes
+#+STARTUP: indent
 
 * Configuration
 :PROPERTIES:
@@ -565,28 +566,9 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
               ("j" "Journal" entry (file+datetree "~/org/diary.org")
                "* %?\n%U\n" :clock-in t :clock-resume t)
-              ("m" "Meeting" entry (file "~/org/refile.org")
-               "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
               ("p" "Phone call" entry (file "~/org/refile.org")
-               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-              ("h" "Habit" entry (file "~/org/refile.org")
-               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
 
-
-;; Remove empty LOGBOOK drawers on clock out
-(defun remove-empty-drawer-on-clock-out ()
-  (interactive)
-  (save-excursion
-    (beginning-of-line 0)
-    (org-remove-empty-drawer-at "LOGBOOK" (point))))
-
-(add-hook 'org-clock-out-hook 'remove-empty-drawer-on-clock-out 'append)
-
-
-; Use full outline paths for refile targets
-(setq org-refile-use-outline-path t)
-
-;;
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
 ;;
@@ -595,8 +577,6 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 
 ;; Resume clocking task on clock-in if the clock is open
 (setq org-clock-in-resume t)
-;; Separate drawers for clocking and logs
-(setq org-drawers (quote ("PROPERTIES" "LOGBOOK")))
 ;; Save clock data and state changes and notes in the LOGBOOK drawer
 (setq org-clock-into-drawer t)
 ;; Sometimes I change tasks I'm clocking quickly - this removes clocked tasks with 0:00 duration
@@ -611,6 +591,8 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 (setq org-clock-auto-clock-resolution (quote when-no-clock-is-running))
 ;; Include current clocking task in clock reports
 (setq org-clock-report-include-clocking-task t)
+;; Startup indented
+(setq org-startup-indented t)
 
 #+END_SRC
 *** Path from shell
