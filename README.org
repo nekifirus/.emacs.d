@@ -566,15 +566,18 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "~/org/refile.org")
                "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("r" "respond" entry (file "~/org/refile.org")
-               "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
               ("n" "note" entry (file "~/org/refile.org")
                "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
-              ("j" "Journal" entry (file+datetree "~/org/diary.org")
-               "* %?\n%U\n" :clock-in t :clock-resume t)
+              ("w" "From web" entry (file+headline "~/org/refile.org" "From web")
+               "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
+	      ("W" "Link" entry (file+headline "~/org/refile.org" "Links")
+               "* %?\n%U\n%:annotation")
+              ("c" "Current clocked" entry (clock)
+               "* %:annotation\n\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n" :immediate-finish t)
+              ("C" "Current clocked link" entry (clock)
+               "* %:annotation\n" :immediate-finish t)
               ("p" "Phone call" entry (file "~/org/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
-
 ;; Resume clocking task when emacs is restarted
 (org-clock-persistence-insinuate)
 ;;
