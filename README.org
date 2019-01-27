@@ -46,6 +46,8 @@
     - [[#yasnippet][Yasnippet]]
     - [[#flyspell][Flyspell]]
     - [[#copy-as-format][Copy-as-format]]
+    - [[#pictures][Pictures]]
+    - [[#server][server]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -470,21 +472,24 @@ going to install it and make sure it's loaded immediately.
 
 *** Org
 **** Latest version
-   #   Let's include a newer version of org-mode than the one that is
-   # built in. We're going to manually remove the org directories from
-   # the load path, to ensure the version we want is prioritized
-   # instead.
+Let's include a newer version of org-mode than the one that is
+built in. We're going to manually remove the org directories from
+the load path, to ensure the version we want is prioritized
+instead.
 
-   # #+BEGIN_SRC emacs-lisp
-   # (use-package org
-   #   :ensure org-plus-contrib
-   #   :pin org
-   #   :defer t)
+#+BEGIN_SRC emacs-lisp
+       (use-package org
+         :ensure org-plus-contrib
+         :pin org
+         :defer t
+         :config
+           (add-to-list 'org-modules 'org-habit)
+           (add-to-list 'org-modules 'org-protocol))
 
-   # ;; Ensure ELPA org is prioritized above built-in org.
-   # (require 'cl)
-   # (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
-   # #+END_SRC
+       ;; Ensure ELPA org is prioritized above built-in org.
+       (require 'cl)
+       (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+#+END_SRC
 
 **** toc-org
 Let's install and load the =toc-org= package after org mode is loaded. This is the package that automatically generates an up to date table of contents for us.
@@ -516,17 +521,16 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
   (setq org-refile-targets '((nil :maxlevel . 9)
     (org-agenda-files :maxlevel . 9)))
 #+END_SRC
-**** Habit
+**** Modules
   #+BEGIN_SRC emacs-lisp
-  (use-package org-habit)
+  ;;  (add-to-list 'org-modules 'org-habit)
+  ;;  (add-to-list 'org-modules 'org-protocol)
   #+END_SRC
 **** GTD
 #+BEGIN_SRC emacs-lisp
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
 (global-set-key (kbd "<f8>") 'org-cycle-agenda-files)
-(global-set-key (kbd "<f9> c") 'calendar)
-(global-set-key (kbd "<f9> g") 'gnus)
 
 (global-set-key (kbd "<f11>") 'org-clock-goto)
 (global-set-key (kbd "C-<f11>") 'org-clock-in)
@@ -733,6 +737,31 @@ Copypasted from a13
         ("s" . copy-as-format-slack)))
 
 #+END_SRC
+*** Pictures
+#+BEGIN_SRC emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '(
+   (ditaa . t)
+   (plantuml . t)
+   )) ; this line activates ditaa
+
+
+(setq org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
+(setq org-plantuml-jar-path "~/.emacs.d/plantuml.jar")
+
+(use-package plantuml-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+  (setq plantuml-jar-path "~/.emacs.d/plantuml.jar")
+
+)
+(add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
+#+END_SRC
+*** server
+#+begin_src emacs-lisp
+(server-start)
+#+end_src
 ** Themes
 This section for themes and colors
 *** Fonts
