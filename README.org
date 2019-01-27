@@ -204,6 +204,8 @@ previously compiled manually then all of the package initialization will still t
       (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
     (unless (assoc-default "org" package-archives)
       (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+    (unless (assoc-default "elpa" package-archives)
+      (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages") t))
 
     (package-initialize)
     (unless (package-installed-p 'use-package)
