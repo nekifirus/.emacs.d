@@ -48,6 +48,7 @@
     - [[#copy-as-format][Copy-as-format]]
     - [[#pictures][Pictures]]
     - [[#server][server]]
+    - [[#gnus][Gnus]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -565,9 +566,9 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 ;; Capture templates
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "~/org/refile.org")
-               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+               "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
               ("n" "note" entry (file "~/org/refile.org")
-               "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+               "* %? :NOTE:\n%U\n%a\n%i" :clock-in t :clock-resume t)
               ("w" "From web" entry (file+headline "~/org/refile.org" "From web")
                "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
 	      ("W" "Link" entry (file+headline "~/org/refile.org" "Links")
@@ -764,6 +765,19 @@ Copypasted from a13
 *** server
 #+begin_src emacs-lisp
 (server-start)
+#+end_src
+*** Gnus
+#+begin_src emacs-lisp
+(setq gnus-select-method
+      '(nnimap "gmail"
+	       (nnimap-address "imap.gmail.com")  ; it could also be imap.googlemail.com if that's your server.
+	       (nnimap-server-port 993)
+	       (nnimap-stream ssl)))
+
+(setq smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-service 587
+      gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
+
 #+end_src
 ** Themes
 This section for themes and colors
