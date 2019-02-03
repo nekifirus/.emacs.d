@@ -514,13 +514,32 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
  #+END_SRC
 **** Agenda
  #+BEGIN_SRC emacs-lisp
-   (setq org-agenda-files '("~/org"))
-   (global-set-key "\C-ca" 'org-agenda)
+ (setq org-agenda-files '("~/org/refile.org" "~/org/gtd.org"))
+ (setq org-agenda-custom-commands
+  '(("N" "NEXT" todo "TODO"
+     ((org-agenda-overriding-header "Do it now")
+     (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+
+    (defun my-org-agenda-skip-all-siblings-but-first ()
+      "Skip all but the first non-done entry."
+      (let (should-skip-entry)
+        (unless (org-current-is-todo)
+        (setq should-skip-entry t))
+      (save-excursion
+        (while (and (not should-skip-entry) (org-goto-sibling t))
+          (when (org-current-is-todo)
+            (setq should-skip-entry t))))
+      (when should-skip-entry
+        (or (outline-next-heading)
+          (goto-char (point-max))))))
+
+      (defun org-current-is-todo ()
+        (string= "TODO" (org-get-todo-state)))
  #+END_SRC
 **** Refile
 #+BEGIN_SRC emacs-lisp
-  (setq org-refile-targets '((nil :maxlevel . 9)
-    (org-agenda-files :maxlevel . 9)))
+(setq org-refile-targets '(("~/org/gtd.org" :maxlevel . 3)
+                           ("~/org/someday.org" :level . 1)))
 #+END_SRC
 **** Modules
   #+BEGIN_SRC emacs-lisp
@@ -532,36 +551,16 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
 (global-set-key (kbd "<f8>") 'org-cycle-agenda-files)
+(global-set-key (kbd "<f9> g") 'gnus)
+(global-set-key (kbd "<f9> c") 'counsel-org-capture)
 
 (global-set-key (kbd "<f11>") 'org-clock-goto)
 (global-set-key (kbd "C-<f11>") 'org-clock-in)
 
 ;; TODO states and faces
-(setq org-todo-keywords
-      (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-              (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)" "PHONE" "MEETING"))))
-
-(setq org-todo-keyword-faces
-      (quote (("TODO" :foreground "red" :weight bold)
-              ("NEXT" :foreground "blue" :weight bold)
-              ("DONE" :foreground "forest green" :weight bold)
-              ("WAITING" :foreground "orange" :weight bold)
-              ("HOLD" :foreground "magenta" :weight bold)
-              ("CANCELLED" :foreground "forest green" :weight bold)
-              ("MEETING" :foreground "forest green" :weight bold)
-              ("PHONE" :foreground "forest green" :weight bold))))
+(setq org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)" "PHONE")))
 
 (setq org-use-fast-todo-selection t)
-
-;; TODO state triggers
-(setq org-todo-state-tags-triggers
-      (quote (("CANCELLED" ("CANCELLED" . t))
-              ("WAITING" ("WAITING" . t))
-              ("HOLD" ("WAITING") ("HOLD" . t))
-              (done ("WAITING") ("HOLD"))
-              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
 ;; Capture templates
 (setq org-capture-templates
@@ -569,6 +568,8 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
                "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
               ("n" "note" entry (file "~/org/refile.org")
                "* %? :NOTE:\n%U\n%a\n%i" :clock-in t :clock-resume t)
+              ("r" "respond" entry (file "~/org/refile.org")
+               "* TODO Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
               ("w" "From web" entry (file+headline "~/org/refile.org" "From web")
                "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
 	      ("W" "Link" entry (file+headline "~/org/refile.org" "Links")
