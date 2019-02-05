@@ -50,6 +50,9 @@
     - [[#server][server]]
     - [[#gnus][Gnus]]
     - [[#darkroom][darkroom]]
+    - [[#google-this][google-this]]
+    - [[#google-translate][google-translate]]
+    - [[#webjump][webjump]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -785,6 +788,32 @@ Copypasted from a13
 *** darkroom
 #+begin_src emacs-lisp
 (use-package darkroom)
+#+end_src
+*** google-this
+#+begin_src emacs-lisp
+(use-package google-this
+  :bind
+  (:map mode-specific-map
+        ("g" . 'google-this-mode-submap)))
+#+end_src
+*** google-translate
+#+begin_src emacs-lisp
+(use-package google-translate
+  :custom
+    (google-translate-default-source-language "en")
+    (google-translate-default-target-language "ru")
+  :bind
+    (:map mode-specific-map
+        :prefix-map google-translate-prefix-map
+        :prefix "t"
+        ("t" . google-translate-at-point)
+        ("q" . google-translate-query-translate)))
+#+end_src
+*** webjump
+#+begin_src emacs-lisp
+(use-package webjump
+  :bind
+  ("<f9> j" . webjump))
 #+end_src
 ** Themes
 This section for themes and colors
