@@ -49,6 +49,7 @@
     - [[#pictures][Pictures]]
     - [[#server][server]]
     - [[#gnus][Gnus]]
+    - [[#darkroom][darkroom]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -780,6 +781,10 @@ Copypasted from a13
       smtpmail-smtp-service 587
       gnus-ignored-newsgroups "^to\\.\\|^[0-9. ]+\\( \\|$\\)\\|^[\"]\"[#'()]")
 
+#+end_src
+*** darkroom
+#+begin_src emacs-lisp
+(use-package darkroom)
 #+end_src
 ** Themes
 This section for themes and colors
