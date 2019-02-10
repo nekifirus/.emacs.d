@@ -79,6 +79,9 @@
     - [[#whole-line-kill][whole-line-kill]]
     - [[#expand-region][expand-region]]
     - [[#marks-to-navigate][Marks to navigate]]
+    - [[#avy-navigate][Avy navigate]]
+    - [[#ace-window][ace window]]
+    - [[#smart-comment][smart-comment]]
   - [[#keybindings][Keybindings]]
     - [[#general][General]]
   - [[#functions][Functions]]
@@ -1084,6 +1087,34 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
   (interactive)
   (set-mark-command 1))
 (global-set-key (kbd "M-`") 'jump-to-mark)
+#+end_src
+*** Avy navigate
+#+begin_src emacs-lisp
+(use-package avy
+  :config
+  (avy-setup-default)
+  :bind
+  (("C-:" .   avy-goto-char-timer)
+   ("M-g M-g" . avy-goto-line)
+   ("M-s M-s" . avy-goto-word-1)))
+
+(use-package avy-zap
+  :bind
+  ([remap zap-to-char] . avy-zap-to-char))
+#+end_src
+*** ace window
+#+begin_src emacs-lisp
+(use-package ace-window
+  :custom
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l) "Use home row for selecting.")
+  (aw-scope 'frame "Highlight only current frame.")
+  :bind
+  (("M-o" . ace-window)))
+#+end_src
+*** smart-comment
+#+begin_src emacs-lisp
+(use-package smart-comment
+  :bind ("M-;" . smart-comment))
 #+end_src
 ** Keybindings
 *** General
