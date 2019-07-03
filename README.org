@@ -905,34 +905,46 @@ From a13/.emacs.d
 ** Completion
 *** Company
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :diminish company-mode
-  :config
-  (global-company-mode)
-  (setq company-tooltip-limit 10)
-  (setq company-dabbrev-downcase 0)
-  (setq company-idle-delay 0)
-  (setq company-echo-delay 0)
-  (setq company-minimum-prefix-length 2)
-  (setq company-require-match nil)
-  (setq company-selection-wrap-around t)
-  (setq company-tooltip-align-annotations t)
-  ;; (setq company-tooltip-flip-when-above t)
-  (setq company-transformers '(company-sort-by-occurrence)) ; weight by frequency
-  (define-key company-active-map [tab] 'company-complete-common-or-cycle)
-  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-  (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-  (use-package company-statistics
+  (use-package company
     :ensure t
+    :diminish company-mode
     :config
-    (add-hook 'after-init-hook 'company-statistics-mode)))
+    (global-company-mode)
+    (setq company-tooltip-limit 10)
+    (setq company-dabbrev-downcase 0)
+    (setq company-idle-delay 0)
+    (setq company-echo-delay 0)
+    (setq company-minimum-prefix-length 2)
+    (setq company-require-match nil)
+    (setq company-selection-wrap-around t)
+    (setq company-tooltip-align-annotations t)
+    ;; (setq company-tooltip-flip-when-above t)
+    (setq company-transformers '(company-sort-by-occurrence)) ; weight by frequency
+    (define-key company-active-map [tab] 'company-complete-common-or-cycle)
+    (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+    ;; (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
+    (use-package company-statistics
+      :ensure t
+      :config
+      (add-hook 'after-init-hook 'company-statistics-mode)))
 #+END_SRC
 
 ** Programming languages
 *** Elixir
 #+BEGIN_SRC emacs-lisp
   ;; Set up the basic Elixir mode.
+
+  (use-package lsp-mode
+    :commands lsp
+    :ensure t
+    :diminish lsp-mode
+    ;; :hook
+    ;; (elixir-mode . lsp)
+    :init
+    (add-to-list 'exec-path "~/projects/elixir-ls/release"))
+
+  (use-package lsp-ui :commands lsp-ui-mode)
+  (use-package company-lsp :commands company-lsp)
 
   (use-package elixir-mode
     :commands elixir-mode
