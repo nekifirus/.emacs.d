@@ -39,10 +39,12 @@
     - [[#csv][CSV]]
     - [[#ag][Ag]]
     - [[#docker][Docker]]
+    - [[#tramp][Tramp]]
     - [[#nolitering][Nolitering]]
     - [[#htmlize][Htmlize]]
     - [[#direnv][Direnv]]
     - [[#haml-mode][Haml mode]]
+    - [[#nix-mode][nix-mode]]
     - [[#yasnippet][Yasnippet]]
     - [[#flyspell][Flyspell]]
     - [[#copy-as-format][Copy-as-format]]
@@ -436,26 +438,27 @@ The magical git client. Let's load magit only when one of the several entry pont
 functions we invoke regularly outside of magit is called.
 
 #+BEGIN_SRC emacs-lisp
-(use-package magit
-  :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all))
+  (use-package magit
+    :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all)
+    :bind (("C-x g" . magit-status)))
 
-(use-package gitignore-mode
-  :mode "/\\.gitignore$")
+  (use-package gitignore-mode
+    :mode "/\\.gitignore$")
 
-(use-package diff-hl
-  :ensure t
-  ;; Integrate with Magit and highlight changed files in the fringe of dired
-  :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
-  :config (global-diff-hl-mode 1))
+  (use-package diff-hl
+    :ensure t
+    ;; Integrate with Magit and highlight changed files in the fringe of dired
+    :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
+    :config (global-diff-hl-mode 1))
 
-(use-package magit-gh-pulls
-  :diminish magit-gh-pulls-mode)
-  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
-;(use-package magithub
-;  :after magit
-;  :config
-;  (magithub-feature-autoinject t)
-;  (setq magithub-clone-default-directory "~/projects/github"))
+  ;; (use-package magit-gh-pulls
+  ;;   :diminish magit-gh-pulls-mode)
+  ;;   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
+  ;(use-package magithub
+  ;  :after magit
+  ;  :config
+  ;  (magithub-feature-autoinject t)
+  ;  (setq magithub-clone-default-directory "~/projects/github"))
 #+END_SRC
 
 *** Github Gist
@@ -495,10 +498,9 @@ instead.
       (add-to-list 'org-modules 'org-habit)
       (add-to-list 'org-modules 'org-protocol))
 
-  ;; Ensure ELPA org is prioritized above built-in org.
-  ;; (require 'cl)
-  ;; (setq
-   ;; load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+       ;; Ensure ELPA org is prioritized above built-in org.
+       ;; (require 'cl)
+       ;; (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
 #+END_SRC
 
 **** toc-org
@@ -617,10 +619,10 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 #+END_SRC
 *** Path from shell
  #+BEGIN_SRC emacs-lisp
- (use-package exec-path-from-shell
-   :ensure t
-   :config (when (memq window-system '(mac ns))
-	     (exec-path-from-shell-initialize)))
+   ;; (use-package exec-path-from-shell
+   ;;   :ensure t
+   ;;   :config (when (memq window-system '(mac ns))
+   ;; 	    (exec-path-from-shell-initialize)))
  #+END_SRC
 *** Restart Emacs
 #+BEGIN_SRC emacs-lisp
@@ -629,11 +631,11 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 #+END_SRC
 *** Wakatime
 #+BEGIN_SRC emacs-lisp
-  (use-package wakatime-mode
-    :ensure t
-    :demand t
-    :diminish wakatime-mode
-    :config (global-wakatime-mode))
+  ;; (use-package wakatime-mode
+  ;;   :ensure t
+  ;;   :demand t
+  ;;   :diminish wakatime-mode
+  ;;   :config (global-wakatime-mode))
 #+END_SRC
 *** [[https://github.com/a13/reverse-im.el][Reverse.im]]
 This is beatiful thing for users with non-latin kbd layouts
@@ -684,8 +686,15 @@ Copypasted from a13
   (use-package dockerfile-mode
     :mode "Dockerfile\\'")
 
-  (use-package docker-compose-mode)
+  (use-package docker-compose-mode
+    :mode "docker-compose*")
 #+END_SRC
+*** Tramp
+#+BEGIN_SRC emacs-lisp
+(use-package docker-tramp)
+(use-package counsel-tramp)
+#+END_SRC
+
 *** Nolitering
     Beatiful feature from Wiedzmin config. Save all emacs package's files in data dir
 #+BEGIN_SRC emacs-lisp
@@ -707,6 +716,10 @@ Copypasted from a13
 *** Haml mode
 #+BEGIN_SRC emacs-lisp
   (use-package haml-mode)
+#+END_SRC
+*** nix-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package nix-mode)
 #+END_SRC
 *** Yasnippet
 #+BEGIN_SRC emacs-lisp

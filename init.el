@@ -21,17 +21,21 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ag-highlight-search t)
+ '(ag-highlight-search t t)
  '(calendar-week-start-day 1)
  '(copy-as-format-default "slack" t)
  '(face-font-family-alternatives (quote (("Consolas" "Monaco" "Monospace"))))
- '(google-translate-default-source-language "en" t)
- '(google-translate-default-target-language "ru" t)
- '(no-littering-var-directory "/Users/Nekifirus/.emacs.d/data/" t)
+ '(google-translate-default-source-language "en")
+ '(google-translate-default-target-language "ru")
+ '(no-littering-var-directory "/home/nekifirus/.emacs.d/data/" t)
+ '(package-selected-packages
+   (quote
+    (smart-comment ace-window avy-zap avy expand-region whole-line-or-region smartparens rainbow-mode rainbow-identifiers rainbow-delimiters cider clojure-snippets clojure-mode-extra-font-locking clojure-mode flycheck-mix alchemist elixir-mode company-statistics company all-the-icons-ivy all-the-icons-dired all-the-icons base16-theme google-translate google-this darkroom plantuml-mode copy-as-format yasnippet-snippets yasnippet haml-mode direnv htmlize no-littering docker-compose-mode dockerfile-mode docker ag csv-mode markdown-mode reverse-im wakatime-mode restart-emacs exec-path-from-shell toc-org org-plus-contrib gist magit-gh-pulls diff-hl gitignore-mode counsel-projectile ivy which-key diminish use-package-ensure-system-package system-packages use-package nix-mode magit)))
  '(projectile-completion-system (quote ivy))
- '(send-mail-function (quote mailclient-send-it))
  '(show-paren-delay 0.0)
- '(system-packages-noconfirm t))
+ '(system-packages-noconfirm t)
+ '(wakatime-cli-path "wakatime")
+ '(wakatime-python-bin nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
