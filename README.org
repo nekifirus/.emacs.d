@@ -66,6 +66,9 @@
     - [[#company][Company]]
   - [[#programming-languages][Programming languages]]
     - [[#elixir][Elixir]]
+    - [[#python][Python]]
+    - [[#haskell][Haskell]]
+    - [[#lua][Lua]]
     - [[#clojure][Clojure]]
     - [[#flycheck][Flycheck]]
   - [[#editing][Editing]]
@@ -553,7 +556,7 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
                            ("~/org/someday.org" :level . 1)))
 #+END_SRC
 **** Modules
-  #+BEGIN_SRC emacs-lisp
+  #+BEgin_SRC emacs-lisp
   ;;  (add-to-list 'org-modules 'org-habit)
   ;;  (add-to-list 'org-modules 'org-protocol)
   #+END_SRC
@@ -711,7 +714,8 @@ Copypasted from a13
 *** Direnv
     How I lived without it?
     #+BEGIN_SRC emacs-lisp
-      (use-package direnv)
+      (use-package direnv
+        :config (direnv-mode))
     #+END_SRC
 *** Haml mode
 #+BEGIN_SRC emacs-lisp
@@ -933,14 +937,13 @@ From a13/.emacs.d
     (setq company-selection-wrap-around t)
     (setq company-tooltip-align-annotations t)
     ;; (setq company-tooltip-flip-when-above t)
-    (setq company-transformers '(company-sort-by-occurrence)) ; weight by frequency
+    ;; (setq company-transformers '(company-sort-by-occurrence)) ; weight by frequency
     (define-key company-active-map [tab] 'company-complete-common-or-cycle)
-    (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-    ;; (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-    (use-package company-statistics
-      :ensure t
-      :config
-      (add-hook 'after-init-hook 'company-statistics-mode)))
+    (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle))
+    ;(use-package company-statistics
+      ;; :ensure t
+      ;; :config
+      ;; (add-hook 'after-init-hook 'company-statistics-mode)))
 #+END_SRC
 
 ** Programming languages
@@ -989,7 +992,32 @@ From a13/.emacs.d
   ;;   :defer t
   ;;   :init (add-hook 'flycheck-mode-hook #'flycheck-credo-setup))
 #+END_SRC
+*** Python
+#+BEGIN_SRC emacs-lisp
+  (use-package  python
+    :mode ("\\.py'" . python-mode)
+    :config (setq-default py-separator-char 47)   ;; Use spaces instead tab
+            (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
+  )
 
+  (use-package py-autopep8
+    :ensure t
+    :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+
+  (use-package elpy
+    :ensure t
+    :config (progn (add-hook 'python-mode-hook 'elpy-enable)))
+
+#+END_SRC
+*** Haskell
+#+BEGIN_SRC emacs-lisp
+(use-package haskell-mode
+  :mode "\\.hs\\'")
+#+END_SRC
+*** Lua
+#+BEGIN_SRC emacs-lisp
+(use-package lua-mode)
+#+END_SRC
 *** Clojure
 #+BEGIN_SRC emacs-lisp
 (use-package clojure-mode)
