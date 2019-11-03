@@ -929,10 +929,10 @@ From a13/.emacs.d
     :config
     (global-company-mode)
     (setq company-tooltip-limit 10)
-    (setq company-dabbrev-downcase 0)
+    ;; (setq company-dabbrev-downcase 0)
     (setq company-idle-delay 0)
     (setq company-echo-delay 0)
-    (setq company-minimum-prefix-length 2)
+    (setq company-minimum-prefix-length 3)
     (setq company-require-match nil)
     (setq company-selection-wrap-around t)
     (setq company-tooltip-align-annotations t)
@@ -998,6 +998,7 @@ From a13/.emacs.d
     :mode ("\\.py'" . python-mode)
     :config (setq-default py-separator-char 47)   ;; Use spaces instead tab
             (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
+            (setq python-shell-completion-native-enable nil) ;; solve warning in repl
   )
 
   (use-package py-autopep8
@@ -1006,7 +1007,12 @@ From a13/.emacs.d
 
   (use-package elpy
     :ensure t
-    :config (progn (add-hook 'python-mode-hook 'elpy-enable)))
+    :config (progn (add-hook 'python-mode-hook 'elpy-enable)
+                   (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
+
+  (use-package py-isort
+    :init
+    (add-hook 'before-save-hook #'py-isort-before-save))
 
 #+END_SRC
 *** Haskell
