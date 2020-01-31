@@ -22,6 +22,7 @@
     - [[#startup][Startup]]
   - [[#packages][Packages]]
     - [[#evil][Evil]]
+    - [[#ansi-color][ansi-color]]
     - [[#which-key][Which-key]]
     - [[#ivy][Ivy]]
     - [[#winner][Winner]]
@@ -49,12 +50,15 @@
     - [[#flyspell][Flyspell]]
     - [[#copy-as-format][Copy-as-format]]
     - [[#pictures][Pictures]]
+    - [[#babel][Babel]]
+    - [[#epa][epa]]
     - [[#server][server]]
     - [[#gnus][Gnus]]
     - [[#darkroom][darkroom]]
     - [[#google-this][google-this]]
     - [[#google-translate][google-translate]]
     - [[#webjump][webjump]]
+    - [[#eredis][eredis]]
   - [[#themes][Themes]]
     - [[#fonts][Fonts]]
     - [[#custom][Custom]]
@@ -70,6 +74,7 @@
     - [[#haskell][Haskell]]
     - [[#lua][Lua]]
     - [[#clojure][Clojure]]
+    - [[#vue][vue]]
     - [[#flycheck][Flycheck]]
   - [[#editing][Editing]]
     - [[#disable-autosave][Disable autosave]]
@@ -285,6 +290,12 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "M-o") 'other-window)
 #+END_SRC
+
+**** Few things
+#+BEGIN_SRC emacs-lisp
+
+(setq compilation-scroll-output 'first-error)
+#+END_SRC
 ** Packages
 *** Evil
 Install, automatically load, and enable evil. It's like vim, but better!
@@ -332,6 +343,16 @@ Install, automatically load, and enable evil. It's like vim, but better!
 #   #+BEGIN_SRC emacs-lisp
 #    (evil-set-initial-state 'help-mode 'emacs)
 #   #+END_SRC
+*** ansi-color
+#+BEGIN_SRC emacs-lisp
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (read-only-mode)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (read-only-mode))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
+#+END_SRC
 *** Which-key
 Shows keybindings
 
@@ -454,14 +475,17 @@ functions we invoke regularly outside of magit is called.
     :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
     :config (global-diff-hl-mode 1))
 
+  (use-package forge
+    :after magit)
+
   ;; (use-package magit-gh-pulls
   ;;   :diminish magit-gh-pulls-mode)
   ;;   (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls)
-  ;(use-package magithub
-  ;  :after magit
-  ;  :config
-  ;  (magithub-feature-autoinject t)
-  ;  (setq magithub-clone-default-directory "~/projects/github"))
+  ;; (use-package magithub
+  ;;   :after magit
+  ;;   :config
+  ;;   (magithub-feature-autoinject t)
+  ;;   (setq magithub-clone-default-directory "~/projects/github"))
 #+END_SRC
 
 *** Github Gist
@@ -498,6 +522,7 @@ instead.
     :pin org
     :defer t
     :config
+      (add-to-list 'org-modules 'ob-redis)
       (add-to-list 'org-modules 'org-habit)
       (add-to-list 'org-modules 'org-protocol))
 
@@ -789,6 +814,21 @@ Copypasted from a13
 )
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
 #+END_SRC
+*** Babel
+#+BEGIN_SRC emacs-lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((sql . t)
+()))
+
+#+END_SRC
+*** epa
+#+BEGIN_SRC emacs-lisp
+(use-package epa
+  :init  (setq epg-gpg-home-directory "~/.gnupg/")
+)
+#+END_SRC
+
 *** server
 #+begin_src emacs-lisp
 (server-start)
@@ -836,6 +876,10 @@ Copypasted from a13
   :bind
   ("<f9> j" . webjump))
 #+end_src
+*** eredis
+#+BEGIN_SRC emacs-lisp
+  (use-package eredis)
+#+END_SRC
 ** Themes
 This section for themes and colors
 *** Fonts
@@ -853,7 +897,7 @@ From a13/.emacs.d
                         :weight 'regular
                         :width 'semi-condensed
                         ;; (/ (* 19 (display-pixel-height)) (display-mm-height))
-                        :height (if (> (display-pixel-height) 1079) 120 160))
+                        :height (if (> (display-pixel-height) 1079) 160 160))
     (set-fontset-font "fontset-default" 'cyrillic
                       (font-spec :registry "iso10646-1" :script 'cyrillic)))
 #+END_SRC
@@ -951,17 +995,18 @@ From a13/.emacs.d
 #+BEGIN_SRC emacs-lisp
   ;; Set up the basic Elixir mode.
 
-  (use-package lsp-mode
-    :commands lsp
-    :ensure t
-    :diminish lsp-mode
-    ;; :hook
-    ;; (elixir-mode . lsp)
-    :init
-    (add-to-list 'exec-path "~/projects/elixir-ls/release"))
+  ;; (use-package lsp-mode
+  ;;   :commands lsp
+  ;;   :ensure t
+  ;;   :diminish lsp-mode
+  ;;   ;; :hook
+  ;;   ;; (elixir-mode . lsp)
+  ;;   :init
+  ;;   (add-to-list 'exec-path "~/projects/elixir-ls/release"))
 
-  (use-package lsp-ui :commands lsp-ui-mode)
-  (use-package company-lsp :commands company-lsp)
+  ;; (use-package
+  ;;   lsp-ui :commands lsp-ui-mode)
+  ;; (use-package company-lsp :commands company-lsp)
 
   (use-package elixir-mode
     :commands elixir-mode
@@ -1032,7 +1077,10 @@ From a13/.emacs.d
 (use-package cider)
 
 #+END_SRC
-
+*** vue
+#+BEGIN_SRC emacs-lisp
+(use-package vue-mode)
+#+END_SRC
 *** Flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck

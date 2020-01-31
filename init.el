@@ -23,10 +23,10 @@
  ;; If there is more than one, they won't work right.
  '(ag-highlight-search t)
  '(calendar-week-start-day 1)
- '(copy-as-format-default "slack")
+ '(copy-as-format-default "slack" t)
  '(face-font-family-alternatives (quote (("Consolas" "Monaco" "Monospace"))))
- '(google-translate-default-source-language "en" t)
- '(google-translate-default-target-language "ru" t)
+ '(google-translate-default-source-language "en")
+ '(google-translate-default-target-language "ru")
  '(no-littering-var-directory "/home/nekifirus/.emacs.d/data/" t)
  '(org-agenda-files (quote ("~/org/gtd.org" "~/org/refile.org")))
  '(package-selected-packages
