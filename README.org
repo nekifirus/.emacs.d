@@ -1025,10 +1025,11 @@ From a13/.emacs.d
     (setq alchemist-test-truncate-lines nil)
     :commands alchemist-mode)
 
-  (use-package flycheck-mix
-    :config
-    (flycheck-mix-setup))
-  ;; To use this you need to localy install credo and bunt. See package repo for instructions
+  ;; (use-package flycheck-mix
+  ;;   :config
+  ;;   (flycheck-mix-setup))
+  ;; ;;
+  To use this you need to localy install credo and bunt. See package repo for instructions
   ;; (use-package flycheck-elixir-credo
   ;;            :init (add-hook 'elixir-mode-hook 'flycheck-elixir-credo-setup))
 
@@ -1080,6 +1081,8 @@ From a13/.emacs.d
 *** vue
 #+BEGIN_SRC emacs-lisp
 (use-package vue-mode)
+(add-hook 'vue-mode-hook (lambda () (setq syntax-ppss-table nil)))
+(setq js-indent-level 2)
 #+END_SRC
 *** Flycheck
 #+BEGIN_SRC emacs-lisp
