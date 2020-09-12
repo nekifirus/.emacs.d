@@ -475,8 +475,8 @@ functions we invoke regularly outside of magit is called.
     :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
     :config (global-diff-hl-mode 1))
 
-  (use-package forge
-    :after magit)
+  ;; (use-package forge
+  ;;   :after magit)
 
   ;; (use-package magit-gh-pulls
   ;;   :diminish magit-gh-pulls-mode)
