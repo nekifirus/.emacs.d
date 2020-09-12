@@ -49,7 +49,6 @@
     - [[#yasnippet][Yasnippet]]
     - [[#flyspell][Flyspell]]
     - [[#copy-as-format][Copy-as-format]]
-    - [[#pictures][Pictures]]
     - [[#babel][Babel]]
     - [[#epa][epa]]
     - [[#server][server]]
@@ -499,14 +498,14 @@ Projectile is a quick and easy project management package that "just works". We'
 going to install it and make sure it's loaded immediately.
 
 #+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :diminish projectile-mode
-  :demand t
-  :config
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (projectile-mode +1)
-  :custom
-  (projectile-completion-system 'ivy))
+  (use-package projectile
+    :diminish projectile-mode
+    :demand t
+    :config
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1)
+    :custom
+    (projectile-completion-system 'ivy))
 #+END_SRC
 
 *** Org
@@ -793,11 +792,13 @@ Copypasted from a13
         ("s" . copy-as-format-slack)))
 
 #+END_SRC
-*** Pictures
+*** Babel
 #+BEGIN_SRC emacs-lisp
 (org-babel-do-load-languages
  'org-babel-load-languages
  '(
+   (sql . t)
+   (python . t)
    (ditaa . t)
    (plantuml . t)
    )) ; this line activates ditaa
@@ -813,14 +814,6 @@ Copypasted from a13
 
 )
 (add-to-list 'auto-mode-alist '("\\.plantuml\\'" . plantuml-mode))
-#+END_SRC
-*** Babel
-#+BEGIN_SRC emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((sql . t)
-()))
-
 #+END_SRC
 *** epa
 #+BEGIN_SRC emacs-lisp
