@@ -489,8 +489,8 @@ functions we invoke regularly outside of magit is called.
 
 *** Github Gist
 #+BEGIN_SRC emacs-lisp
-(use-package gist
-:ensure t)
+  ;; (use-package gist
+  ;;   :ensure t)
 #+END_SRC
 
 *** Projectile
@@ -824,7 +824,7 @@ Copypasted from a13
 
 *** server
 #+begin_src emacs-lisp
-(server-start)
+   (server-start)
 #+end_src
 *** Gnus
 #+begin_src emacs-lisp
@@ -852,16 +852,16 @@ Copypasted from a13
 #+end_src
 *** google-translate
 #+begin_src emacs-lisp
-(use-package google-translate
-  :custom
-    (google-translate-default-source-language "en")
-    (google-translate-default-target-language "ru")
-  :bind
-    (:map mode-specific-map
-        :prefix-map google-translate-prefix-map
-        :prefix "t"
-        ("t" . google-translate-at-point)
-        ("q" . google-translate-query-translate)))
+  ;; (use-package google-translate
+  ;;   :custom
+  ;;     (google-translate-default-source-language "en")
+  ;;     (google-translate-default-target-language "ru")
+  ;;   :bind
+  ;;     (:map mode-specific-map
+  ;;         :prefix-map google-translate-prefix-map
+  ;;         :prefix "t"
+  ;;         ("t" . google-translate-at-point)
+  ;;         ("q" . google-translate-query-translate)))
 #+end_src
 *** webjump
 #+begin_src emacs-lisp
@@ -871,7 +871,7 @@ Copypasted from a13
 #+end_src
 *** eredis
 #+BEGIN_SRC emacs-lisp
-  (use-package eredis)
+  ;; (use-package eredis)
 #+END_SRC
 ** Themes
 This section for themes and colors
@@ -1022,7 +1022,7 @@ From a13/.emacs.d
   ;;   :config
   ;;   (flycheck-mix-setup))
   ;; ;;
-  To use this you need to localy install credo and bunt. See package repo for instructions
+  ;; To use this you need to localy install credo and bunt. See package repo for instructions
   ;; (use-package flycheck-elixir-credo
   ;;            :init (add-hook 'elixir-mode-hook 'flycheck-elixir-credo-setup))
 
