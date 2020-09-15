@@ -1127,7 +1127,7 @@ The section for good tools for editing text and code
     (setq show-trailing-whitespace t))
   (add-hook 'prog-mode-hook #'my/buf-show-trailing-whitespace)
   (custom-set-faces '(trailing-whitespace ((t (:background "dim gray")))))
-  (add-hook 'write-file-hooks 'delete-trailing-whitespace)
+  (add-hook 'write-file-functions 'delete-trailing-whitespace)
 #+END_SRC
 *** Indent with spaces by default
 #+BEGIN_SRC emacs-lisp
