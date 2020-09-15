@@ -1073,9 +1073,16 @@ From a13/.emacs.d
 #+END_SRC
 *** vue
 #+BEGIN_SRC emacs-lisp
-(use-package vue-mode)
-(add-hook 'vue-mode-hook (lambda () (setq syntax-ppss-table nil)))
-(setq js-indent-level 2)
+  (use-package vue-mode
+    :init
+    (add-hook 'vue-mode-hook (lambda () (setq syntax-ppss-table nil)))
+    :config
+    (setq js-indent-level 2)
+    :bind
+    ("C-c C-C" . vue-mode-edit-indirect-at-point)
+    )
+
+
 #+END_SRC
 *** Flycheck
 #+BEGIN_SRC emacs-lisp
