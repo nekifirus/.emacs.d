@@ -1279,6 +1279,17 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
 (use-package smart-comment
   :bind ("M-;" . smart-comment))
 #+end_src
+*** multiple-cursors
+#+begin_src emacs-lisp
+(use-package multiple-cursors
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C-S-w C-S-w") 'mc/mark-all-dwim)
+  (global-set-key (kbd "C-S-e C-S-e") 'mc/edit-ends-of-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+#+end_src
 ** Keybindings
 *** General
 #+BEGIN_SRC emacs-lisp
