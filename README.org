@@ -21,11 +21,13 @@
     - [[#package-management][Package Management]]
     - [[#startup][Startup]]
   - [[#packages][Packages]]
+    - [[#nolitering][Nolitering]]
     - [[#evil][Evil]]
     - [[#ansi-color][ansi-color]]
     - [[#which-key][Which-key]]
     - [[#ivy][Ivy]]
     - [[#winner][Winner]]
+    - [[#ibuffer][iBuffer]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
     - [[#magit][Magit]]
@@ -41,7 +43,6 @@
     - [[#ag][Ag]]
     - [[#docker][Docker]]
     - [[#tramp][Tramp]]
-    - [[#nolitering][Nolitering]]
     - [[#htmlize][Htmlize]]
     - [[#direnv][Direnv]]
     - [[#haml-mode][Haml mode]]
@@ -396,6 +397,30 @@ Generic completion frontend that's just awesome! Let's install and enable it.
   :init
   (winner-mode))
 #+END_SRC
+*** iBuffer
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :bind ("C-x C-b" . ibuffer))
+
+  (use-package ibuffer-vc
+    :init
+    ;; Include version control status info in the ibuffer list.
+    (setq ibuffer-formats
+          '((mark modified read-only vc-status-mini " "
+                  (name 18 18 :left :elide)
+                  " "
+                  (size 9 -1 :right)
+                  " "
+                  (mode 16 16 :left :elide)
+                  " "
+                  (vc-status 16 16 :left)
+                  " "
+                  filename-and-process)))
+    :config (add-hook 'ibuffer-hook (lambda()
+                                      (ibuffer-vc-set-filter-groups-by-vc-root)
+                                      (unless (eq ibuffer-sorting-mode 'alphabetic)
+                                        (ibuffer-do-sort-by-alphabetic)))))
+#+end_src
 *** Counsel
 Counsel allows us to utilize ivy by replacing many built-in and common functions
 with richer versions. Let's install it!
