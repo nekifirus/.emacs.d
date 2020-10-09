@@ -299,6 +299,14 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
 (setq compilation-scroll-output 'first-error)
 #+END_SRC
 ** Packages
+*** Nolitering
+    Beatiful feature from Wiedzmin config. Save all emacs package's files in data dir
+#+BEGIN_SRC emacs-lisp
+  (use-package no-littering
+    :ensure t
+    :custom
+    (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
+#+END_SRC
 *** Evil
 Install, automatically load, and enable evil. It's like vim, but better!
 
