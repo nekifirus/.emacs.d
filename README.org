@@ -22,11 +22,13 @@
     - [[#startup][Startup]]
   - [[#packages][Packages]]
     - [[#nolitering][Nolitering]]
+    - [[#try][Try]]
     - [[#evil][Evil]]
     - [[#ansi-color][ansi-color]]
     - [[#which-key][Which-key]]
     - [[#ivy][Ivy]]
     - [[#winner][Winner]]
+    - [[#framesonly][FramesOnly]]
     - [[#ibuffer][iBuffer]]
     - [[#counsel][Counsel]]
     - [[#swiper][Swiper]]
@@ -307,6 +309,12 @@ Remove unnecessary GUI elements: menu-bar, tool-bar, and scroll-bar.
     :custom
     (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
 #+END_SRC
+*** Try
+#+begin_src emacs-lisp
+  ;;(use-package try
+  ;;  :ensure t
+  ;;  :defer t)
+#+end_src
 *** Evil
 Install, automatically load, and enable evil. It's like vim, but better!
 
@@ -407,6 +415,10 @@ Generic completion frontend that's just awesome! Let's install and enable it.
   :init
   (winner-mode))
 #+END_SRC
+*** FramesOnly
+#+begin_src emacs-lisp
+ ;; (use-package frames-only-mode :config (frames-only-mode))
+#+end_src
 *** iBuffer
 #+begin_src emacs-lisp
   (use-package ibuffer
@@ -414,71 +426,74 @@ Generic completion frontend that's just awesome! Let's install and enable it.
 
   (use-package ibuffer-vc
     :init
-    ;; Include version control status info in the ibuffer list.
-    (setq ibuffer-formats
-          '((mark modified read-only vc-status-mini " "
-                  (name 18 18 :left :elide)
-                  " "
-                  (size 9 -1 :right)
-                  " "
-                  (mode 16 16 :left :elide)
-                  " "
-                  (vc-status 16 16 :left)
-                  " "
-                  filename-and-process)))
-    :config (add-hook 'ibuffer-hook (lambda()
-                                      (ibuffer-vc-set-filter-groups-by-vc-root)
-                                      (unless (eq ibuffer-sorting-mode 'alphabetic)
-                                        (ibuffer-do-sort-by-alphabetic)))))
+    :config
+    (define-ibuffer-column icon
+      (:name "Icon" :inline t)
+      (all-the-icons-ivy--icon-for-mode major-mode))
+    :custom
+    (ibuffer-formats
+     '((mark modified read-only vc-status-mini " "
+             (name 18 18 :left :elide)
+             " "
+             (size 9 -1 :right)
+             " "
+             (mode 16 16 :left :elide)
+             " "
+             filename-and-process)) "include vc status info")
+    :hook
+    (ibuffer . (lambda ()
+                 (ibuffer-vc-set-filter-groups-by-vc-root)
+                 (unless (eq ibuffer-sorting-mode 'alphabetic)
+                   (ibuffer-do-sort-by-alphabetic)))))
 #+end_src
 *** Counsel
 Counsel allows us to utilize ivy by replacing many built-in and common functions
 with richer versions. Let's install it!
 
 #+BEGIN_SRC emacs-lisp
-(use-package counsel-projectile
-  :after counsel projectile
-  :config
-  (counsel-projectile-mode))
+  (use-package counsel-projectile
+    :after counsel projectile
+    :config
+    (counsel-projectile-mode))
 
-(use-package counsel
-  :diminish counsel-mode
-  :bind
-  (([remap menu-bar-open] . counsel-tmm)
-   ([remap insert-char] . counsel-unicode-char)
-   ([remap isearch-forward] . counsel-grep-or-swiper)
-   :map mode-specific-map
-   :prefix-map counsel-prefix-map
-   :prefix "c"
-   ("a" . counsel-apropos)
-   ("b" . counsel-bookmark)
-   ("B" . counsel-bookmarked-directory)
-   ("c" . counsel-org-capture)
-   ("d" . counsel-dired-jump)
-   ("f" . counsel-file-jump)
-   ("F" . counsel-faces)
-   ("g" . counsel-org-goto)
-   ("h" . counsel-command-history)
-   ("H" . counsel-minibuffer-history)
-   ("i" . counsel-imenu)
-   ("j" . counsel-find-symbol)
-   ("l" . counsel-locate)
-   ("L" . counsel-find-library)
-   ("m" . counsel-mark-ring)
-   ("o" . counsel-outline)
-   ("O" . counsel-find-file-extern)
-   ("p" . counsel-package)
-   ("r" . counsel-recentf)
-   ("s g" . counsel-grep)
-   ("s r" . counsel-rg)
-   ("s s" . counsel-ag)
-   ("t" . counsel-org-tag)
-   ("v" . counsel-set-variable)
-   ("w" . counsel-wmctrl)
-   :map help-map
-   ("F" . counsel-describe-face))
-  :config
-  (counsel-mode))
+  (use-package counsel
+    :diminish counsel-mode
+    :bind
+    (([remap menu-bar-open] . counsel-tmm)
+     ([remap insert-char] . counsel-unicode-char)
+     ([remap isearch-forward] . counsel-grep-or-swiper)
+     :map mode-specific-map
+     :prefix-map counsel-prefix-map
+     :prefix "c"
+     ("a" . counsel-apropos)
+     ("b" . counsel-bookmark)
+     ("B" . counsel-bookmarked-directory)
+     ("c" . counsel-org-capture)
+     ("d" . counsel-dired-jump)
+     ("f" . counsel-file-jump)
+     ("F" . counsel-faces)
+     ("g" . counsel-org-goto)
+     ("h" . counsel-command-history)
+     ("H" . counsel-minibuffer-history)
+     ("i" . counsel-imenu)
+     ("j" . counsel-find-symbol)
+     ("l" . counsel-locate)
+     ("L" . counsel-find-library)
+     ("m" . counsel-mark-ring)
+     ("o" . counsel-outline)
+     ("O" . counsel-find-file-extern)
+     ("p" . counsel-package)
+     ("r" . counsel-recentf)
+     ("s g" . counsel-grep)
+     ("s r" . counsel-rg)
+     ("s s" . counsel-ag)
+     ("t" . counsel-org-tag)
+     ("v" . counsel-set-variable)
+     ("w" . counsel-wmctrl)
+     :map help-map
+     ("F" . counsel-describe-face))
+    :init
+    (counsel-mode))
 
 #+END_SRC
 
@@ -570,7 +585,9 @@ instead.
 #+END_SRC
 
 **** toc-org
-Let's install and load the =toc-org= package after org mode is loaded. This is the package that automatically generates an up to date table of contents for us.
+Let's install and load the =toc-org= package after org mode is
+loaded. This is the package that automatically generates an up to date
+table of contents for us.
 
       #+BEGIN_SRC emacs-lisp
       (use-package toc-org
@@ -679,7 +696,7 @@ Let's install and load the =toc-org= package after org mode is loaded. This is t
 ;; Clock out when moving task to a done state
 (setq org-clock-out-when-done t)
 ;; Save the running clock and all clock history when exiting Emacs, load it on startup
-(setq org-clock-persist t)
+(Setq org-clock-persist t)
 ;; Do not prompt to resume an active clock
 (setq org-clock-persist-query-resume nil)
 ;; Enable auto clock resolution for finding open clocks
@@ -944,18 +961,30 @@ From a13/.emacs.d
     :ensure nil
     :defer t
     :custom
-    (face-font-family-alternatives '(("Consolas" "Monaco" "Monospace")))
+    (face-font-family-alternatives '(("Monaco" "Iosevka Light" "Source Code Pro Light" "Ubuntu" "Monaco" "Consolas" "Monospace")))
     :config
     (set-face-attribute 'default
                         nil
-                        :family (caar face-font-family-alternatives)
-                        :weight 'regular
-                        :width 'semi-condensed
-                        ;; (/ (* 19 (display-pixel-height)) (display-mm-height))
-                        :height (if (> (display-pixel-height) 1079) 160 160))
+                        :font "Iosevka Light"
+                        :height 140
+                        )
+
     (set-fontset-font "fontset-default" 'cyrillic
-                      (font-spec :registry "iso10646-1" :script 'cyrillic)))
-#+END_SRC
+                       (font-spec :registry "iso10646-1" :script 'cyrillic)))
+#+end_SRC
+    (set-face-attribute 'default
+                        nil
+                        ;; :font "Iosevka Light"
+                        :font "Iosevka Light"
+                        ;; :foundry "CYEL"
+                        ;; :family (caar face-font-family-alternatives)
+                        ;; :weight 'light
+                        ;; :width 'semi-condensed
+                        ;; :height (/ (* 20 (display-pixel-height)) (display-mm-height))
+                        ;; :height (if (> (display-pixel-height) 1079) 130 160)
+                      :height 130
+                      )
+
 *** Custom
 #+BEGIN_SRC emacs-lisp
   (use-package custom
