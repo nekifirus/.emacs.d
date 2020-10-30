@@ -72,7 +72,6 @@ This is my current emacs configuration
             (create-lockfiles nil)
             (make-backup-files nil)
             :config
-            ;; Terminal emacs doesn't have it
             (fset 'yes-or-no-p 'y-or-n-p)
             (global-set-key (kbd "M-o") 'other-window)
             (setq compilation-scroll-output 'first-error)
@@ -85,10 +84,8 @@ This is my current emacs configuration
                         :height 140
                         )
             (when (fboundp 'set-fontset-font)
-              ;; a workaround for old charsets
               (set-fontset-font "fontset-default" 'cyrillic
                         (font-spec :registry "iso10646-1" :script 'cyrillic))
-              ;; TODO: is it possible to not hardcode fonts?
               )
             (require 'ansi-color)
             (defun colorize-compilation-buffer ()
@@ -127,7 +124,7 @@ This is my current emacs configuration
       (display-time-day-and-date t)
       (display-time-24hr-format t)
       :config
-      (display-time-mode t))
+      (display-time-mode nil))
   #+end_src
 ** Themes
 *** Base16
