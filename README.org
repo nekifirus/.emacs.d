@@ -445,7 +445,7 @@ This is my current emacs configuration
        :custom
        (mu4e-get-mail-command "mbsync -a")
        (mu4e-maildir "~/Maildir")
-       (mu4e-update-interval 1500)
+       ;; (mu4e-update-interval 1500)
        (mu4e-use-fancy-chars t)
        (mu4e-view-show-addresses t)
        (mu4e-view-show-images t)
