@@ -81,7 +81,7 @@ This is my current emacs configuration
             (set-face-attribute 'default
                         nil
                         :font "Iosevka Light"
-                        :height 140
+                        :height 120
                         )
             (when (fboundp 'set-fontset-font)
               (set-fontset-font "fontset-default" 'cyrillic
@@ -376,7 +376,7 @@ This is my current emacs configuration
         (add-to-list 'org-modules 'org-habit)
         (add-to-list 'org-modules 'org-protocol)
 
-        (require 'org-tempo)
+        ;; (require 'org-tempo)
         (org-babel-do-load-languages
          'org-babel-load-languages
          '(
@@ -445,8 +445,17 @@ This is my current emacs configuration
      (use-package mu4e
        :ensure-system-package mu
        :custom
+       (mail-user-agent 'mu4e-user-agent)
        (mu4e-get-mail-command "mbsync -a")
        (mu4e-maildir "~/Maildir")
+       ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
+       ;; Override in context switching for other type of mailboxes
+       (mu4e-sent-messages-behavior 'delete)
+       (message-kill-buffer-on-exit t)
+       ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
+       (mu4e-change-filenames-when-moving t)
+       ;; This helps when using a dark theme (shr)
+       (shr-color-visible-luminance-min 80)
        ;; (mu4e-update-interval 1500)
        (mu4e-use-fancy-chars t)
        (mu4e-view-show-addresses t)
@@ -562,6 +571,12 @@ This is my current emacs configuration
       (use-package smart-comment
         :bind ("M-;" . smart-comment))
     #+end_src
+** poporg
+#+begin_src emacs-lisp
+  (use-package poporg
+        :bind (("C-c C-/" . poporg-dwim)))
+  
+#+end_src
 * Projectile
    #+begin_src emacs-lisp
      (use-package projectile
@@ -597,6 +612,8 @@ This is my current emacs configuration
         (company-tooltip-limit 10)
         (company-idle-delay 0.2)
         (company-echo-delay 0.1)
+        (company-dabbrev-ignore-case nil)
+        (company-dabbrev-downcase nil)
         ;; (company-minimum-prefix-length 3)
         ;; (company-require-match nil)
         (company-selection-wrap-around t)
@@ -649,12 +666,13 @@ This is my current emacs configuration
 
       :hook ((python-mode . lsp)
              (vue-mode . lsp)
+             (go-mode . lsp)
              (js-mode . lsp))
       :commands lsp)
 
     (use-package lsp-ui :commands lsp-ui-mode)
   #+end_src
-** TODO python
+** python
 #+begin_src emacs-lisp
   (use-package  python
     :mode ("\\.py'" . python-mode)
@@ -676,7 +694,7 @@ This is my current emacs configuration
     :init
     (add-hook 'before-save-hook #'py-isort-before-save))
 #+end_src
-** TODO js
+** js
 #+begin_src emacs-lisp
   (use-package vue-mode
     :init
@@ -694,6 +712,19 @@ This is my current emacs configuration
      (setq css-indent-offset 4))
 
 #+end_src
+** GO
+#+begin_src emacs-lisp
+(use-package go-mode
+    :after lsp-mode
+    :hook ((before-save . lsp-format-buffer)
+            (before-save . lsp-organize-imports)))
+#+end_src
+** Protobuf
+#+begin_src emacs-lisp
+(use-package protobuf-mode
+  :mode ("\\.proto\\'" . protobuf-mode))
+#+end_src
+
 ** TODO elixir
 ** TODO other languages
 ** TODO python lsp
@@ -705,3 +736,4 @@ This is my current emacs configuration
                          (lsp)))
   :init
   (setq lsp-python-ms-executable (executable-find "python-language-server")))
+
