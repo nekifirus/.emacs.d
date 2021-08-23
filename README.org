@@ -120,7 +120,7 @@ This is my current emacs configuration
     (use-package time
       :ensure nil
       :custom
-      (display-time-default-load-average t)
+      (display-time-default-load-average nil)
       (display-time-day-and-date t)
       (display-time-24hr-format t)
       :config
@@ -322,30 +322,32 @@ This is my current emacs configuration
     #+begin_src emacs-lisp
       (use-package org
         :custom
-        (org-default-notes-file "~/org/refile.org") ; default refile file
+        (org-default-notes-file "~/org/gtd/inbox.org") ; default refile file
         (org-agenda-span 'day)             ; start in day view default
-        (org-agenda-files '("~/org/gtd"))
-        (org-refile-targets '((org-agenda-files :maxlevel . 3))) ; where refile to
-        (org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)" "PHONE")))
+        (org-agenda-files '("~/org/gtd/"))
+        (org-refile-targets '((nil :maxlevel . 3) (org-agenda-files :maxlevel . 3))) ; where refile to
+        (org-refile-use-outline-path 'file)
+        (org-outline-path-complete-in-steps nil)
+        (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)" "PHONE")))
         (org-use-fast-todo-selection t)
         (org-capture-templates
-         (quote (("t" "todo" entry (file "~/org/refile.org")
+         (quote (("t" "todo" entry (file "~/org/gtd/inbox.org")
                   "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
-                 ("n" "note" entry (file "~/org/refile.org")
+                 ("n" "note" entry (file "~/org/gtd/inbox.org")
                   "* %? :NOTE:\n%U\n%a\n%i" :clock-in t :clock-resume t)
-                 ("r" "respond" entry (file "~/org/refile.org")
+                 ("r" "respond" entry (file "~/org/gtd/inbox.org")
                   "* TODO Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                 ("w" "From web" entry (file+headline "~/org/refile.org" "From web")
+                 ("w" "From web" entry (file+headline "~/org/gtd/inbox.org" "From web")
                   "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
-                 ("W" "Link" entry (file+headline "~/org/refile.org" "Links")
+                 ("W" "Link" entry (file+headline "~/org/gtd/inbox.org" "Links")
                   "* %?\n%U\n%:annotation")
                  ("c" "Current clocked" entry (clock)
                   "* %:annotation\n\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n" :immediate-finish t)
                  ("C" "Current clocked link" entry (clock)
                   "* %:annotation\n" :immediate-finish t)
-                 ("p" "Phone call" entry (file "~/org/refile.org")
+                 ("p" "Phone call" entry (file "~/org/gtd/inbox.org")
                   "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
-
+      
         (org-clock-history-length 23) ;; Show lot of clocking history so it's easy to pick items off the C-F11 list
         (org-clock-in-resume t) ;; Resume clocking task on clock-in if the clock is open
         (org-clock-into-drawer t) ;; Save clock data and state changes and notes in the LOGBOOK drawer
@@ -440,6 +442,70 @@ This is my current emacs configuration
         (org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
         :mode "\\.plantuml\\'")
     #+end_src
+** org-roam
+[[file:../../org/org-roam/20210603151328-org_roam.org][org-roam]] 
+#+begin_src emacs-lisp
+  (use-package org-roam
+      :ensure t
+      :custom
+      (org-roam-v2-ack t)
+      (org-roam-directory "~/org/org-roam/")
+      (org-roam-dailies-directory "~/org/org-roam/daily/")
+  
+      :bind (("C-c n l" . org-roam-buffer-toggle)
+             ("C-c n f" . org-roam-node-find)
+             ("C-c n g" . org-roam-graph)
+             ("C-c n i" . org-roam-node-insert)
+             ("C-c n c" . org-roam-capture)
+             ;; Dailies
+             ("C-c n j" . org-roam-dailies-capture-today))
+      :config
+      (org-roam-setup)
+      ;; If using org-roam-protocol
+      ;; (require 'org-roam-protocol)
+      )
+  ;; (use-package org-roam
+  ;;       :ensure t
+  ;;       :hook
+  ;;       (after-init . org-roam-mode)	
+  ;;       :bind (:map org-roam-mode-map
+  ;;               (("C-c n l" . org-roam)
+  ;;                ("C-c n c" . org-roam-dailies-capture-today)
+  ;;                ("C-c n C" . org-roam-capture)
+  ;;                ("C-c n f" . org-roam-find-file)
+  ;;                ("C-c n g" . org-roam-graph))
+  ;;               :map org-mode-map
+  ;;               (("C-c n i" . org-roam-insert))
+  ;;               (("C-c n I" . org-roam-insert-immediate)))
+  ;;       :custom
+  ;;       (org-roam-completion-everywhere t)
+  ;;       (org-roam-encrypt-files nil)
+  ;;       (org-roam-completion-system 'ivy)
+  ;;       (org-roam-directory "~/org/org-roam/")
+  ;;       (org-roam-dailies-directory "~/org/org-roam/daily/")
+  ;;       (org-roam-dailies-capture-templates
+  ;;       '(("d" "default" entry
+  ;;          #'org-roam-capture--get-point
+  ;;          "* %<%H:%M> %? \n%U\n%a\n%i" 
+  ;;          :file-name "daily/%<%Y-%m-%d>"
+  ;;          :head "#+title: %<%Y-%m-%d>\n\n"
+  ;;          :clock-in t :clock-resume t)
+  ;;         ("1" "sql_trade_prod" entry
+  ;;          #'org-roam-capture--get-point
+  ;;          "* %<%H:%M>\n#+begin_src sql\n%?\n#+end_src\n" 
+  ;;          :file-name "sql/%<%Y-%m-%d>-trade_prod.org"
+  ;;          :head "#+SETUPFILE: setup/prod_trade.org.gpg"
+  ;;          :clock-in t :clock-resume t
+  ;;          :unnarrowed t :jump-to-captured t)
+  ;;         ("2" "sql_exchange_prod" entry
+  ;;          #'org-roam-capture--get-point
+  ;;          "* %<%H:%M>\n#+begin_src sql\n%?\n#+end_src\n" 
+  ;;          :file-name "sql/%<%Y-%m-%d>-exchange_prod.org"
+  ;;          :head "#+SETUPFILE: setup/prod_exchange.org.gpg"
+  ;;          :clock-in t :clock-resume t
+  ;;          :unnarrowed t :jump-to-captured t)
+  ;;         )))
+#+end_src
 * Email
    #+begin_src emacs-lisp
      (use-package mu4e
