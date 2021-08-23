@@ -11,91 +11,91 @@ This is my current emacs configuration
 ** use-package
     #+begin_src emacs-lisp
       (require 'package)
-
+      
       ;; optional. makes unpure packages archives unavailable
       (setq package-archives nil)
-
+      
       (setq package-enable-at-startup nil)
       (package-initialize)
-
+      
       (unless (package-installed-p 'use-package)
-	(package-refresh-contents)
-	(package-install 'use-package))
+        (package-refresh-contents)
+        (package-install 'use-package))
       (require 'use-package)
       (require 'use-package-ensure)
       (setq use-package-always-ensure nil)
-
+      
       (put 'use-package 'lisp-indent-function 1)
-
+      
       (use-package use-package-core
-	:custom
-	(use-package-verbose t)
-	(use-package-minimum-reported-time 0.005)
-	(use-package-enable-imenu-support t))
-    (use-package diminish)
-    #+end_src
-** no-litering
-    #+begin_src emacs-lisp
-      (use-package no-littering
         :custom
-        (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
-    #+end_src
+        (use-package-verbose t)
+        (use-package-minimum-reported-time 0.005)
+        (use-package-enable-imenu-support t))
+      (use-package diminish)
+      #+end_src
+** no-litering
+#+begin_src emacs-lisp
+  (use-package no-littering
+    :custom
+    (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
+#+end_src
 ** no-custom
-  #+begin_src emacs-lisp
-    (use-package custom
-      :custom
-      (custom-safe-themes t))
-  #+end_src
+#+begin_src emacs-lisp
+  (use-package custom
+    :custom
+    (custom-safe-themes t))
+#+end_src
 ** emacs package
-    #+begin_src emacs-lisp
-          (use-package emacs
-            :init
-            (put 'narrow-to-region 'disabled nil)
-            (put 'downcase-region 'disabled nil)
-            (fset 'x-popup-menu #'ignore)
-            :custom
-            (ring-bell-function 'ignore)
-            (default-frame-alist '((menu-bar-lines 0)
-                       (tool-bar-lines 0)
-                       (vertical-scroll-bars)))
-            (scroll-step 1)
-            (inhibit-startup-screen t "Don't show splash screen")
-            (use-dialog-box nil "Disable dialog boxes")
-            (x-gtk-use-system-tooltips nil)
-            (use-file-dialog nil)
-            (enable-recursive-minibuffers t "Allow minibuffer commands in the minibuffer")
-            (indent-tabs-mode nil "Spaces!")
-            (tab-width 4)
-            (debug-on-quit nil)
-            (show-paren-delay 0.0)
-            (auto-save-default nil)
-            (create-lockfiles nil)
-            (make-backup-files nil)
-            :config
-            (fset 'yes-or-no-p 'y-or-n-p)
-            (global-set-key (kbd "M-o") 'other-window)
-            (setq compilation-scroll-output 'first-error)
-            (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-            (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-            (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-            (set-face-attribute 'default
+#+begin_src emacs-lisp
+  (use-package emacs
+    :init
+    (put 'narrow-to-region 'disabled nil)
+    (put 'downcase-region 'disabled nil)
+    (fset 'x-popup-menu #'ignore)
+    :custom
+    (ring-bell-function 'ignore)
+    (default-frame-alist '((menu-bar-lines 0)
+                           (tool-bar-lines 0)
+                           (vertical-scroll-bars)))
+    (scroll-step 1)
+    (inhibit-startup-screen t "Don't show splash screen")
+    (use-dialog-box nil "Disable dialog boxes")
+    (x-gtk-use-system-tooltips nil)
+    (use-file-dialog nil)
+    (enable-recursive-minibuffers t "Allow minibuffer commands in the minibuffer")
+    (indent-tabs-mode nil "Spaces!")
+    (tab-width 4)
+    (debug-on-quit nil)
+    (show-paren-delay 0.0)
+    (auto-save-default nil)
+    (create-lockfiles nil)
+    (make-backup-files nil)
+    :config
+    (fset 'yes-or-no-p 'y-or-n-p)
+    (global-set-key (kbd "M-o") 'other-window)
+    (setq compilation-scroll-output 'first-error)
+    (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+    (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+    (set-face-attribute 'default
                         nil
                         :font "Iosevka Light"
-                        :height 120
+                        :height 130
                         )
-            (when (fboundp 'set-fontset-font)
-              (set-fontset-font "fontset-default" 'cyrillic
+    (when (fboundp 'set-fontset-font)
+      (set-fontset-font "fontset-default" 'cyrillic
                         (font-spec :registry "iso10646-1" :script 'cyrillic))
-              )
-            (require 'ansi-color)
-            (defun colorize-compilation-buffer ()
-              (read-only-mode)
-              (ansi-color-apply-on-region compilation-filter-start (point))
-              (read-only-mode))
-            (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-            (global-auto-revert-mode t)
-            (show-paren-mode t)
-            )
+      )
+    (require 'ansi-color)
+    (defun colorize-compilation-buffer ()
+      (read-only-mode)
+      (ansi-color-apply-on-region compilation-filter-start (point))
+      (read-only-mode))
+    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+    (global-auto-revert-mode t)
+    (show-paren-mode t)
+    )
     #+end_src
 ** font-lock
 #+begin_src emacs-lisp
@@ -130,27 +130,27 @@ This is my current emacs configuration
 *** Base16
     #+begin_src emacs-lisp
       (use-package base16-theme
-        ;; :config
-        ;; ;; (
-        ;; load-theme 'base16-gruvbox-dark-hard t)
-      ;;
-      )
+        :config
+        (load-theme 'base16-classic-dark t)
+        ;; (load-theme 'base16-gruvbox-dark-hard t)
+         )
     #+end_src
 *** Modus
 #+begin_src emacs-lisp
-    (use-package modus-vivendi-theme
-      :config
-      ;; (run-at-time "18:00" (* 60 60 24)
-      ;;              (lambda ()
-      ;;                (enable-theme 'modus-vivendi)))
-                     )
-    (use-package modus-operandi-theme
-      :config
-      ;; (run-at-time "11:00" (* 60 60 24)
-      ;;              (lambda ()
-      ;;                (enable-theme 'modus-operandi)))
-  )
-
+    ;; (use-package modus-vivendi-theme
+    ;;   :config
+    ;;   ;; (run-at-time "18:00" (* 60 60 24)
+    ;;   ;;              (lambda ()
+    ;;   ;;                (enable-theme 'modus-vivendi)))
+    ;;                  )
+    ;; (use-pa
+    ;;  ckage modus-operandi-theme
+  ;;     :config
+  ;;     ;; (run-at-time "11:00" (* 60 60 24)
+  ;;     ;;              (lambda ()
+  ;;     ;;                (enable-theme 'modus-operandi)))
+  ;; )
+  
 #+end_src
 ** mood-line
 #+begin_src emacs-lisp
@@ -304,8 +304,8 @@ This is my current emacs configuration
     #+end_src
 ** Tramp
     #+begin_src emacs-lisp
-    (use-package docker-tramp)
-    (use-package counsel-tramp)
+      ;; (use-package docker-tramp)
+      (use-package counsel-tramp)
     #+end_src
 ** direnv
     #+begin_src emacs-lisp
@@ -367,7 +367,7 @@ This is my current emacs configuration
         :bind
         ("<f12>" . 'org-agenda)
         ("<f8>" . 'org-cycle-agenda-files)
-        ("<f9> m" . 'mu4e)
+        ("<f9> m" . 'notmuch)
         ("<f9> g" . 'gnus)
         ("<f9> c" . 'counsel-org-capture)
         ("<f11>" . 'org-clock-goto)
@@ -549,6 +549,19 @@ This is my current emacs configuration
        :ensure-system-package mu
        :custom (org-mu4e-link-query-in-headers-mode nil))
    #+end_src
+* Telega
+#+begin_src emacs-lisp
+  (use-package telega
+    :custom
+    (telega-use-docker t)
+    :config
+    (telega-notifications-mode 1)
+    (telega-mode-line-mode 1)
+    (telega-appindicator-mode 1)
+    (define-key global-map (kbd "C-c t") telega-prefix-map)
+    :bind 
+    :commands (telega))
+#+end_src
 * Editing stuff
 ** copy as format
     #+begin_src emacs-lisp
@@ -746,17 +759,18 @@ This is my current emacs configuration
     (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
     (setq python-shell-completion-native-enable nil) ;; solve warning in repl
     )
-
+  
   (use-package py-autopep8
     :ensure t
     :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
-
-  (use-package elpy
-    :ensure t
-    :config (progn (add-hook 'python-mode-hook 'elpy-enable)
-                   (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
-
-  (use-package py-isort
+  
+  ;; (use-package elpy
+  ;;   :ensure t
+  ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
+  ;;                  (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
+  
+  ;; (use
+   -package py-isort
     :init
     (add-hook 'before-save-hook #'py-isort-before-save))
 #+end_src
