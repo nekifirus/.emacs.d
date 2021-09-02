@@ -367,7 +367,7 @@ This is my current emacs configuration
         :bind
         ("<f12>" . 'org-agenda)
         ("<f8>" . 'org-cycle-agenda-files)
-        ("<f9> m" . 'notmuch)
+        ("<f9> m" . 'mu4e)
         ("<f9> g" . 'gnus)
         ("<f9> c" . 'counsel-org-capture)
         ("<f11>" . 'org-clock-goto)
@@ -532,18 +532,44 @@ This is my current emacs configuration
        (message-kill-buffer-on-exit t)
        (mu4e-enable-mode-line t)
        (mu4e-enable-notifications t)
-       (mu4e-sent-folder "/nekifirus/[Gmail]/Sent Mail")
-       (mu4e-drafts-folder "/nekifirus/[Gmail]/Drafts")
-       (mu4e-trash-folder "/nekifirus/[Gmail]/Trash")
-       (smtpmail-smtp-server "smtp.gmail.com")
-       (smtpmail-smtp-service 587)
        (send-mail-function 'smtpmail-send-it)
+       (mu4e-context-policy 'pick-first)
+       (mu4e-contexts
+        `( ,(make-mu4e-context
+             :name "Gmail"
+             :enter-func (lambda () (mu4e-message "Entering gmail context"))
+             :leave-func (lambda () (mu4e-message "Leaving gmail context"))
+             :match-func (lambda (msg)
+                             (when msg
+                               (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
+             :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
+                      ( user-full-name	        . "Nikita Mistyukov" )
+                      (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
+                      (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
+                      (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
+                      (smtpmail-smtp-server      . "smtp.gmail.com")
+                      (smtpmail-smtp-service     . 587)))
+           ,(make-mu4e-context
+             :name "Yandex"
+             :enter-func (lambda () (mu4e-message "Entering yandex context"))
+             :leave-func (lambda () (mu4e-message "Leaving yandex context"))
+             :match-func (lambda (msg)
+                             (when msg
+                               (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
+             :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
+                      ( user-full-name	        . "Nikita Mistyukov" )
+                      (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
+                      (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
+                      (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
+                      (smtpmail-smtp-server      . "smtp.yandex.ru")
+                      (smtpmail-smtp-service     . 465)))
+           ))
        :config
        (add-to-list 'mu4e-view-actions
                     '("ViewInBrowser" . mu4e-action-view-in-browser) t)
        )
-
-
+     
+     
      (use-package org-mu4e
        :ensure nil
        :ensure-system-package mu
@@ -753,26 +779,25 @@ This is my current emacs configuration
   #+end_src
 ** python
 #+begin_src emacs-lisp
-  (use-package  python
-    :mode ("\\.py'" . python-mode)
-    :config (setq-default py-separator-char 47)   ;; Use spaces instead tab
-    (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
-    (setq python-shell-completion-native-enable nil) ;; solve warning in repl
-    )
+   (use-package  python
+     :mode ("\\.py'" . python-mode)
+     :config (setq-default py-separator-char 47)   ;; Use spaces instead tab
+     (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
+     (setq python-shell-completion-native-enable nil) ;; solve warning in repl
+     )
   
-  (use-package py-autopep8
+   (use-package py-autopep8
+     :ensure t
+     :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+  
+  (use-package elpy
     :ensure t
-    :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+    :config (progn (add-hook 'python-mode-hook 'elpy-enable)
+                   (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
   
-  ;; (use-package elpy
-  ;;   :ensure t
-  ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
-  ;;                  (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
-  
-  ;; (use
-   -package py-isort
-    :init
-    (add-hook 'before-save-hook #'py-isort-before-save))
+   (use-package py-isort
+     :init
+     (add-hook 'before-save-hook #'py-isort-before-save))
 #+end_src
 ** js
 #+begin_src emacs-lisp
