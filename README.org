@@ -48,54 +48,57 @@ This is my current emacs configuration
 #+end_src
 ** emacs package
 #+begin_src emacs-lisp
-  (use-package emacs
-    :init
-    (put 'narrow-to-region 'disabled nil)
-    (put 'downcase-region 'disabled nil)
-    (fset 'x-popup-menu #'ignore)
-    :custom
-    (ring-bell-function 'ignore)
-    (default-frame-alist '((menu-bar-lines 0)
-                           (tool-bar-lines 0)
-                           (vertical-scroll-bars)))
-    (scroll-step 1)
-    (inhibit-startup-screen t "Don't show splash screen")
-    (use-dialog-box nil "Disable dialog boxes")
-    (x-gtk-use-system-tooltips nil)
-    (use-file-dialog nil)
-    (enable-recursive-minibuffers t "Allow minibuffer commands in the minibuffer")
-    (indent-tabs-mode nil "Spaces!")
-    (tab-width 4)
-    (debug-on-quit nil)
-    (show-paren-delay 0.0)
-    (auto-save-default nil)
-    (create-lockfiles nil)
-    (make-backup-files nil)
-    :config
-    (fset 'yes-or-no-p 'y-or-n-p)
-    (global-set-key (kbd "M-o") 'other-window)
-    (setq compilation-scroll-output 'first-error)
-    (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-    (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-    (set-face-attribute 'default
-                        nil
-                        :font "Iosevka Light"
-                        :height 130
-                        )
-    (when (fboundp 'set-fontset-font)
-      (set-fontset-font "fontset-default" 'cyrillic
-                        (font-spec :registry "iso10646-1" :script 'cyrillic))
+    (use-package emacs
+      :init
+      (put 'narrow-to-region 'disabled nil)
+      (put 'downcase-region 'disabled nil)
+      (fset 'x-popup-menu #'ignore)
+      :custom
+      (ring-bell-function 'ignore)
+      (default-frame-alist '((menu-bar-lines 0)
+                             (tool-bar-lines 0)
+                             (vertical-scroll-bars)))
+      (scroll-step 1)
+      (inhibit-startup-screen t "Don't show splash screen")
+      (use-dialog-box nil "Disable dialog boxes")
+      (x-gtk-use-system-tooltips nil)
+      (use-file-dialog nil)
+      (enable-recursive-minibuffers t "Allow minibuffer commands in the minibuffer")
+      (indent-tabs-mode nil "Spaces!")
+      (tab-width 4)
+      (debug-on-quit nil)
+      (show-paren-delay 0.0)
+      (auto-save-default nil)
+      (create-lockfiles nil)
+      (make-backup-files nil)
+      :config
+      (fset 'yes-or-no-p 'y-or-n-p)
+      (global-set-key (kbd "M-o") 'other-window)
+      (setq compilation-scroll-output 'first-error)
+      (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+      (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+      (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+      (set-face-attribute 'default
+                          nil
+                          :font "Iosevka Light"
+                          :height 130
+                          )
+      (when (fboundp 'set-fontset-font)
+        (set-fontset-font "fontset-default" 'cyrillic
+                          (font-spec :registry "iso10646-1" :script 'cyrillic))
+        )
+      (require 'ansi-color)
+      (defun colorize-compilation-buffer ()
+        (read-only-mode)
+        (ansi-color-apply-on-region compilation-filter-start (point))
+        (read-only-mode))
+      (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+      (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+      (add-to-list 'process-coding-system-alist '("elpy" . (utf-8 . utf-8)))
+      (add-to-list 'process-coding-system-alist '("flake8" . (utf-8 . utf-8)))
+      (global-auto-revert-mode t)
+      (show-paren-mode t)
       )
-    (require 'ansi-color)
-    (defun colorize-compilation-buffer ()
-      (read-only-mode)
-      (ansi-color-apply-on-region compilation-filter-start (point))
-      (read-only-mode))
-    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-    (global-auto-revert-mode t)
-    (show-paren-mode t)
-    )
     #+end_src
 ** font-lock
 #+begin_src emacs-lisp
@@ -508,72 +511,114 @@ This is my current emacs configuration
 #+end_src
 * Email
    #+begin_src emacs-lisp
-     (use-package mu4e
-       :ensure-system-package mu
-       :custom
-       (mail-user-agent 'mu4e-user-agent)
-       (mu4e-get-mail-command "mbsync -a")
-       (mu4e-maildir "~/Maildir")
-       ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
-       ;; Override in context switching for other type of mailboxes
-       (mu4e-sent-messages-behavior 'delete)
-       (message-kill-buffer-on-exit t)
-       ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
-       (mu4e-change-filenames-when-moving t)
-       ;; This helps when using a dark theme (shr)
-       (shr-color-visible-luminance-min 80)
-       ;; (mu4e-update-interval 1500)
-       (mu4e-use-fancy-chars t)
-       (mu4e-view-show-addresses t)
-       (mu4e-view-show-images t)
-       (mu4e-maildir-shortcuts t)
-       (mu4e-view-prefer-html t)
-       (mu4e-view-show-images t)
-       (message-kill-buffer-on-exit t)
-       (mu4e-enable-mode-line t)
-       (mu4e-enable-notifications t)
-       (send-mail-function 'smtpmail-send-it)
-       (mu4e-context-policy 'pick-first)
-       (mu4e-contexts
-        `( ,(make-mu4e-context
-             :name "Gmail"
-             :enter-func (lambda () (mu4e-message "Entering gmail context"))
-             :leave-func (lambda () (mu4e-message "Leaving gmail context"))
-             :match-func (lambda (msg)
-                             (when msg
-                               (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
-             :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
-                      ( user-full-name	        . "Nikita Mistyukov" )
-                      (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
-                      (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
-                      (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
-                      (smtpmail-smtp-server      . "smtp.gmail.com")
-                      (smtpmail-smtp-service     . 587)))
-           ,(make-mu4e-context
-             :name "Yandex"
-             :enter-func (lambda () (mu4e-message "Entering yandex context"))
-             :leave-func (lambda () (mu4e-message "Leaving yandex context"))
-             :match-func (lambda (msg)
-                             (when msg
-                               (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
-             :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
-                      ( user-full-name	        . "Nikita Mistyukov" )
-                      (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
-                      (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
-                      (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
-                      (smtpmail-smtp-server      . "smtp.yandex.ru")
-                      (smtpmail-smtp-service     . 465)))
-           ))
-       :config
-       (add-to-list 'mu4e-view-actions
-                    '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-       )
-     
-     
-     (use-package org-mu4e
-       :ensure nil
-       :ensure-system-package mu
-       :custom (org-mu4e-link-query-in-headers-mode nil))
+        (use-package mu4e
+          :ensure-system-package mu
+          :custom
+          (mail-user-agent 'mu4e-user-agent)
+          (mu4e-get-mail-command "mbsync -a")
+          (mu4e-maildir "~/Maildir")
+          ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
+          ;; Override in context switching for other type of mailboxes
+          (mu4e-sent-messages-behavior 'delete)
+          (message-kill-buffer-on-exit t)
+          ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
+          (mu4e-change-filenames-when-moving t)
+          ;; This helps when using a dark theme (shr)
+          (shr-color-visible-luminance-min 80)
+          ;; (mu4e-update-interval 1500)
+          (mu4e-use-fancy-chars t)
+          (mu4e-view-show-addresses t)
+          (mu4e-view-show-images t)
+          (mu4e-maildir-shortcuts t)
+          (mu4e-view-prefer-html t)
+          (mu4e-view-show-images t)
+          (message-kill-buffer-on-exit t)
+          (mu4e-enable-mode-line t)
+          (mu4e-enable-notifications t)
+          (send-mail-function 'smtpmail-send-it)
+          ( user-full-name "Nikita Mistyukov" )
+          (mu4e-context-policy 'pick-first)
+          (mu4e-contexts
+           `( ,(make-mu4e-context
+                :name "Gmail"
+                :enter-func (lambda () (mu4e-message "Entering gmail context"))
+                :leave-func (lambda () (mu4e-message "Leaving gmail context"))
+                :match-func (lambda (msg)
+                                (when msg
+                                  (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
+                :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
+                         (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
+                         (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
+                         (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
+                         (smtpmail-smtp-server      . "smtp.gmail.com")
+                         (smtpmail-smtp-service     . 587)))
+              ,(make-mu4e-context
+                :name "Yandex"
+                :enter-func (lambda () (mu4e-message "Entering yandex context"))
+                :leave-func (lambda () (mu4e-message "Leaving yandex context"))
+                :match-func (lambda (msg)
+                                (when msg
+                                  (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
+                :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
+                         (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
+                         (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
+                         (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
+                         (smtpmail-smtp-server      . "smtp.yandex.ru")
+                         (smtpmail-smtp-service     . 465)))
+              ))
+          :config
+          (add-to-list 'mu4e-view-actions
+                       '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+          )(progn
+     (use-package-ensure-elpa 'org-mu4e
+                              '(nil)
+                              'nil)
+     (defvar use-package--warning66
+       #'(lambda
+           (keyword err)
+           (let
+               ((msg
+                 (format "%s/%s: %s" 'org-mu4e keyword
+                         (error-message-string err))))
+             (display-warning 'use-package msg :error))))
+     (condition-case-unless-debug err
+         (progn
+           (let
+               ((custom--inhibit-theme-enable nil))
+             (unless
+                 (memq 'use-package custom-known-themes)
+               (deftheme use-package)
+               (enable-theme 'use-package)
+               (setq custom-enabled-themes
+                     (remq 'use-package custom-enabled-themes)))
+             (custom-theme-set-variables 'use-package
+                                         '(org-mu4e-link-query-in-headers-mode nil nil nil "Customized with use-package org-mu4e")))
+           (let
+               ((now
+                 (current-time)))
+             (message "%s..." "Loading package org-mu4e")
+             (prog1
+                 (if
+                     (not
+                      (require 'org-mu4e nil t))
+                     (display-warning 'use-package
+                                      (format "Cannot load %s" 'org-mu4e)
+                                      :error)
+                   (unless
+                       (use-package-ensure-system-package-exists\? 'mu)
+                     (system-packages-install "mu")))
+               (let
+                   ((elapsed
+                     (float-time
+                      (time-subtract
+                       (current-time)
+                       now))))
+                 (if
+                     (> elapsed 0.005)
+                     (message "%s...done (%.3fs)" "Loading package org-mu4e" elapsed)
+                   (message "%s...done" "Loading package org-mu4e"))))))
+       (error
+        (funcall use-package--warning66 :catch err))))
    #+end_src
 * Telega
 #+begin_src emacs-lisp
@@ -790,12 +835,13 @@ This is my current emacs configuration
      :ensure t
      :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
   
-  (use-package elpy
-    :ensure t
-    :config (progn (add-hook 'python-mode-hook 'elpy-enable)
-                   (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
+  ;; (use-package elpy
+  ;;   :ensure t
+  ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
+  ;;                  (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
   
-   (use-package py-isort
+  (use-p
+    ackage py-isort
      :init
      (add-hook 'before-save-hook #'py-isort-before-save))
 #+end_src
