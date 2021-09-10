@@ -37,6 +37,7 @@ This is my current emacs configuration
 ** no-litering
 #+begin_src emacs-lisp
   (use-package no-littering
+    :ensure t
     :custom
     (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
 #+end_src
@@ -93,9 +94,6 @@ This is my current emacs configuration
         (ansi-color-apply-on-region compilation-filter-start (point))
         (read-only-mode))
       (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-      (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-      (add-to-list 'process-coding-system-alist '("elpy" . (utf-8 . utf-8)))
-      (add-to-list 'process-coding-system-alist '("flake8" . (utf-8 . utf-8)))
       (global-auto-revert-mode t)
       (show-paren-mode t)
       )
@@ -120,12 +118,13 @@ This is my current emacs configuration
     #+end_src
 ** time
   #+begin_src emacs-lisp
+
     (use-package time
       :ensure nil
       :custom
       (display-time-default-load-average nil)
-      (display-time-day-and-date t)
-      (display-time-24hr-format t)
+      (display-time-day-and-date nil)
+      (display-time-24hr-format nil)
       :config
       (display-time-mode nil))
   #+end_src
@@ -511,114 +510,65 @@ This is my current emacs configuration
 #+end_src
 * Email
    #+begin_src emacs-lisp
-        (use-package mu4e
-          :ensure-system-package mu
-          :custom
-          (mail-user-agent 'mu4e-user-agent)
-          (mu4e-get-mail-command "mbsync -a")
-          (mu4e-maildir "~/Maildir")
-          ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
-          ;; Override in context switching for other type of mailboxes
-          (mu4e-sent-messages-behavior 'delete)
-          (message-kill-buffer-on-exit t)
-          ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
-          (mu4e-change-filenames-when-moving t)
-          ;; This helps when using a dark theme (shr)
-          (shr-color-visible-luminance-min 80)
-          ;; (mu4e-update-interval 1500)
-          (mu4e-use-fancy-chars t)
-          (mu4e-view-show-addresses t)
-          (mu4e-view-show-images t)
-          (mu4e-maildir-shortcuts t)
-          (mu4e-view-prefer-html t)
-          (mu4e-view-show-images t)
-          (message-kill-buffer-on-exit t)
-          (mu4e-enable-mode-line t)
-          (mu4e-enable-notifications t)
-          (send-mail-function 'smtpmail-send-it)
-          ( user-full-name "Nikita Mistyukov" )
-          (mu4e-context-policy 'pick-first)
-          (mu4e-contexts
-           `( ,(make-mu4e-context
-                :name "Gmail"
-                :enter-func (lambda () (mu4e-message "Entering gmail context"))
-                :leave-func (lambda () (mu4e-message "Leaving gmail context"))
-                :match-func (lambda (msg)
-                                (when msg
-                                  (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
-                :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
-                         (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
-                         (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
-                         (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
-                         (smtpmail-smtp-server      . "smtp.gmail.com")
-                         (smtpmail-smtp-service     . 587)))
-              ,(make-mu4e-context
-                :name "Yandex"
-                :enter-func (lambda () (mu4e-message "Entering yandex context"))
-                :leave-func (lambda () (mu4e-message "Leaving yandex context"))
-                :match-func (lambda (msg)
-                                (when msg
-                                  (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
-                :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
-                         (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
-                         (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
-                         (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
-                         (smtpmail-smtp-server      . "smtp.yandex.ru")
-                         (smtpmail-smtp-service     . 465)))
-              ))
-          :config
-          (add-to-list 'mu4e-view-actions
-                       '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-          )(progn
-     (use-package-ensure-elpa 'org-mu4e
-                              '(nil)
-                              'nil)
-     (defvar use-package--warning66
-       #'(lambda
-           (keyword err)
-           (let
-               ((msg
-                 (format "%s/%s: %s" 'org-mu4e keyword
-                         (error-message-string err))))
-             (display-warning 'use-package msg :error))))
-     (condition-case-unless-debug err
-         (progn
-           (let
-               ((custom--inhibit-theme-enable nil))
-             (unless
-                 (memq 'use-package custom-known-themes)
-               (deftheme use-package)
-               (enable-theme 'use-package)
-               (setq custom-enabled-themes
-                     (remq 'use-package custom-enabled-themes)))
-             (custom-theme-set-variables 'use-package
-                                         '(org-mu4e-link-query-in-headers-mode nil nil nil "Customized with use-package org-mu4e")))
-           (let
-               ((now
-                 (current-time)))
-             (message "%s..." "Loading package org-mu4e")
-             (prog1
-                 (if
-                     (not
-                      (require 'org-mu4e nil t))
-                     (display-warning 'use-package
-                                      (format "Cannot load %s" 'org-mu4e)
-                                      :error)
-                   (unless
-                       (use-package-ensure-system-package-exists\? 'mu)
-                     (system-packages-install "mu")))
-               (let
-                   ((elapsed
-                     (float-time
-                      (time-subtract
-                       (current-time)
-                       now))))
-                 (if
-                     (> elapsed 0.005)
-                     (message "%s...done (%.3fs)" "Loading package org-mu4e" elapsed)
-                   (message "%s...done" "Loading package org-mu4e"))))))
-       (error
-        (funcall use-package--warning66 :catch err))))
+             (use-package mu4e
+               :ensure-system-package mu
+               :custom
+               (mail-user-agent 'mu4e-user-agent)
+               (mu4e-get-mail-command "mbsync -a")
+               (mu4e-maildir "~/Maildir")
+               ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
+               ;; Override in context switching for other type of mailboxes
+               (mu4e-sent-messages-behavior 'delete)
+               (message-kill-buffer-on-exit t)
+               ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
+               (mu4e-change-filenames-when-moving t)
+               ;; This helps when using a dark theme (shr)
+               (shr-color-visible-luminance-min 80)
+               ;; (mu4e-update-interval 1500)
+               (mu4e-use-fancy-chars t)
+               (mu4e-view-show-addresses t)
+               (mu4e-view-show-images t)
+               (mu4e-maildir-shortcuts t)
+               (mu4e-view-prefer-html t)
+               (mu4e-view-show-images t)
+               (message-kill-buffer-on-exit t)
+               (mu4e-enable-mode-line t)
+               (mu4e-enable-notifications t)
+               (send-mail-function 'smtpmail-send-it)
+               ( user-full-name "Nikita Mistyukov" )
+               (mu4e-context-policy 'pick-first)
+               (mu4e-contexts
+                `( ,(make-mu4e-context
+                     :name "Gmail"
+                     :enter-func (lambda () (mu4e-message "Entering gmail context"))
+                     :leave-func (lambda () (mu4e-message "Leaving gmail context"))
+                     :match-func (lambda (msg)
+                                     (when msg
+                                       (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
+                     :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
+                              (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
+                              (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
+                              (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
+                              (smtpmail-smtp-server      . "smtp.gmail.com")
+                              (smtpmail-smtp-service     . 587)))
+                   ,(make-mu4e-context
+                     :name "Yandex"
+                     :enter-func (lambda () (mu4e-message "Entering yandex context"))
+                     :leave-func (lambda () (mu4e-message "Leaving yandex context"))
+                     :match-func (lambda (msg)
+                                     (when msg
+                                       (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
+                     :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
+                              (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
+                              (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
+                              (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
+                              (smtpmail-smtp-server      . "smtp.yandex.ru")
+                              (smtpmail-smtp-service     . 465)))
+                   ))
+               :config
+               (add-to-list 'mu4e-view-actions
+                            '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+               )
    #+end_src
 * Telega
 #+begin_src emacs-lisp
@@ -816,6 +766,7 @@ This is my current emacs configuration
 
       :hook ((python-mode . lsp)
              (vue-mode . lsp)
+             (nix-mode . lsp)
              (go-mode . lsp)
              (js-mode . lsp))
       :commands lsp)
@@ -840,8 +791,7 @@ This is my current emacs configuration
   ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
   ;;                  (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
   
-  (use-p
-    ackage py-isort
+  (use-package py-isort
      :init
      (add-hook 'before-save-hook #'py-isort-before-save))
 #+end_src
