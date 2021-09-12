@@ -320,6 +320,22 @@ This is my current emacs configuration
         :init  (setq epg-gpg-home-directory "~/.gnupg/")
         )
     #+end_src
+** pdf-tools
+#+begin_src elisp
+  (use-package pdf-tools
+    :config
+    (require 'pdf-tools)
+    (require 'pdf-view)
+    (require 'pdf-misc)
+    (require 'pdf-occur)
+    (require 'pdf-util)
+    (require 'pdf-annot)
+    (require 'pdf-info)
+    (require 'pdf-isearch)
+    (require 'pdf-history)
+    (require 'pdf-links)
+    (pdf-tools-install :no-query))
+#+end_src
 * Org
     #+begin_src emacs-lisp
       (use-package org
