@@ -544,14 +544,14 @@ This is my current emacs configuration
                (mu4e-use-fancy-chars t)
                (mu4e-view-show-addresses t)
                (mu4e-view-show-images t)
-               (mu4e-maildir-shortcuts t)
+               (mu4e-maildir-shortcuts nil)
                (mu4e-view-prefer-html t)
                (mu4e-view-show-images t)
                (message-kill-buffer-on-exit t)
                (mu4e-enable-mode-line t)
                (mu4e-enable-notifications t)
                (send-mail-function 'smtpmail-send-it)
-               ( user-full-name "Nikita Mistyukov" )
+               (user-full-name "Nikita Mistyukov" )
                (mu4e-context-policy 'pick-first)
                (mu4e-contexts
                 `( ,(make-mu4e-context
