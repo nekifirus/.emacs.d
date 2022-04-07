@@ -11,28 +11,28 @@ This is my current emacs configuration
 ** use-package
     #+begin_src emacs-lisp
       (require 'package)
-      
-      ;; optional. makes unpure packages archives unavailable
-      (setq package-archives nil)
-      
-      (setq package-enable-at-startup nil)
+
+      (unless (assoc-default "melpa" package-archives)
+        (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+      (unless (assoc-default "org" package-archives)
+        (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+      (unless (assoc-default "elpa" package-archives)
+        (add-to-list 'package-archives '("elpa" . "https://elpa.gnu.org/packages") t))
+
       (package-initialize)
-      
       (unless (package-installed-p 'use-package)
         (package-refresh-contents)
         (package-install 'use-package))
       (require 'use-package)
-      (require 'use-package-ensure)
-      (setq use-package-always-ensure nil)
-      
+      (setq use-package-always-ensure t)
       (put 'use-package 'lisp-indent-function 1)
-      
-      (use-package use-package-core
-        :custom
-        (use-package-verbose t)
-        (use-package-minimum-reported-time 0.005)
-        (use-package-enable-imenu-support t))
-      (use-package diminish)
+
+          (use-package use-package-core
+            :custom
+            (use-package-verbose t)
+            (use-package-minimum-reported-time 0.005)
+            (use-package-enable-imenu-support t))
+          (use-package diminish)
       #+end_src
 ** no-litering
 #+begin_src emacs-lisp
@@ -322,19 +322,19 @@ This is my current emacs configuration
     #+end_src
 ** pdf-tools
 #+begin_src elisp
-  (use-package pdf-tools
-    :config
-    (require 'pdf-tools)
-    (require 'pdf-view)
-    (require 'pdf-misc)
-    (require 'pdf-occur)
-    (require 'pdf-util)
-    (require 'pdf-annot)
-    (require 'pdf-info)
-    (require 'pdf-isearch)
-    (require 'pdf-history)
-    (require 'pdf-links)
-    (pdf-tools-install :no-query))
+  ;; (use-package pdf-tools
+  ;;   :config
+  ;;   (require 'pdf-tools)
+  ;;   (require 'pdf-view)
+  ;;   (require 'pdf-misc)
+  ;;   (require 'pdf-occur)
+  ;;   (require 'pdf-util)
+  ;;   (require 'pdf-annot)
+  ;;   (require 'pdf-info)
+  ;;   (require 'pdf-isearch)
+  ;;   (require 'pdf-history)
+  ;;   (require 'pdf-links)
+  ;;   (pdf-tools-install :no-query))
 #+end_src
 * Org
     #+begin_src emacs-lisp
@@ -526,68 +526,68 @@ This is my current emacs configuration
 #+end_src
 * Email
    #+begin_src emacs-lisp
-     (use-package mu4e
-       :ensure-system-package mu
-       :custom
-       (mail-user-agent 'mu4e-user-agent)
-       (mu4e-get-mail-command "mbsync -a")
-       (mu4e-maildir "~/Maildir")
-       ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
-       ;; Override in context switching for other type of mailboxes
-       (mu4e-sent-messages-behavior 'delete)
-       (message-kill-buffer-on-exit t)
-       ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
-       (mu4e-change-filenames-when-moving t)
-       ;; This helps when using a dark theme (shr)
-       (shr-color-visible-luminance-min 80)
-       ;; (mu4e-update-interval 1500)
-       (mu4e-use-fancy-chars t)
-       (mu4e-view-show-addresses t)
-       (mu4e-view-show-images t)
-       (mu4e-maildir-shortcuts nil)
-       (mu4e-view-prefer-html t)
-       (mu4e-view-show-images t)
-       (message-kill-buffer-on-exit t)
-       (mu4e-enable-mode-line t)
-       (mu4e-enable-notifications t)
-       (sendmail-program "msmtp")
-       (message-sendmail-f-is-evil t)
-       (message-sendmail-extra-arguments '("--read-envelope-from"))
-       (message-send-mail-function 'message-send-mail-with-sendmail)
-       (user-full-name "Nikita Mistyukov" )
-       (mu4e-context-policy 'pick-first)
-       (mu4e-contexts
-        `( ,(make-mu4e-context
-             :name "Gmail"
-             :enter-func (lambda () (mu4e-message "Entering gmail context"))
-             :leave-func (lambda () (mu4e-message "Leaving gmail context"))
-             :match-func (lambda (msg)
-                             (when msg
-                               (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
-             :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
-                      (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
-                      (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
-                      (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
-                      (smtpmail-smtp-server      . "smtp.gmail.com")
-                      (smtpmail-smtp-service     . 587)))
-           ,(make-mu4e-context
-             :name "Yandex"
-             :enter-func (lambda () (mu4e-message "Entering yandex context"))
-             :leave-func (lambda () (mu4e-message "Leaving yandex context"))
-             :match-func (lambda (msg)
-                             (when msg
-                               (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
-             :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
-                      (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
-                      (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
-                      (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
-                      (smtpmail-smtp-server      . "smtp.yandex.ru")
-                      (smtpmail-smtp-service     . 465)))
-           ))
-       :config
-       (add-to-list 'mu4e-view-actions
-                    '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-       )
+     ;; (use-package mu4e
+     ;;   :ensure-system-package mu
+     ;;   :custom
+     ;;   (mail-user-agent 'mu4e-user-agent)
+     ;;   (mu4e-get-mail-command "mbsync -a")
+     ;;   (mu4e-maildir "~/Maildir")
+     ;;   ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
+     ;;   ;; Override in context switching for other type of mailboxes
+     ;;   (mu4e-sent-messages-behavior 'delete)
+     ;;   (message-kill-buffer-on-exit t)
+     ;;   ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
+     ;;   (mu4e-change-filenames-when-moving t)
+     ;;   ;; This helps when using a dark theme (shr)
+     ;;   (shr-color-visible-luminance-min 80)
+     ;;   ;; (mu4e-update-interval 1500)
+     ;;   (mu4e-use-fancy-chars t)
+     ;;   (mu4e-view-show-addresses t)
+     ;;   (mu4e-view-show-images t)
+     ;;   (mu4e-maildir-shortcuts nil)
+     ;;   (mu4e-view-prefer-html t)
+     ;;   (mu4e-view-show-images t)
+     ;;   (message-kill-buffer-on-exit t)
+     ;;   (mu4e-enable-mode-line t)
+     ;;   (mu4e-enable-notifications t)
+     ;;   (sendmail-program "msmtp")
+     ;;   (message-sendmail-f-is-evil t)
+     ;;   (message-sendmail-extra-arguments '("--read-envelope-from"))
+     ;;   (message-send-mail-function 'message-send-mail-with-sendmail)
+     ;;   (user-full-name "Nikita Mistyukov" )
+     ;;   (mu4e-context-policy 'pick-first)
+     ;;   (mu4e-contexts
+     ;;    `( ,(make-mu4e-context
+     ;;         :name "Gmail"
+     ;;         :enter-func (lambda () (mu4e-message "Entering gmail context"))
+     ;;         :leave-func (lambda () (mu4e-message "Leaving gmail context"))
+     ;;         :match-func (lambda (msg)
+     ;;                         (when msg
+     ;;                           (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
+     ;;         :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
+     ;;                  (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
+     ;;                  (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
+     ;;                  (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
+     ;;                  (smtpmail-smtp-server      . "smtp.gmail.com")
+     ;;                  (smtpmail-smtp-service     . 587)))
+     ;;       ,(make-mu4e-context
+     ;;         :name "Yandex"
+     ;;         :enter-func (lambda () (mu4e-message "Entering yandex context"))
+     ;;         :leave-func (lambda () (mu4e-message "Leaving yandex context"))
+     ;;         :match-func (lambda (msg)
+     ;;                         (when msg
+     ;;                           (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
+     ;;         :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
+     ;;                  (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
+     ;;                  (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
+     ;;                  (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
+     ;;                  (smtpmail-smtp-server      . "smtp.yandex.ru")
+     ;;                  (smtpmail-smtp-service     . 465)))
+     ;;       ))
+     ;;   :config
+     ;;   (add-to-list 'mu4e-view-actions
+     ;;                '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+     ;;   )
    #+end_src
 * Telega
 #+begin_src emacs-lisp
@@ -713,13 +713,21 @@ This is my current emacs configuration
         :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all)
         :bind (("C-x g" . magit-status)))
 
-      (use-package gitignore-mode
-        :mode "/\\.gitignore$")
+      ;; (use-package gitignore-mode
+      ;;   :mode "/\\.gitignore$")
 
       (use-package diff-hl
         ;; Integrate with Magit and highlight changed files in the fringe of dired
         :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
         :config (global-diff-hl-mode 1))
+
+      (use-package exec-path-from-shell
+      :custom (exec-path-from-shell-initialize)
+      :config 
+      (exec-path-from-shell-copy-env "SSH_AUTH_SOCK") 
+      (exec-path-from-shell-copy-env "NVM_DIR") 
+      (exec-path-from-shell-copy-env "PATH") 
+      )
     #+end_src
 
 * programming
@@ -787,6 +795,7 @@ This is my current emacs configuration
              (vue-mode . lsp)
              (nix-mode . lsp)
              (go-mode . lsp)
+             (typescript-mode . lsp)
              (js-mode . lsp))
       :commands lsp)
 
@@ -846,6 +855,29 @@ This is my current emacs configuration
 #+end_src
 
 ** TODO elixir
+
+** Solidity
+#+begin_src emacs-lisp
+  (use-package solidity-mode
+    :mode ("\\.sol\\'" . solidity-mode))
+#+end_src
+
+** typescript
+#+begin_src emacs-lisp
+  (use-package typescript-mode
+    :ensure t
+    :mode ("\\.ts\\'" . typescript-mode))
+    ;; ("\\.tsx\\'" . typescript-mode))
+#+end_src
+#+begin_src emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode (("\\.tsx" .  web-mode)
+         ("\\.svelte" .  web-mode)
+         ("\\.html$" .  web-mode))
+  :hook (web-mode . lsp-mode)
+  )
+#+end_src
 ** TODO other languages
 ** TODO python lsp
 [2020-10-10 Sat 13:24]
