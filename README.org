@@ -787,6 +787,7 @@ This is my current emacs configuration
              (vue-mode . lsp)
              (nix-mode . lsp)
              (go-mode . lsp)
+             (typescript-mode . lsp)
              (js-mode . lsp))
       :commands lsp)
 
@@ -825,12 +826,17 @@ This is my current emacs configuration
     :bind
     ("C-c C-C" . vue-mode-edit-indirect-at-point))
 
-   (use-package css-mode
-     :mode "\\.css\\'"
-     :config
-     (setq css-indent-level 4)
-     (setq css-indent-offset 4))
-
+  (use-package css-mode
+    :mode "\\.css\\'"
+    :config
+    (setq css-indent-level 4)
+    (setq css-indent-offset 4))
+  (use-package web-mode
+    :ensure t
+    :mode (("\\.tsx" .  web-mode)
+           ("\\.svelte" .  web-mode)
+           ("\\.html$" .  web-mode))
+    :hook (web-mode . lsp-mode))
 #+end_src
 ** GO
 #+begin_src emacs-lisp
