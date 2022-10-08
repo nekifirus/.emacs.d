@@ -1,3 +1,4 @@
+
 #+TITLE: Emacs Configuration
 #+Author: Nikita Mistyukov
 #+PROPERTY: header-args :tangle init.el
@@ -365,7 +366,7 @@ This is my current emacs configuration
                   "* %:annotation\n" :immediate-finish t)
                  ("p" "Phone call" entry (file "~/org/gtd/inbox.org")
                   "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
-      
+
         (org-clock-history-length 23) ;; Show lot of clocking history so it's easy to pick items off the C-F11 list
         (org-clock-in-resume t) ;; Resume clocking task on clock-in if the clock is open
         (org-clock-into-drawer t) ;; Save clock data and state changes and notes in the LOGBOOK drawer
@@ -382,6 +383,7 @@ This is my current emacs configuration
         (org-fontify-whole-heading-line t)
         (org-fontify-quote-and-verse-blocks t)
         (org-image-actual-width '(700)) ;; Set image width to 700
+        (org-src-tab-acts-natively t) ;; indent in source blocks
         :bind
         ("<f12>" . 'org-agenda)
         ("<f8>" . 'org-cycle-agenda-files)
