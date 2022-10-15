@@ -864,4 +864,19 @@ This is my current emacs configuration
                          (lsp)))
   :init
   (setq lsp-python-ms-executable (executable-find "python-language-server")))
+* my functions
+#+begin_src emacs-lisp
+  (defun choose-file (dir)
+    (let* ((files (->> (directory-files-and-attributes dir nil nil)
+                       (--filter (file-regular-p (expand-file-name (car it) dir)))
+                       (--sort (not (time-less-p (nth 6 it) (nth 6 other))))))
+           (chosen (completing-read "Choose file: " files))
+           ) (concat dir chosen)))
+
+  (defun nm/org-insert-screenshot ()
+    "Insert org-link at point with choosen screenshot form Screenshots folder."
+    (interactive)
+    (insert (concat "[[" (choose-file "~/Pictures/Screenshots/") "]]\n\n"))
+    (org-redisplay-inline-images))
+#+end_src
 
