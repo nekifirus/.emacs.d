@@ -634,7 +634,7 @@ table of contents for us.
     (add-to-list 'mu4e-bookmarks
                  '( :name "Iconic development"
                     :key ?d
-                    :query "flag:flagged"))
+                    :query "development@iconic.info"))
     )
 #+end_src
 * Telega
