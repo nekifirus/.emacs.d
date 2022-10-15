@@ -685,7 +685,7 @@ This is my current emacs configuration
       This is the same as using \\[set-mark-command] with the prefix argument."
         (interactive)
         (set-mark-command 1))
-      (global-set-key (kbd "M-`") 'jump-to-mark)
+      (global-set-key (kbd "M-`") 'counsel-mark-ring)
     #+end_src
 ** smart-comment
     #+begin_src emacs-lisp
