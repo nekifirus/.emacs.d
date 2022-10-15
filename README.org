@@ -10,31 +10,31 @@ This is my current emacs configuration
 
 * Base
 ** use-package
-    #+begin_src emacs-lisp
-      (require 'package)
-      
-      ;; optional. makes unpure packages archives unavailable
-      (setq package-archives nil)
-      
-      (setq package-enable-at-startup nil)
-      (package-initialize)
-      
-      (unless (package-installed-p 'use-package)
-        (package-refresh-contents)
-        (package-install 'use-package))
-      (require 'use-package)
-      (require 'use-package-ensure)
-      (setq use-package-always-ensure nil)
-      
-      (put 'use-package 'lisp-indent-function 1)
-      
-      (use-package use-package-core
-        :custom
-        (use-package-verbose t)
-        (use-package-minimum-reported-time 0.005)
-        (use-package-enable-imenu-support t))
-      (use-package diminish)
-      #+end_src
+#+begin_src emacs-lisp
+  (require 'package)
+
+  ;; optional. makes unpure packages archives unavailable
+  (setq package-archives nil)
+
+  (setq package-enable-at-startup nil)
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (require 'use-package)
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure nil)
+
+  (put 'use-package 'lisp-indent-function 1)
+
+  (use-package use-package-core
+    :custom
+    (use-package-verbose t)
+    (use-package-minimum-reported-time 0.005)
+    (use-package-enable-imenu-support t))
+  (use-package diminish)
+#+end_src
 ** no-litering
 #+begin_src emacs-lisp
   (use-package no-littering
@@ -50,55 +50,55 @@ This is my current emacs configuration
 #+end_src
 ** emacs package
 #+begin_src emacs-lisp
-    (use-package emacs
-      :init
-      (put 'narrow-to-region 'disabled nil)
-      (put 'downcase-region 'disabled nil)
-      (fset 'x-popup-menu #'ignore)
-      :custom
-      (ring-bell-function 'ignore)
-      (default-frame-alist '((menu-bar-lines 0)
-                             (tool-bar-lines 0)
-                             (vertical-scroll-bars)))
-      (scroll-step 1)
-      (inhibit-startup-screen t "Don't show splash screen")
-      (use-dialog-box nil "Disable dialog boxes")
-      (x-gtk-use-system-tooltips nil)
-      (use-file-dialog nil)
-      (enable-recursive-minibuffers t "Allow minibuffer commands in the minibuffer")
-      (indent-tabs-mode nil "Spaces!")
-      (tab-width 4)
-      (debug-on-quit nil)
-      (show-paren-delay 0.0)
-      (auto-save-default nil)
-      (create-lockfiles nil)
-      (make-backup-files nil)
-      :config
-      (fset 'yes-or-no-p 'y-or-n-p)
-      (global-set-key (kbd "M-o") 'other-window)
-      (setq compilation-scroll-output 'first-error)
-      (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-      (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-      (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-      (set-face-attribute 'default
-                          nil
-                          :font "Iosevka Light"
-                          :height 130
-                          )
-      (when (fboundp 'set-fontset-font)
-        (set-fontset-font "fontset-default" 'cyrillic
-                          (font-spec :registry "iso10646-1" :script 'cyrillic))
-        )
-      (require 'ansi-color)
-      (defun colorize-compilation-buffer ()
-        (read-only-mode)
-        (ansi-color-apply-on-region compilation-filter-start (point))
-        (read-only-mode))
-      (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-      (global-auto-revert-mode t)
-      (show-paren-mode t)
+  (use-package emacs
+    :init
+    (put 'narrow-to-region 'disabled nil)
+    (put 'downcase-region 'disabled nil)
+    (fset 'x-popup-menu #'ignore)
+    :custom
+    (ring-bell-function 'ignore)
+    (default-frame-alist '((menu-bar-lines 0)
+                           (tool-bar-lines 0)
+                           (vertical-scroll-bars)))
+    (scroll-step 1)
+    (inhibit-startup-screen t "Don't show splash screen")
+    (use-dialog-box nil "Disable dialog boxes")
+    (x-gtk-use-system-tooltips nil)
+    (use-file-dialog nil)
+    (enable-recursive-minibuffers t "Allow minibuffer commands in the minibuffer")
+    (indent-tabs-mode nil "Spaces!")
+    (tab-width 4)
+    (debug-on-quit nil)
+    (show-paren-delay 0.0)
+    (auto-save-default nil)
+    (create-lockfiles nil)
+    (make-backup-files nil)
+    :config
+    (fset 'yes-or-no-p 'y-or-n-p)
+    (global-set-key (kbd "M-o") 'other-window)
+    (setq compilation-scroll-output 'first-error)
+    (when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+    (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+    (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+    (set-face-attribute 'default
+                        nil
+                        :font "Iosevka Light"
+                        :height 130
+                        )
+    (when (fboundp 'set-fontset-font)
+      (set-fontset-font "fontset-default" 'cyrillic
+                        (font-spec :registry "iso10646-1" :script 'cyrillic))
       )
-    #+end_src
+    (require 'ansi-color)
+    (defun colorize-compilation-buffer ()
+      (read-only-mode)
+      (ansi-color-apply-on-region compilation-filter-start (point))
+      (read-only-mode))
+    (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+    (global-auto-revert-mode t)
+    (show-paren-mode t)
+    )
+#+end_src
 ** font-lock
 #+begin_src emacs-lisp
   ;; (use-package font-lock
@@ -108,52 +108,52 @@ This is my current emacs configuration
   ;;   (font-lock-string-face ((t (:inherit font-lock-string-face :italic t)))))
 #+end_src
 ** server
-    #+begin_src emacs-lisp
-      (use-package server
-        :config
-        (progn
-          (defun server-enable ()
-            (unless (server-running-p)
-              (server-start)))
-          (add-hook 'after-init-hook 'server-enable t)))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package server
+    :config
+    (progn
+      (defun server-enable ()
+        (unless (server-running-p)
+          (server-start)))
+      (add-hook 'after-init-hook 'server-enable t)))
+#+end_src
 ** time
-  #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 
-    (use-package time
-      :ensure nil
-      :custom
-      (display-time-default-load-average nil)
-      (display-time-day-and-date nil)
-      (display-time-24hr-format nil)
-      :config
-      (display-time-mode nil))
-  #+end_src
+  (use-package time
+    :ensure nil
+    :custom
+    (display-time-default-load-average nil)
+    (display-time-day-and-date nil)
+    (display-time-24hr-format nil)
+    :config
+    (display-time-mode nil))
+#+end_src
 ** Themes
 *** Base16
-    #+begin_src emacs-lisp
-      (use-package base16-theme
-        :config
-        (load-theme 'base16-classic-dark t)
-        ;; (load-theme 'base16-gruvbox-dark-hard t)
-         )
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package base16-theme
+    :config
+    (load-theme 'base16-classic-dark t)
+    ;; (load-theme 'base16-gruvbox-dark-hard t)
+    )
+#+end_src
 *** Modus
 #+begin_src emacs-lisp
-    ;; (use-package modus-vivendi-theme
-    ;;   :config
-    ;;   ;; (run-at-time "18:00" (* 60 60 24)
-    ;;   ;;              (lambda ()
-    ;;   ;;                (enable-theme 'modus-vivendi)))
-    ;;                  )
-    ;; (use-pa
-    ;;  ckage modus-operandi-theme
+  ;; (use-package modus-vivendi-theme
+  ;;   :config
+  ;;   ;; (run-at-time "18:00" (* 60 60 24)
+  ;;   ;;              (lambda ()
+  ;;   ;;                (enable-theme 'modus-vivendi)))
+  ;;                  )
+  ;; (use-pa
+  ;;  ckage modus-operandi-theme
   ;;     :config
   ;;     ;; (run-at-time "11:00" (* 60 60 24)
   ;;     ;;              (lambda ()
   ;;     ;;                (enable-theme 'modus-operandi)))
   ;; )
-  
+
 #+end_src
 ** mood-line
 #+begin_src emacs-lisp
@@ -167,160 +167,160 @@ This is my current emacs configuration
 
 #+end_src
 ** All the icons
-    #+begin_src emacs-lisp
-      (use-package all-the-icons)
-      (use-package all-the-icons-dired
-        :hook
-        (dired-mode . all-the-icons-dired-mode))
+#+begin_src emacs-lisp
+  (use-package all-the-icons)
+  (use-package all-the-icons-dired
+    :hook
+    (dired-mode . all-the-icons-dired-mode))
 
-      (use-package all-the-icons-ivy
-        :after ivy projectile
-        :config (all-the-icons-ivy-setup))
-    #+end_src
+  (use-package all-the-icons-ivy
+    :after ivy projectile
+    :config (all-the-icons-ivy-setup))
+#+end_src
 ** which-key
-    #+begin_src emacs-lisp
-      (use-package which-key
-        :diminish which-key-mode
-        :config
-        (setq which-key-sort-order #'which-key-prefix-then-key-order
-              which-key-sort-uppercase-first nil
-              which-key-add-column-padding 1
-              which-key-max-display-columns nil
-              which-key-min-display-lines 5)
-        (which-key-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package which-key
+    :diminish which-key-mode
+    :config
+    (setq which-key-sort-order #'which-key-prefix-then-key-order
+          which-key-sort-uppercase-first nil
+          which-key-add-column-padding 1
+          which-key-max-display-columns nil
+          which-key-min-display-lines 5)
+    (which-key-mode))
+#+end_src
 ** ivy
-    #+begin_src emacs-lisp
-      (use-package ivy
-        :diminish (ivy-mode . "")
-        :demand t
-        :config
-        (ivy-mode 1)
-        ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
-        (setq ivy-use-virtual-buffers t)
-        ;; number of result lines to display
-        (setq ivy-height 10))
+#+begin_src emacs-lisp
+  (use-package ivy
+    :diminish (ivy-mode . "")
+    :demand t
+    :config
+    (ivy-mode 1)
+    ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+    (setq ivy-use-virtual-buffers t)
+    ;; number of result lines to display
+    (setq ivy-height 10))
 
-    #+end_src
+#+end_src
 ** counsel
-    #+begin_src emacs-lisp
-      (use-package counsel
-        :diminish counsel-mode
-        :bind
-        (([remap menu-bar-open] . counsel-tmm)
-         ([remap insert-char] . counsel-unicode-char)
-         :map mode-specific-map
-         :prefix-map counsel-prefix-map
-         :prefix "c"
-         ("a" . counsel-apropos)
-         ("b" . counsel-bookmark)
-         ("B" . counsel-bookmarked-directory)
-         ("c" . counsel-org-capture)
-         ("d" . counsel-dired-jump)
-         ("f" . counsel-file-jump)
-         ("F" . counsel-faces)
-         ("g" . counsel-org-goto)
-         ("h" . counsel-command-history)
-         ("H" . counsel-minibuffer-history)
-         ("i" . counsel-imenu)
-         ("j" . counsel-find-symbol)
-         ("l" . counsel-locate)
-         ("L" . counsel-find-library)
-         ("m" . counsel-mark-ring)
-         ("o" . counsel-outline)
-         ("O" . counsel-find-file-extern)
-         ("p" . counsel-package)
-         ("r" . counsel-recentf)
-         ("s g" . counsel-grep)
-         ("s r" . counsel-rg)
-         ("s s" . counsel-ag)
-         ("t" . counsel-org-tag)
-         ("v" . counsel-set-variable)
-         ("w" . counsel-wmctrl)
-         :map help-map
-         ("F" . counsel-describe-face))
-        :init
-        (counsel-mode))
+#+begin_src emacs-lisp
+  (use-package counsel
+    :diminish counsel-mode
+    :bind
+    (([remap menu-bar-open] . counsel-tmm)
+     ([remap insert-char] . counsel-unicode-char)
+     :map mode-specific-map
+     :prefix-map counsel-prefix-map
+     :prefix "c"
+     ("a" . counsel-apropos)
+     ("b" . counsel-bookmark)
+     ("B" . counsel-bookmarked-directory)
+     ("c" . counsel-org-capture)
+     ("d" . counsel-dired-jump)
+     ("f" . counsel-file-jump)
+     ("F" . counsel-faces)
+     ("g" . counsel-org-goto)
+     ("h" . counsel-command-history)
+     ("H" . counsel-minibuffer-history)
+     ("i" . counsel-imenu)
+     ("j" . counsel-find-symbol)
+     ("l" . counsel-locate)
+     ("L" . counsel-find-library)
+     ("m" . counsel-mark-ring)
+     ("o" . counsel-outline)
+     ("O" . counsel-find-file-extern)
+     ("p" . counsel-package)
+     ("r" . counsel-recentf)
+     ("s g" . counsel-grep)
+     ("s r" . counsel-rg)
+     ("s s" . counsel-ag)
+     ("t" . counsel-org-tag)
+     ("v" . counsel-set-variable)
+     ("w" . counsel-wmctrl)
+     :map help-map
+     ("F" . counsel-describe-face))
+    :init
+    (counsel-mode))
 
-      (use-package counsel-projectile
-        :after counsel projectile
-        :config
-        (counsel-projectile-mode))
-    #+end_src
+  (use-package counsel-projectile
+    :after counsel projectile
+    :config
+    (counsel-projectile-mode))
+#+end_src
 ** swiper
-    #+begin_src emacs-lisp
-      (use-package swiper
-        :bind
-        (([remap isearch-forward] . swiper-isearch)
-        ([remap isearch-backward] . swiper-isearch-backward)
-        )
-        :commands (swiper-isearch swiper-isearch-backward swiper swiper-all))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package swiper
+    :bind
+    (([remap isearch-forward] . swiper-isearch)
+     ([remap isearch-backward] . swiper-isearch-backward)
+     )
+    :commands (swiper-isearch swiper-isearch-backward swiper swiper-all))
+#+end_src
 ** ag
-    #+begin_src emacs-lisp
-      (use-package ag
-        :ensure-system-package (ag . silversearcher-ag)
-        :custom
-        (ag-highlight-search t "Highlight the current search term."))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package ag
+    :ensure-system-package (ag . silversearcher-ag)
+    :custom
+    (ag-highlight-search t "Highlight the current search term."))
+#+end_src
 ** winner
-    #+begin_src emacs-lisp
-      (use-package winner
-        :diminish winner-mode
-        :init
-        (winner-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package winner
+    :diminish winner-mode
+    :init
+    (winner-mode))
+#+end_src
 ** iBuffer
-    #+begin_src emacs-lisp
-      (use-package ibuffer
-        :bind ("C-x C-b" . ibuffer))
+#+begin_src emacs-lisp
+  (use-package ibuffer
+    :bind ("C-x C-b" . ibuffer))
 
-      (use-package ibuffer-vc
-        :init
-        :config
-        (define-ibuffer-column icon
-          (:name "Icon" :inline t)
-          (all-the-icons-icon-for-mode 'major-mode))
-        :custom
-        (ibuffer-formats
-        '((mark modified read-only vc-status-mini " "
-                (name 18 18 :left :elide)
-                " "
-                (size 9 -1 :right)
-                " "
-                (mode 16 16 :left :elide)
-                " "
-                filename-and-process)) "include vc status info")
-        :hook
-        (ibuffer . (lambda ()
-                     (ibuffer-vc-set-filter-groups-by-vc-root)
-                     (unless (eq ibuffer-sorting-mode 'alphabetic)
-                       (ibuffer-do-sort-by-alphabetic)))))
-    #+end_src
+  (use-package ibuffer-vc
+    :init
+    :config
+    (define-ibuffer-column icon
+      (:name "Icon" :inline t)
+      (all-the-icons-icon-for-mode 'major-mode))
+    :custom
+    (ibuffer-formats
+     '((mark modified read-only vc-status-mini " "
+             (name 18 18 :left :elide)
+             " "
+             (size 9 -1 :right)
+             " "
+             (mode 16 16 :left :elide)
+             " "
+             filename-and-process)) "include vc status info")
+    :hook
+    (ibuffer . (lambda ()
+                 (ibuffer-vc-set-filter-groups-by-vc-root)
+                 (unless (eq ibuffer-sorting-mode 'alphabetic)
+                   (ibuffer-do-sort-by-alphabetic)))))
+#+end_src
 ** Reverse.im
-    #+begin_src emacs-lisp
-      (use-package reverse-im
-        :config
-        (add-to-list 'reverse-im-modifiers 'super)
-        (add-to-list 'reverse-im-input-methods "russian-computer")
-        (reverse-im-mode t))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package reverse-im
+    :config
+    (add-to-list 'reverse-im-modifiers 'super)
+    (add-to-list 'reverse-im-input-methods "russian-computer")
+    (reverse-im-mode t))
+#+end_src
 ** Tramp
-    #+begin_src emacs-lisp
-      ;; (use-package docker-tramp)
-      (use-package counsel-tramp)
-    #+end_src
+#+begin_src emacs-lisp
+  ;; (use-package docker-tramp)
+  (use-package counsel-tramp)
+#+end_src
 ** direnv
-    #+begin_src emacs-lisp
-    (use-package direnv
-        :config (direnv-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package direnv
+    :config (direnv-mode))
+#+end_src
 ** epa
-    #+begin_src emacs-lisp
-      (use-package epa
-        :init  (setq epg-gpg-home-directory "~/.gnupg/")
-        )
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package epa
+    :init  (setq epg-gpg-home-directory "~/.gnupg/")
+    )
+#+end_src
 ** pdf-tools
 #+begin_src elisp
   (use-package pdf-tools
@@ -338,152 +338,152 @@ This is my current emacs configuration
     (pdf-tools-install :no-query))
 #+end_src
 * Org
-    #+begin_src emacs-lisp
-      (use-package org
-        :custom
-        (org-default-notes-file "~/org/gtd/inbox.org") ; default refile file
-        (org-agenda-span 'day)             ; start in day view default
-        (org-agenda-files '("~/org/gtd/"))
-        (org-refile-targets '((nil :maxlevel . 3) (org-agenda-files :maxlevel . 3))) ; where refile to
-        (org-refile-use-outline-path 'file)
-        (org-outline-path-complete-in-steps nil)
-        (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)" "PHONE")))
-        (org-use-fast-todo-selection t)
-        (org-capture-templates
-         (quote (("t" "todo" entry (file "~/org/gtd/inbox.org")
-                  "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
-                 ("n" "note" entry (file "~/org/gtd/inbox.org")
-                  "* %? :NOTE:\n%U\n%a\n%i" :clock-in t :clock-resume t)
-                 ("r" "respond" entry (file "~/org/gtd/inbox.org")
-                  "* TODO Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-                 ("w" "From web" entry (file+headline "~/org/gtd/inbox.org" "From web")
-                  "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
-                 ("W" "Link" entry (file+headline "~/org/gtd/inbox.org" "Links")
-                  "* %?\n%U\n%:annotation")
-                 ("c" "Current clocked" entry (clock)
-                  "* %:annotation\n\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n" :immediate-finish t)
-                 ("C" "Current clocked link" entry (clock)
-                  "* %:annotation\n" :immediate-finish t)
-                 ("p" "Phone call" entry (file "~/org/gtd/inbox.org")
-                  "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
+#+begin_src emacs-lisp
+  (use-package org
+    :custom
+    (org-default-notes-file "~/org/gtd/inbox.org") ; default refile file
+    (org-agenda-span 'day)             ; start in day view default
+    (org-agenda-files '("~/org/gtd/"))
+    (org-refile-targets '((nil :maxlevel . 3) (org-agenda-files :maxlevel . 3))) ; where refile to
+    (org-refile-use-outline-path 'file)
+    (org-outline-path-complete-in-steps nil)
+    (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)" "PHONE")))
+    (org-use-fast-todo-selection t)
+    (org-capture-templates
+     (quote (("t" "todo" entry (file "~/org/gtd/inbox.org")
+              "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
+             ("n" "note" entry (file "~/org/gtd/inbox.org")
+              "* %? :NOTE:\n%U\n%a\n%i" :clock-in t :clock-resume t)
+             ("r" "respond" entry (file "~/org/gtd/inbox.org")
+              "* TODO Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+             ("w" "From web" entry (file+headline "~/org/gtd/inbox.org" "From web")
+              "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
+             ("W" "Link" entry (file+headline "~/org/gtd/inbox.org" "Links")
+              "* %?\n%U\n%:annotation")
+             ("c" "Current clocked" entry (clock)
+              "* %:annotation\n\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n" :immediate-finish t)
+             ("C" "Current clocked link" entry (clock)
+              "* %:annotation\n" :immediate-finish t)
+             ("p" "Phone call" entry (file "~/org/gtd/inbox.org")
+              "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
 
-        (org-clock-history-length 23) ;; Show lot of clocking history so it's easy to pick items off the C-F11 list
-        (org-clock-in-resume t) ;; Resume clocking task on clock-in if the clock is open
-        (org-clock-into-drawer t) ;; Save clock data and state changes and notes in the LOGBOOK drawer
-        (org-clock-out-remove-zero-time-clocks t) ;; removes clocked tasks with 0:00 duration
-        (org-clock-out-when-done t) ;; Clock out when moving task to a done state
-        (org-clock-persist t) ;; Save the running clock and all clock history when exiting Emacs, load it on startup
-        (org-clock-persist-query-resume nil) ;; Do not prompt to resume an active clock
-        (org-clock-auto-clock-resolution (quote when-no-clock-is-running)) ;; Enable auto clock resolution for finding open clocks
-        (org-clock-report-include-clocking-task t) ;; Include current clocking task in clock reports
-        (org-startup-indented t) ;; Startup indented
-        (org-log-done t) ;; Log when I've done tasks
-        (org-confirm-babel-evaluate nil) ;; I've tired to say yest 100500 times a day
-        (org-fontify-done-headline t)
-        (org-fontify-whole-heading-line t)
-        (org-fontify-quote-and-verse-blocks t)
-        (org-image-actual-width '(700)) ;; Set image width to 700
-        (org-src-tab-acts-natively t) ;; indent in source blocks
-        :bind
-        ("<f12>" . 'org-agenda)
-        ("<f8>" . 'org-cycle-agenda-files)
-        ("<f9> m" . 'mu4e)
-        ("<f9> g" . 'gnus)
-        ("<f9> c" . 'counsel-org-capture)
-        ("<f11>" . 'org-clock-goto)
-        ("C-<f11>" . 'org-clock-in)
-        :config
-        (org-clock-persistence-insinuate) ;; Resume clocking task when emacs is restarted
-        (add-to-list 'org-modules 'ob-redis)
-        (add-to-list 'org-modules 'org-habit)
-        (add-to-list 'org-modules 'org-protocol)
+    (org-clock-history-length 23) ;; Show lot of clocking history so it's easy to pick items off the C-F11 list
+    (org-clock-in-resume t) ;; Resume clocking task on clock-in if the clock is open
+    (org-clock-into-drawer t) ;; Save clock data and state changes and notes in the LOGBOOK drawer
+    (org-clock-out-remove-zero-time-clocks t) ;; removes clocked tasks with 0:00 duration
+    (org-clock-out-when-done t) ;; Clock out when moving task to a done state
+    (org-clock-persist t) ;; Save the running clock and all clock history when exiting Emacs, load it on startup
+    (org-clock-persist-query-resume nil) ;; Do not prompt to resume an active clock
+    (org-clock-auto-clock-resolution (quote when-no-clock-is-running)) ;; Enable auto clock resolution for finding open clocks
+    (org-clock-report-include-clocking-task t) ;; Include current clocking task in clock reports
+    (org-startup-indented t) ;; Startup indented
+    (org-log-done t) ;; Log when I've done tasks
+    (org-confirm-babel-evaluate nil) ;; I've tired to say yest 100500 times a day
+    (org-fontify-done-headline t)
+    (org-fontify-whole-heading-line t)
+    (org-fontify-quote-and-verse-blocks t)
+    (org-image-actual-width '(700)) ;; Set image width to 700
+    (org-src-tab-acts-natively t) ;; indent in source blocks
+    :bind
+    ("<f12>" . 'org-agenda)
+    ("<f8>" . 'org-cycle-agenda-files)
+    ("<f9> m" . 'mu4e)
+    ("<f9> g" . 'gnus)
+    ("<f9> c" . 'counsel-org-capture)
+    ("<f11>" . 'org-clock-goto)
+    ("C-<f11>" . 'org-clock-in)
+    :config
+    (org-clock-persistence-insinuate) ;; Resume clocking task when emacs is restarted
+    (add-to-list 'org-modules 'ob-redis)
+    (add-to-list 'org-modules 'org-habit)
+    (add-to-list 'org-modules 'org-protocol)
 
-        ;; (require 'org-tempo)
-        (org-babel-do-load-languages
-         'org-babel-load-languages
-         '(
-           (sql . t)
-           (python . t)
-           (ditaa . t)
-           (plantuml . t)
-           ))
-        (setq org-agenda-custom-commands
-              '(("N" "NEXT" todo "TODO"
-                 ((org-agenda-overriding-header "Do it now")
-                  (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+    ;; (require 'org-tempo)
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '(
+       (sql . t)
+       (python . t)
+       (ditaa . t)
+       (plantuml . t)
+       ))
+    (setq org-agenda-custom-commands
+          '(("N" "NEXT" todo "TODO"
+             ((org-agenda-overriding-header "Do it now")
+              (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
 
-        (defun my-org-agenda-skip-all-siblings-but-first ()
-          "Skip all but the first non-done entry."
-          (let (should-skip-entry)
-            (unless (org-current-is-todo)
-              (setq should-skip-entry t))
-            (save-excursion
-              (while (and (not should-skip-entry) (org-goto-sibling t))
-                (when (org-current-is-todo)
-                  (setq should-skip-entry t))))
-            (when should-skip-entry
-              (or (outline-next-heading)
-                  (goto-char (point-max))))))
+    (defun my-org-agenda-skip-all-siblings-but-first ()
+      "Skip all but the first non-done entry."
+      (let (should-skip-entry)
+        (unless (org-current-is-todo)
+          (setq should-skip-entry t))
+        (save-excursion
+          (while (and (not should-skip-entry) (org-goto-sibling t))
+            (when (org-current-is-todo)
+              (setq should-skip-entry t))))
+        (when should-skip-entry
+          (or (outline-next-heading)
+              (goto-char (point-max))))))
 
-        (defun org-current-is-todo ()
-          (string= "TODO" (org-get-todo-state)))
+    (defun org-current-is-todo ()
+      (string= "TODO" (org-get-todo-state)))
 
-        )
+    )
 
 
 #+end_src
 ** toc-org
-    This is the package that automatically generates an up to date
-    table of contents for us.
-    #+begin_src emacs-lisp
-    (use-package toc-org
-        :after org
-        :init (add-hook 'org-mode-hook #'toc-org-enable))
-    #+end_src
+This is the package that automatically generates an up to date
+table of contents for us.
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :after org
+    :init (add-hook 'org-mode-hook #'toc-org-enable))
+#+end_src
 ** org-bullets
-    #+begin_src emacs-lisp
-    (use-package org-bullets
-      :hook (org-mode . org-bullets-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :hook (org-mode . org-bullets-mode))
+#+end_src
 ** calendar
-    #+begin_src emacs-lisp
-      (use-package calendar
-        :ensure nil
-        :config
-        (setq calendar-week-start-day 1))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package calendar
+    :ensure nil
+    :config
+    (setq calendar-week-start-day 1))
+#+end_src
 ** plantuml
-    #+begin_src emacs-lisp
-      (setq org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
+#+begin_src emacs-lisp
+  (setq org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
 
-      (use-package plantuml-mode
-        :custom
-        (org-plantuml-jar-path "~/.emacs.d/plantuml.jar")
-        (org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
-        :mode "\\.plantuml\\'")
-    #+end_src
+  (use-package plantuml-mode
+    :custom
+    (org-plantuml-jar-path "~/.emacs.d/plantuml.jar")
+    (org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
+    :mode "\\.plantuml\\'")
+#+end_src
 ** org-roam
 [[file:../../org/org-roam/20210603151328-org_roam.org][org-roam]] 
 #+begin_src emacs-lisp
   (use-package org-roam
-      :ensure t
-      :custom
-      (org-roam-v2-ack t)
-      (org-roam-directory "~/org/org-roam/")
-      (org-roam-dailies-directory "~/org/org-roam/daily/")
-  
-      :bind (("C-c n l" . org-roam-buffer-toggle)
-             ("C-c n f" . org-roam-node-find)
-             ("C-c n g" . org-roam-graph)
-             ("C-c n i" . org-roam-node-insert)
-             ("C-c n c" . org-roam-capture)
-             ;; Dailies
-             ("C-c n j" . org-roam-dailies-capture-today))
-      :config
-      (org-roam-setup)
-      ;; If using org-roam-protocol
-      ;; (require 'org-roam-protocol)
-      )
+    :ensure t
+    :custom
+    (org-roam-v2-ack t)
+    (org-roam-directory "~/org/org-roam/")
+    (org-roam-dailies-directory "~/org/org-roam/daily/")
+
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+           ("C-c n f" . org-roam-node-find)
+           ("C-c n g" . org-roam-graph)
+           ("C-c n i" . org-roam-node-insert)
+           ("C-c n c" . org-roam-capture)
+           ;; Dailies
+           ("C-c n j" . org-roam-dailies-capture-today))
+    :config
+    (org-roam-setup)
+    ;; If using org-roam-protocol
+    ;; (require 'org-roam-protocol)
+    )
   ;; (use-package org-roam
   ;;       :ensure t
   ;;       :hook
@@ -636,7 +636,7 @@ This is my current emacs configuration
                     :key ?d
                     :query "flag:flagged"))
     )
-   #+end_src
+#+end_src
 * Telega
 #+begin_src emacs-lisp
   (use-package telega
@@ -652,167 +652,167 @@ This is my current emacs configuration
 #+end_src
 * Editing stuff
 ** copy as format
-    #+begin_src emacs-lisp
-      (use-package copy-as-format
-        :custom
-        (copy-as-format-default "slack")
-        :bind
-        (:map mode-specific-map
-              :prefix-map copy-as-format-prefix-map
-              :prefix "f"
-              ("f" . copy-as-format)
-              ("a" . copy-as-format-asciidoc)
-              ("b" . copy-as-format-bitbucket)
-              ("d" . copy-as-format-disqus)
-              ("g" . copy-as-format-github)
-              ("l" . copy-as-format-gitlab)
-              ("c" . copy-as-format-hipchat)
-              ("h" . copy-as-format-html)
-              ("j" . copy-as-format-jira)
-              ("m" . copy-as-format-markdown)
-              ("w" . copy-as-format-mediawiki)
-              ("o" . copy-as-format-org-mode)
-              ("p" . copy-as-format-pod)
-              ("r" . copy-as-format-rst)
-              ("s" . copy-as-format-slack)))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package copy-as-format
+    :custom
+    (copy-as-format-default "slack")
+    :bind
+    (:map mode-specific-map
+          :prefix-map copy-as-format-prefix-map
+          :prefix "f"
+          ("f" . copy-as-format)
+          ("a" . copy-as-format-asciidoc)
+          ("b" . copy-as-format-bitbucket)
+          ("d" . copy-as-format-disqus)
+          ("g" . copy-as-format-github)
+          ("l" . copy-as-format-gitlab)
+          ("c" . copy-as-format-hipchat)
+          ("h" . copy-as-format-html)
+          ("j" . copy-as-format-jira)
+          ("m" . copy-as-format-markdown)
+          ("w" . copy-as-format-mediawiki)
+          ("o" . copy-as-format-org-mode)
+          ("p" . copy-as-format-pod)
+          ("r" . copy-as-format-rst)
+          ("s" . copy-as-format-slack)))
+#+end_src
 ** Whole line or region
-    #+begin_src emacs-lisp
-      (use-package whole-line-or-region
-        :diminish whole-line-or-region-local-mode
-        :config (whole-line-or-region-global-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package whole-line-or-region
+    :diminish whole-line-or-region-local-mode
+    :config (whole-line-or-region-global-mode))
+#+end_src
 ** multiple-cursors
-    #+begin_src emacs-lisp
-      (use-package multiple-cursors
-        :config
-        (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-        (global-set-key (kbd "C-S-w C-S-w") 'mc/mark-all-dwim)
-        (global-set-key (kbd "C-S-e C-S-e") 'mc/edit-ends-of-lines)
-        (global-set-key (kbd "C->") 'mc/mark-next-like-this)
-        (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-        (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package multiple-cursors
+    :config
+    (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (global-set-key (kbd "C-S-w C-S-w") 'mc/mark-all-dwim)
+    (global-set-key (kbd "C-S-e C-S-e") 'mc/edit-ends-of-lines)
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+#+end_src
 ** smartparens
-    #+begin_src emacs-lisp
-      (use-package smartparens
-        :demand t
-        :diminish smartparens-mode
-        :config
-        (require 'smartparens-config)
-        (smartparens-global-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :demand t
+    :diminish smartparens-mode
+    :config
+    (require 'smartparens-config)
+    (smartparens-global-mode))
+#+end_src
 ** LGBT modes
-    #+begin_src emacs-lisp
-      (use-package rainbow-delimiters
-        :commands (rainbow-delimiters-mode)
-        :hook (prog-mode . rainbow-delimiters-mode))
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :commands (rainbow-delimiters-mode)
+    :hook (prog-mode . rainbow-delimiters-mode))
 
-      (use-package rainbow-identifiers
-        :hook (prog-mode . rainbow-identifiers-mode))
+  (use-package rainbow-identifiers
+    :hook (prog-mode . rainbow-identifiers-mode))
 
-      (use-package rainbow-mode
-        :diminish rainbow-mode
-        :hook prog-mode)
-    #+end_src
+  (use-package rainbow-mode
+    :diminish rainbow-mode
+    :hook prog-mode)
+#+end_src
 ** marks to navigate
-    Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][article]]
-    #+begin_src emacs-lisp
-      (defun push-mark-no-activate ()
-        "Pushes `point' to `mark-ring' and does not activate the region
-      Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-        (interactive)
-        (push-mark (point) t nil)
-        (message "Pushed mark to ring"))
-      (global-set-key (kbd "C-`") 'push-mark-no-activate)
+Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][article]]
+#+begin_src emacs-lisp
+  (defun push-mark-no-activate ()
+    "Pushes `point' to `mark-ring' and does not activate the region
+  Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+    (interactive)
+    (push-mark (point) t nil)
+    (message "Pushed mark to ring"))
+  (global-set-key (kbd "C-`") 'push-mark-no-activate)
 
-      (defun jump-to-mark ()
-        "Jumps to the local mark, respecting the `mark-ring' order.
-      This is the same as using \\[set-mark-command] with the prefix argument."
-        (interactive)
-        (set-mark-command 1))
-      (global-set-key (kbd "M-`") 'counsel-mark-ring)
-    #+end_src
+  (defun jump-to-mark ()
+    "Jumps to the local mark, respecting the `mark-ring' order.
+  This is the same as using \\[set-mark-command] with the prefix argument."
+    (interactive)
+    (set-mark-command 1))
+  (global-set-key (kbd "M-`") 'counsel-mark-ring)
+#+end_src
 ** smart-comment
-    #+begin_src emacs-lisp
-      (use-package smart-comment
-        :bind ("M-;" . smart-comment))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package smart-comment
+    :bind ("M-;" . smart-comment))
+#+end_src
 ** poporg
 #+begin_src emacs-lisp
   (use-package poporg
-        :bind (("C-c C-/" . poporg-dwim)))
-  
+    :bind (("C-c C-/" . poporg-dwim)))
+
 #+end_src
+** avy
 * Projectile
-   #+begin_src emacs-lisp
-     (use-package projectile
-       :diminish projectile-mode
-       :demand t
-       :config
-       (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-       (projectile-mode +1)
-       :custom
-       (projectile-completion-system 'ivy))
-   #+end_src
+#+begin_src emacs-lisp
+  (use-package projectile
+    :diminish projectile-mode
+    :demand t
+    :config
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (projectile-mode +1)
+    :custom
+    (projectile-completion-system 'ivy))
+#+end_src
 * Magit
-    #+begin_src emacs-lisp
-      (use-package magit
-        :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all)
-        :bind (("C-x g" . magit-status)))
+#+begin_src emacs-lisp
+  (use-package magit
+    :commands (magit-status magit-blame-addition magit-log-buffer-file magit-log-all)
+    :bind (("C-x g" . magit-status)))
 
-      (use-package gitignore-mode
-        :mode "/\\.gitignore$")
+  (use-package gitignore-mode
+    :mode "/\\.gitignore$")
 
-      (use-package diff-hl
-        ;; Integrate with Magit and highlight changed files in the fringe of dired
-        :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
-        :config (global-diff-hl-mode 1))
-    #+end_src
+  (use-package diff-hl
+    ;; Integrate with Magit and highlight changed files in the fringe of dired
+    :hook ((magit-post-refresh . diff-hl-magit-post-refresh))
+    :config (global-diff-hl-mode 1))
+#+end_src
 
 * programming
 ** company
-    #+begin_src emacs-lisp
-      (use-package company
-        :diminish company-mode
-        :custom
-        (company-tooltip-limit 10)
-        (company-idle-delay 0.2)
-        (company-echo-delay 0.1)
-        (company-dabbrev-ignore-case nil)
-        (company-dabbrev-downcase nil)
-        ;; (company-minimum-prefix-length 3)
-        ;; (company-require-match nil)
-        (company-selection-wrap-around t)
-        (company-tooltip-align-annotations t)
-        :config
-        (global-company-mode))
+#+begin_src emacs-lisp
+  (use-package company
+    :diminish company-mode
+    :custom
+    (company-tooltip-limit 10)
+    (company-idle-delay 0.2)
+    (company-echo-delay 0.1)
+    (company-dabbrev-ignore-case nil)
+    (company-dabbrev-downcase nil)
+    ;; (company-minimum-prefix-length 3)
+    ;; (company-require-match nil)
+    (company-selection-wrap-around t)
+    (company-tooltip-align-annotations t)
+    :config
+    (global-company-mode))
 
-      (use-package company-box
-        :diminish company-box-mode
-        :hook (company-mode . company-box-mode))
-    #+end_src
+  (use-package company-box
+    :diminish company-box-mode
+    :hook (company-mode . company-box-mode))
+#+end_src
 
 ** nix-mode
-    #+begin_src emacs-lisp
-    (use-package nix-mode)
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package nix-mode)
+#+end_src
 
 ** flyspell
-    #+begin_src emacs-lisp
-      (use-package flyspell
-        :defer t
-        :diminish flyspell-mode
-        :init
-        (progn (add-hook 'prog-mode-hook 'flyspell-mode)))
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :defer t
+    :diminish flyspell-mode
+    :hook (prog-mode-hook . flyspell-mode))
     #+end_src
 
 ** flycheck
-    #+begin_src emacs-lisp
-      (use-package flycheck
-        :diminish flycheck-mode
-        :config (global-flycheck-mode))
-    #+end_src
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :diminish flycheck-mode
+    :config (global-flycheck-mode))
+#+end_src
 ** yasnippet
 
 #+begin_src emacs-lisp
@@ -823,46 +823,50 @@ This is my current emacs configuration
   (use-package yasnippet-snippets)
 #+end_src
 * lsp
-  #+begin_src emacs-lisp
-    (use-package lsp-mode
-      :custom
-      (lsp-keymap-prefix "C-c l")
-      (gc-cons-threshold 100000000)
-      (read-process-output-max (* 3 1024 1024))
-      (lsp-idle-delay 0.500)
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :custom
+    (lsp-keymap-prefix "C-c l")
+    (gc-cons-threshold 100000000)
+    (read-process-output-max (* 3 1024 1024))
+    (lsp-idle-delay 0.500)
 
-      :hook ((python-mode . lsp)
-             (vue-mode . lsp)
-             (nix-mode . lsp)
-             (go-mode . lsp)
-             (typescript-mode . lsp)
-             (js-mode . lsp))
-      :commands lsp)
+    :hook ((python-mode . lsp)
+           (vue-mode . lsp)
+           (nix-mode . lsp)
+           (go-mode . lsp)
+           (typescript-mode . lsp)
+           (js-mode . lsp))
+    :commands lsp)
 
-    (use-package lsp-ui :commands lsp-ui-mode)
-  #+end_src
+  (use-package lsp-ui :commands lsp-ui-mode)
+#+end_src
 ** python
 #+begin_src emacs-lisp
-   (use-package  python
-     :mode ("\\.py'" . python-mode)
-     :config (setq-default py-separator-char 47)   ;; Use spaces instead tab
-     (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
-     (setq python-shell-completion-native-enable nil) ;; solve warning in repl
-     )
-  
-   (use-package py-autopep8
-     :ensure t
-     :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
-  
+  (use-package  python
+    :mode ("\\.py'" . python-mode)
+    :hook ((python-mode . lsp-mode)
+           (before-save-hook . lsp-format-buffer))
+    :config
+    (setq-default py-separator-char 47)   ;; Use spaces instead tab
+    (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
+    (setq python-shell-completion-native-enable nil) ;; solve warning in repl
+    )
+
+  ;; (use-package py-autopep8
+  ;;    :ensure t
+  ;;    :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+
+  ;; ;;
   ;; (use-package elpy
   ;;   :ensure t
   ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
   ;;                  (add-hook 'elpy-mode-hook (lambda () (highlight-indentation-mode -1)))))
-  
-  (use-package py-isort
-     :init
-     (add-hook 'before-save-hook #'py-isort-before-save))
-#+end_src
+
+  ;; (use-package py-isort
+  ;;    :init
+  ;;    (add-hook 'before-save-hook #'py-isort-before-save))
+    #+end_src
 ** js
 #+begin_src emacs-lisp
   (use-package vue-mode
@@ -888,15 +892,15 @@ This is my current emacs configuration
 #+end_src
 ** GO
 #+begin_src emacs-lisp
-(use-package go-mode
+  (use-package go-mode
     :after lsp-mode
     :hook ((before-save . lsp-format-buffer)
-            (before-save . lsp-organize-imports)))
+           (before-save . lsp-organize-imports)))
 #+end_src
 ** Protobuf
 #+begin_src emacs-lisp
-(use-package protobuf-mode
-  :mode ("\\.proto\\'" . protobuf-mode))
+  (use-package protobuf-mode
+    :mode ("\\.proto\\'" . protobuf-mode))
 #+end_src
 
 ** TODO elixir
@@ -905,11 +909,11 @@ This is my current emacs configuration
 [2020-10-10 Sat 13:24]
 
 (use-package lsp-python-ms
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-python-ms)
-                         (lsp)))
-  :init
-  (setq lsp-python-ms-executable (executable-find "python-language-server")))
+:hook (python-mode . (lambda ()
+(require 'lsp-python-ms)
+(lsp)))
+:init
+(setq lsp-python-ms-executable (executable-find "python-language-server")))
 * my functions
 #+begin_src emacs-lisp
   (defun choose-file (dir)
