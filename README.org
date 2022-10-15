@@ -526,70 +526,116 @@ This is my current emacs configuration
   ;;          :unnarrowed t :jump-to-captured t)
   ;;         )))
 #+end_src
+** org-mime
+#+begin_src emacs-lisp
+  (use-package org-mime
+    :after org
+    :bind ((:map message-mode-map
+                 ("C-c M-o" . org-mime-htmlize))
+           (:map org-mode-map
+                 ("C-c M-o" . org-mime-org-buffer-htmlize)))
+    )
+#+end_src
 * Email
-   #+begin_src emacs-lisp
-     (use-package mu4e
-       :ensure-system-package mu
-       :custom
-       (mail-user-agent 'mu4e-user-agent)
-       (mu4e-get-mail-command "mbsync -a")
-       (mu4e-maildir "~/Maildir")
-       ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
-       ;; Override in context switching for other type of mailboxes
-       (mu4e-sent-messages-behavior 'delete)
-       (message-kill-buffer-on-exit t)
-       ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
-       (mu4e-change-filenames-when-moving t)
-       ;; This helps when using a dark theme (shr)
-       (shr-color-visible-luminance-min 80)
-       ;; (mu4e-update-interval 1500)
-       (mu4e-use-fancy-chars t)
-       (mu4e-view-show-addresses t)
-       (mu4e-view-show-images t)
-       (mu4e-maildir-shortcuts nil)
-       (mu4e-view-prefer-html t)
-       (mu4e-view-show-images t)
-       (message-kill-buffer-on-exit t)
-       (mu4e-enable-mode-line t)
-       (mu4e-enable-notifications t)
-       (sendmail-program "msmtp")
-       (message-sendmail-f-is-evil t)
-       (message-sendmail-extra-arguments '("--read-envelope-from"))
-       (message-send-mail-function 'message-send-mail-with-sendmail)
-       (user-full-name "Nikita Mistyukov" )
-       (mu4e-context-policy 'pick-first)
-       (mu4e-contexts
-        `( ,(make-mu4e-context
-             :name "Gmail"
-             :enter-func (lambda () (mu4e-message "Entering gmail context"))
-             :leave-func (lambda () (mu4e-message "Leaving gmail context"))
-             :match-func (lambda (msg)
-                             (when msg
-                               (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
-             :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
-                      (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
-                      (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
-                      (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
-                      (smtpmail-smtp-server      . "smtp.gmail.com")
-                      (smtpmail-smtp-service     . 587)))
-           ,(make-mu4e-context
-             :name "Yandex"
-             :enter-func (lambda () (mu4e-message "Entering yandex context"))
-             :leave-func (lambda () (mu4e-message "Leaving yandex context"))
-             :match-func (lambda (msg)
-                             (when msg
-                               (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
-             :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
-                      (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
-                      (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
-                      (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
-                      (smtpmail-smtp-server      . "smtp.yandex.ru")
-                      (smtpmail-smtp-service     . 465)))
-           ))
-       :config
-       (add-to-list 'mu4e-view-actions
-                    '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-       )
+#+begin_src emacs-lisp
+  (use-package mu4e
+    :ensure-system-package mu
+    :custom
+    (mail-user-agent 'mu4e-user-agent)
+    (mu4e-get-mail-command "mbsync -a")
+    (mu4e-maildir "~/Maildir")
+    ;; Don't save message to Sent Messages, Gmail/IMAP takes care of this
+    ;; Override in context switching for other type of mailboxes
+    (mu4e-sent-messages-behavior 'delete)
+    ;; This fixes the error 'mbsync error: UID is x beyond highest assigned UID x'
+    (mu4e-change-filenames-when-moving t)
+    ;; This helps when using a dark theme (shr)
+    (shr-color-visible-luminance-min 80)
+    (mu4e-update-interval 1500)
+    (mu4e-headers-fields 
+     '((:human-date . 12)
+       (:flags . 6)
+       (:mailing-list . 10)
+       (:from . 22)
+       (:thread-subject))) ;; add thread-subject
+    ;; (mu4e-index-cleanup nil) ;; faster
+    ;; (mu4e-index-lazy-check t)
+    ;; index ??
+    (mu4e-maildir-shortcuts
+     '( (:maildir "/nekifirus-iconic/Inbox"  :key ?i)
+        (:maildir "/nekifirus/Inbox"  :key ?g)
+        (:maildir "/nekifirus-yandex/Inbox"  :key ?y)
+        (:maildir "/nekifirus-iconic/[Gmail]/All Mail"  :key ?I :hide t)
+        (:maildir "/nekifirus/[Gmail]/All Mail"  :key ?G :hide t)
+        ))
+    (mu4e-compose-dont-reply-to-self t)
+    (mu4e-use-fancy-chars t) 
+    (mu4e-view-show-addresses t)
+    (mu4e-view-show-images t)
+    (mu4e-view-prefer-html t)
+    (mu4e-view-show-images t)
+    (message-kill-buffer-on-exit t)
+    (mu4e-enable-mode-line t)
+    (mu4e-enable-notifications t)
+    (sendmail-program "msmtp")
+    (message-sendmail-f-is-evil t)
+    (message-sendmail-extra-arguments '("--read-envelope-from"))
+    (message-send-mail-function 'message-send-mail-with-sendmail)
+    (user-full-name "Nikita Mistyukov" )
+    (mu4e-context-policy 'pick-first)
+    (mu4e-contexts
+     `( ,(make-mu4e-context
+          :name "Iconic"
+          :enter-func (lambda () (mu4e-message "Entering iconic context"))
+          :leave-func (lambda () (mu4e-message "Leaving iconic context"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches msg :to "n.mistyukov@iconic.info")))
+          :vars '( ( user-mail-address	    . "n.mistyukov@iconic.info"  )
+                   (mu4e-sent-folder          . "/nekifirus-iconic/[Gmail]/Sent Mail")
+                   (mu4e-drafts-folder        . "/nekifirus-iconic/[Gmail]/Drafts")
+                   (mu4e-trash-folder         . "/nekifirus-iconic/[Gmail]/Trash")
+                   (smtpmail-smtp-server      . "smtp.gmail.com")
+                   (smtpmail-smtp-service     . 587)))
+        ,(make-mu4e-context
+          :name "Gmail"
+          :enter-func (lambda () (mu4e-message "Entering gmail context"))
+          :leave-func (lambda () (mu4e-message "Leaving gmail context"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches msg :to "nekifirus@gmail.com")))
+          :vars '( ( user-mail-address	    . "nekifirus@gmail.com"  )
+                   (mu4e-sent-folder          . "/nekifirus/[Gmail]/Sent Mail")
+                   (mu4e-drafts-folder        . "/nekifirus/[Gmail]/Drafts")
+                   (mu4e-trash-folder         . "/nekifirus/[Gmail]/Trash")
+                   (smtpmail-smtp-server      . "smtp.gmail.com")
+                   (smtpmail-smtp-service     . 587)))
+        ,(make-mu4e-context
+          :name "Yandex"
+          :enter-func (lambda () (mu4e-message "Entering yandex context"))
+          :leave-func (lambda () (mu4e-message "Leaving yandex context"))
+          :match-func (lambda (msg)
+                        (when msg
+                          (mu4e-message-contact-field-matches msg :to "nekifirus@yandex.ru")))
+          :vars '( ( user-mail-address	    . "nekifirus@yandex.ru"  )
+                   (mu4e-sent-folder          . "/nekifirus-yandex/Sent")
+                   (mu4e-drafts-folder        . "/nekifirus-yandex/Drafts")
+                   (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
+                   (smtpmail-smtp-server      . "smtp.yandex.ru")
+                   (smtpmail-smtp-service     . 465)))
+        ))
+    :config
+    (add-to-list 'mu4e-view-actions
+                 '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+    (add-to-list 'mu4e-bookmarks
+                 '( :name "Starred"
+                    :key ?s
+                    :query "flag:flagged"))
+    (add-to-list 'mu4e-bookmarks
+                 '( :name "Iconic development"
+                    :key ?d
+                    :query "flag:flagged"))
+    )
    #+end_src
 * Telega
 #+begin_src emacs-lisp
