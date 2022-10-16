@@ -551,7 +551,7 @@ table of contents for us.
     (mu4e-change-filenames-when-moving t)
     ;; This helps when using a dark theme (shr)
     (shr-color-visible-luminance-min 80)
-    (mu4e-update-interval 1500)
+    (mu4e-update-interval 6000)
     (mu4e-headers-fields 
      '((:human-date . 12)
        (:flags . 6)
@@ -568,6 +568,13 @@ table of contents for us.
         (:maildir "/nekifirus-iconic/[Gmail]/All Mail"  :key ?I :hide t)
         (:maildir "/nekifirus/[Gmail]/All Mail"  :key ?G :hide t)
         ))
+    (mu4e-bookmarks
+     '((:name "Iconic development" :key ?d :query "development@iconic.info")
+       (:name "Starred" :key ?s :query "flag:flagged")
+       (:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?u)
+       (:name "Today's messages" :query "date:today..now" :key ?t)
+       (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
+       ))
     (mu4e-compose-dont-reply-to-self t)
     (mu4e-use-fancy-chars t) 
     (mu4e-view-show-addresses t)
@@ -623,19 +630,7 @@ table of contents for us.
                    (mu4e-trash-folder         . "/nekifirus-yandex/Trash")
                    (smtpmail-smtp-server      . "smtp.yandex.ru")
                    (smtpmail-smtp-service     . 465)))
-        ))
-    :config
-    (add-to-list 'mu4e-view-actions
-                 '("ViewInBrowser" . mu4e-action-view-in-browser) t)
-    (add-to-list 'mu4e-bookmarks
-                 '( :name "Starred"
-                    :key ?s
-                    :query "flag:flagged"))
-    (add-to-list 'mu4e-bookmarks
-                 '( :name "Iconic development"
-                    :key ?d
-                    :query "development@iconic.info"))
-    )
+        )))
 #+end_src
 * Telega
 #+begin_src emacs-lisp
