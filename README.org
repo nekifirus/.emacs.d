@@ -923,5 +923,13 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
     (interactive)
     (insert (concat "[[" (choose-file "~/Pictures/Screenshots/") "]]\n\n"))
     (org-redisplay-inline-images))
+
+  (defun nm/restart-mu ()
+    "Sometimes mu is broken, because of gpg-key unlocked ttl"
+    (interactive)
+    (let ((buffer "*mu-reindex*"))
+      (shell-command "pkill -2 -u $UID mu" buffer buffer)
+      (shell-command "sleep 1" buffer buffer)
+      (shell-command "mu index" buffer buffer)))
 #+end_src
 
