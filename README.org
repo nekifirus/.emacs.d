@@ -359,7 +359,7 @@ This is my current emacs configuration
              ("w" "From web" entry (file+headline "~/org/gtd/inbox.org" "From web")
               "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
              ("W" "Link" entry (file+headline "~/org/gtd/inbox.org" "Links")
-              "* %?\n%U\n%:annotation")
+              "* %? %:annotation\n%U\n%:annotation")
              ("c" "Current clocked" entry (clock)
               "* %:annotation\n\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n" :immediate-finish t)
              ("C" "Current clocked link" entry (clock)
