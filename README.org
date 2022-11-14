@@ -455,8 +455,6 @@ table of contents for us.
 #+end_src
 ** plantuml
 #+begin_src emacs-lisp
-  (setq org-ditaa-jar-path "~/.emacs.d/ditaa.jar")
-
   (use-package plantuml-mode
     :custom
     (org-plantuml-jar-path "~/.emacs.d/plantuml.jar")
@@ -530,7 +528,7 @@ table of contents for us.
 ** org-mime
 #+begin_src emacs-lisp
   (use-package org-mime
-    :after org
+    :after (org mu4e)
     :bind ((:map message-mode-map
                  ("C-c M-o" . org-mime-htmlize))
            (:map org-mode-map
@@ -563,15 +561,12 @@ table of contents for us.
     ;; (mu4e-index-lazy-check t)
     ;; index ??
     (mu4e-maildir-shortcuts
-     '( (:maildir "/nekifirus-iconic/Inbox"  :key ?i)
-        (:maildir "/nekifirus/Inbox"  :key ?g)
+     '( (:maildir "/nekifirus/Inbox"  :key ?g)
         (:maildir "/nekifirus-yandex/Inbox"  :key ?y)
-        (:maildir "/nekifirus-iconic/[Gmail]/All Mail"  :key ?I :hide t)
         (:maildir "/nekifirus/[Gmail]/All Mail"  :key ?G :hide t)
         ))
     (mu4e-bookmarks
-     '((:name "Iconic development" :key ?d :query "development@iconic.info")
-       (:name "Starred" :key ?s :query "flag:flagged")
+     '((:name "Starred" :key ?s :query "flag:flagged")
        (:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?u)
        (:name "Today's messages" :query "date:today..now" :key ?t)
        (:name "Last 7 days" :query "date:7d..now" :hide-unread t :key ?w)
@@ -593,19 +588,6 @@ table of contents for us.
     (mu4e-context-policy 'pick-first)
     (mu4e-contexts
      `( ,(make-mu4e-context
-          :name "Iconic"
-          :enter-func (lambda () (mu4e-message "Entering iconic context"))
-          :leave-func (lambda () (mu4e-message "Leaving iconic context"))
-          :match-func (lambda (msg)
-                        (when msg
-                          (mu4e-message-contact-field-matches msg :to "n.mistyukov@iconic.info")))
-          :vars '( ( user-mail-address	    . "n.mistyukov@iconic.info"  )
-                   (mu4e-sent-folder          . "/nekifirus-iconic/[Gmail]/Sent Mail")
-                   (mu4e-drafts-folder        . "/nekifirus-iconic/[Gmail]/Drafts")
-                   (mu4e-trash-folder         . "/nekifirus-iconic/[Gmail]/Trash")
-                   (smtpmail-smtp-server      . "smtp.gmail.com")
-                   (smtpmail-smtp-service     . 587)))
-        ,(make-mu4e-context
           :name "Gmail"
           :enter-func (lambda () (mu4e-message "Entering gmail context"))
           :leave-func (lambda () (mu4e-message "Leaving gmail context"))
@@ -849,11 +831,11 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
     (setq python-shell-completion-native-enable nil) ;; solve warning in repl
     )
 
-  ;; (use-package py-autopep8
-  ;;    :ensure t
-  ;;    :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+  (use-package py-autopep8
+     :ensure t
+     :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
 
-  ;; ;;
+  ;;
   ;; (use-package elpy
   ;;   :ensure t
   ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
