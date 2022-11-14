@@ -384,6 +384,7 @@ This is my current emacs configuration
     (org-fontify-quote-and-verse-blocks t)
     (org-image-actual-width '(700)) ;; Set image width to 700
     (org-src-tab-acts-natively t) ;; indent in source blocks
+    (org-export-with-sub-superscripts nil) ;; don't export <sub> tags
     :bind
     ("<f12>" . 'org-agenda)
     ("<f8>" . 'org-cycle-agenda-files)
