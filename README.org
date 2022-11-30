@@ -894,6 +894,7 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
 :init
 (setq lsp-python-ms-executable (executable-find "python-language-server")))
 * my functions
+** org-insert-screenshot
 #+begin_src emacs-lisp
    (defun choose-file (dir)
      (let* ((files (->> (directory-files-and-attributes dir nil nil)
@@ -907,7 +908,10 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
      (interactive)
      (insert (concat "[[" (choose-file "~/Pictures/Screenshots/") "]]\n\n"))
      (org-redisplay-inline-images))
-
+  
+#+end_src
+** nm/mail-subtree
+#+begin_src emacs-lisp
    (defun nm/mail-subtree ()
      "Compose email with subtree heading as subject and whole subtree as html-body"
      (interactive)
@@ -924,9 +928,6 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
        (yank)
        (message-goto-to)))
 
-  (defun nm/remove-todo ()
-    (interactive)
-    (org-todo "DONE"))
 #+end_src
 * ledger
 #+begin_src emacs-lisp
