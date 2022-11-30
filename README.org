@@ -944,6 +944,7 @@ another.
     (save-excursion
       (org-cut-subtree)
       (org-roam-node-find t)
+      (end-of-buffer)
       (org-yank)))
     #+end_src
 
