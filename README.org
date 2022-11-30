@@ -929,6 +929,24 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
        (message-goto-to)))
 
 #+end_src
+** nm/refile-to-roam
+
+I've not found a good way to use standart org-refile for moving org
+subtrees to org-roam nodes. But I need it.
+
+What is refile? It gets subtree from one place and pastes it to
+another. 
+
+#+begin_src emacs-lisp
+  (defun nm/refile-to-roam ()
+    "Moves current org subtree to org-roam node"
+    (interactive)
+    (save-excursion
+      (org-cut-subtree)
+      (org-roam-node-find t)
+      (org-yank)))
+    #+end_src
+
 * ledger
 #+begin_src emacs-lisp
   (use-package ledger-mode
