@@ -1,15 +1,37 @@
-
 #+TITLE: Emacs Configuration
 #+Author: Nikita Mistyukov
 #+PROPERTY: header-args :tangle init.el
 #+STARTUP: indent
 
-This is my current emacs configuration
-* TODO Make link to old config
-* TODO Document this
+I started programming a lot in 2018. At March I started to feel delay
+between pressing keyboard buttons and seeing symbols at screen.
 
-* Base
-** use-package
+I switched my attention to old text editors and try Vim. I configured
+it for work but it was to hard to extend. And I try spacemacs. At
+summer this repository started. I felt that vanila Emacs is better.
+
+Year later I read [[https://www.masteringemacs.org/][Mastering Emacs]], switched of vim-bindings, and
+started to learn world of Emacs.
+
+This repo started from [[https://github.com/gilbertw1/emacs-literate-starter.git][this starter template]] and rewriten a lot of
+times. You can see old branches if you want to.
+
+This is classic Emacs literal configuration. I'm tangling this file
+after changes.
+
+I using this configuration with [[https://github.com/nekifirus/nixos][my nixos config]] and don't need to
+install packages default way.
+
+I add new packages to nixos config and configure it here. It can be
+strange a little, but it more reproducible. I'm updating packages
+versions when I really want to only.
+
+
+* Initial setup
+** Packages setup
+In this section package system initialized only for [[https://github.com/jwiegley/use-package][use-package macro]].
+Package archives disabled at all.
+
 #+begin_src emacs-lisp
   (require 'package)
 
@@ -35,20 +57,24 @@ This is my current emacs configuration
     (use-package-enable-imenu-support t))
   (use-package diminish)
 #+end_src
-** no-litering
+** [[https://github.com/emacscollective/no-littering][No-litering]]
+It helps to keep clean emacs config directory.
+
 #+begin_src emacs-lisp
   (use-package no-littering
     :ensure t
     :custom
     (no-littering-var-directory (expand-file-name "data/" user-emacs-directory)))
 #+end_src
-** no-custom
+** Custom
+I don't strong about this code. But I use it for a long. 
 #+begin_src emacs-lisp
   (use-package custom
     :custom
     (custom-safe-themes t))
 #+end_src
-** emacs package
+** Emacs
+This is configuration of emacs package itself.
 #+begin_src emacs-lisp
   (use-package emacs
     :init
@@ -99,15 +125,9 @@ This is my current emacs configuration
     (show-paren-mode t)
     )
 #+end_src
-** font-lock
-#+begin_src emacs-lisp
-  ;; (use-package font-lock
-  ;;   :custom-face
-  ;;   (font-lock-comment-face ((t (:inherit font-lock-comment-face :italic t))))
-  ;;   (font-lock-doc-face ((t (:inherit font-lock-doc-face :italic t))))
-  ;;   (font-lock-string-face ((t (:inherit font-lock-string-face :italic t)))))
-#+end_src
-** server
+** Emacs-server
+This enables emacs as server. It very useful.
+
 #+begin_src emacs-lisp
   (use-package server
     :config
@@ -117,9 +137,10 @@ This is my current emacs configuration
           (server-start)))
       (add-hook 'after-init-hook 'server-enable t)))
 #+end_src
-** time
+** Time
+Time settings. I think time in mode-line must be desabled at all. Will
+do it in next versions.
 #+begin_src emacs-lisp
-
   (use-package time
     :ensure nil
     :custom
@@ -130,32 +151,15 @@ This is my current emacs configuration
     (display-time-mode nil))
 #+end_src
 ** Themes
-*** Base16
+Last time I work a lot outside and like Leuven theme. In a dark tomb
+groovbox is the best.
 #+begin_src emacs-lisp
-  (use-package base16-theme
-    :config
-    (load-theme 'base16-classic-dark t)
-    ;; (load-theme 'base16-gruvbox-dark-hard t)
-    )
+  (use-package leuven-theme
+    :init (load-theme 'leuven t))
 #+end_src
-*** Modus
-#+begin_src emacs-lisp
-  ;; (use-package modus-vivendi-theme
-  ;;   :config
-  ;;   ;; (run-at-time "18:00" (* 60 60 24)
-  ;;   ;;              (lambda ()
-  ;;   ;;                (enable-theme 'modus-vivendi)))
-  ;;                  )
-  ;; (use-pa
-  ;;  ckage modus-operandi-theme
-  ;;     :config
-  ;;     ;; (run-at-time "11:00" (* 60 60 24)
-  ;;     ;;              (lambda ()
-  ;;     ;;                (enable-theme 'modus-operandi)))
-  ;; )
-
-#+end_src
-** mood-line
+* Useful packages
+** [[https://github.com/jessiehildebrandt/mood-line][Mood-line]]
+I'm using this package for a long. It's simple.
 #+begin_src emacs-lisp
   (use-package mood-line
     :custom
@@ -167,6 +171,7 @@ This is my current emacs configuration
 
 #+end_src
 ** All the icons
+All the icons packages. With font in system it shows icons somewhere.
 #+begin_src emacs-lisp
   (use-package all-the-icons)
   (use-package all-the-icons-dired
@@ -177,7 +182,10 @@ This is my current emacs configuration
     :after ivy projectile
     :config (all-the-icons-ivy-setup))
 #+end_src
-** which-key
+** [[https://github.com/justbur/emacs-which-key][Which-key]]
+I think this package must be enabled by default. Really useful. It
+helps to remember keychords.
+
 #+begin_src emacs-lisp
   (use-package which-key
     :diminish which-key-mode
@@ -189,7 +197,8 @@ This is my current emacs configuration
           which-key-min-display-lines 5)
     (which-key-mode))
 #+end_src
-** ivy
+** [[https://github.com/abo-abo/swiper][Ivy]]
+Completion frontend for Emacs. The best for me yet.
 #+begin_src emacs-lisp
   (use-package ivy
     :diminish (ivy-mode . "")
@@ -202,7 +211,8 @@ This is my current emacs configuration
     (setq ivy-height 10))
 
 #+end_src
-** counsel
+** [[https://elpa.gnu.org/packages/counsel.html][Counsel]]
+Various completion functions using Ivy
 #+begin_src emacs-lisp
   (use-package counsel
     :diminish counsel-mode
@@ -247,7 +257,8 @@ This is my current emacs configuration
     :config
     (counsel-projectile-mode))
 #+end_src
-** swiper
+** Swiper
+I replaced with it standart search-forward/backward
 #+begin_src emacs-lisp
   (use-package swiper
     :bind
@@ -257,6 +268,7 @@ This is my current emacs configuration
     :commands (swiper-isearch swiper-isearch-backward swiper swiper-all))
 #+end_src
 ** ag
+Fulltext search. I use it thousands time a day
 #+begin_src emacs-lisp
   (use-package ag
     :ensure-system-package (ag . silversearcher-ag)
@@ -264,6 +276,7 @@ This is my current emacs configuration
     (ag-highlight-search t "Highlight the current search term."))
 #+end_src
 ** winner
+Good mode. It allows to switch through windows history.
 #+begin_src emacs-lisp
   (use-package winner
     :diminish winner-mode
@@ -271,6 +284,7 @@ This is my current emacs configuration
     (winner-mode))
 #+end_src
 ** iBuffer
+Sometimes useful to clean list of thousands buffers)
 #+begin_src emacs-lisp
   (use-package ibuffer
     :bind ("C-x C-b" . ibuffer))
@@ -298,6 +312,7 @@ This is my current emacs configuration
                    (ibuffer-do-sort-by-alphabetic)))))
 #+end_src
 ** Reverse.im
+Not working now. But when I used two languages for writing it helps a lot.
 #+begin_src emacs-lisp
   (use-package reverse-im
     :config
@@ -305,23 +320,23 @@ This is my current emacs configuration
     (add-to-list 'reverse-im-input-methods "russian-computer")
     (reverse-im-mode t))
 #+end_src
-** Tramp
-#+begin_src emacs-lisp
-  ;; (use-package docker-tramp)
-  (use-package counsel-tramp)
-#+end_src
 ** direnv
+This is fantastic package. With nixos it allows to have specific
+environments and package versions for each project. I don't have
+globally installed python or node.
 #+begin_src emacs-lisp
   (use-package direnv
     :config (direnv-mode))
 #+end_src
 ** epa
+This thing helps with pgp encryption.
 #+begin_src emacs-lisp
   (use-package epa
     :init  (setq epg-gpg-home-directory "~/.gnupg/")
     )
 #+end_src
 ** pdf-tools
+Only used for viewing pdf
 #+begin_src elisp
   (use-package pdf-tools
     :config
@@ -477,6 +492,7 @@ table of contents for us.
            ("C-c n g" . org-roam-graph)
            ("C-c n i" . org-roam-node-insert)
            ("C-c n c" . org-roam-capture)
+           ("C-c n w" . nm/refile-to-roam)
            ;; Dailies
            ("C-c n j" . org-roam-dailies-capture-today))
     :config
@@ -681,7 +697,7 @@ table of contents for us.
     (require 'smartparens-config)
     (smartparens-global-mode))
 #+end_src
-** LGBT modes
+** Rainbow modes
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :commands (rainbow-delimiters-mode)
