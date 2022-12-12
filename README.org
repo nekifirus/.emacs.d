@@ -356,9 +356,9 @@ Only used for viewing pdf
 #+begin_src emacs-lisp
   (use-package org
     :custom
-    (org-default-notes-file "~/org/gtd/inbox.org") ; default refile file
+    (org-default-notes-file "~/org/org-roam/gtd/inbox.org") ; default refile file
     (org-agenda-span 'day)             ; start in day view default
-    (org-agenda-files '("~/org/gtd/"))
+    (org-agenda-files '("~/org/org-roam/gtd/"))
     (org-refile-targets '((nil :maxlevel . 3) (org-agenda-files :maxlevel . 3))) ; where refile to
     (org-refile-use-outline-path 'file)
     (org-outline-path-complete-in-steps nil)
@@ -486,17 +486,28 @@ table of contents for us.
     (org-roam-v2-ack t)
     (org-roam-directory "~/org/org-roam/")
     (org-roam-dailies-directory "~/org/org-roam/daily/")
+    (org-roam-dailies-capture-templates
+     '(("d" "default" entry
+        "* %<%H:%M> \n%U\n%a\n%i %?"
+        :target (file+head "%<%Y-%m-%d>.org"
+                           "#+title: %<%Y-%m-%d>\n")
+        :clock-in t :clock-resume t)
+       ))
 
     :bind (("C-c n l" . org-roam-buffer-toggle)
            ("C-c n f" . org-roam-node-find)
            ("C-c n g" . org-roam-graph)
            ("C-c n i" . org-roam-node-insert)
-           ("C-c n c" . org-roam-capture)
+           ("C-c n m" . org-id-get-create)
            ("C-c n w" . nm/refile-to-roam)
            ;; Dailies
-           ("C-c n j" . org-roam-dailies-capture-today))
+           ("C-c n c" . org-roam-dailies-capture-today)
+           ("C-c n j" . org-roam-dailies-capture-today)
+           ("C-c n t" . org-roam-dailies-goto-today)
+           ("C-c n y" . org-roam-dailies-goto-yesterday))
     :config
     (org-roam-setup)
+    (org-roam-db-autosync-mode)
     ;; If using org-roam-protocol
     ;; (require 'org-roam-protocol)
     )
