@@ -853,7 +853,8 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
   (use-package  python
     :mode ("\\.py'" . python-mode)
     :hook ((python-mode . lsp)
-           (before-save-hook . lsp-format-buffer))
+           ;; (before-save-hook . lsp-format-buffer)
+           )
     :config
     (setq-default py-separator-char 47)   ;; Use spaces instead tab
     (setq-default python-indent-offset 4) ;; 4 spaces instead 2 for python-mode
@@ -899,10 +900,7 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
 #+end_src
 ** GO
 #+begin_src emacs-lisp
-  (use-package go-mode
-    :after lsp-mode
-    :hook ((before-save . lsp-format-buffer)
-           (before-save . lsp-organize-imports)))
+  (use-package go-mode :after lsp-mode)
 #+end_src
 ** Protobuf
 #+begin_src emacs-lisp
