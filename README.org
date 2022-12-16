@@ -486,6 +486,7 @@ table of contents for us.
     (org-roam-v2-ack t)
     (org-roam-directory "~/org/org-roam/")
     (org-roam-dailies-directory "~/org/org-roam/daily/")
+    (org-roam-completion-everywhere t)
     (org-roam-dailies-capture-templates
      '(("d" "default" entry
         "* %<%H:%M> \n%U\n%a\n%i %?"
