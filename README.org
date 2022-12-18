@@ -501,7 +501,6 @@ table of contents for us.
            ("C-c n m" . org-id-get-create)
            ("C-c n w" . org-roam-refile)
            ;; Dailies
-           ("C-c n c" . org-roam-dailies-capture-today)
            ("C-c n j" . org-roam-dailies-capture-today)
            ("C-c n t" . org-roam-dailies-goto-today)
            ("C-c n y" . org-roam-dailies-goto-yesterday))
