@@ -402,10 +402,9 @@ Only used for viewing pdf
     (org-export-with-sub-superscripts nil) ;; don't export <sub> tags
     :bind
     ("<f12>" . 'org-agenda)
-    ("<f8>" . 'org-cycle-agenda-files)
     ("<f9> m" . 'mu4e)
-    ("<f9> g" . 'gnus)
-    ("<f9> c" . 'counsel-org-capture)
+    ("<f9> c" . 'org-roam-dailies-capture-today)
+    ("<f9> w" . 'eww)
     ("<f11>" . 'org-clock-goto)
     ("C-<f11>" . 'org-clock-in)
     :config
