@@ -381,7 +381,16 @@ Only used for viewing pdf
               "* %:annotation\n" :immediate-finish t)
              ("p" "Phone call" entry (file "~/org/org-roam/daily/inbox.org")
               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
-
+    (org-agenda-custom-commands '(("n" . "My commands")           ; prefix discriber
+                                  ("np" "Projects" tags "project" ((org-agenda-overriding-header "Move it forward!")))
+                                  ("nn" "Next" todo "NEXT" ((org-agenda-overriding-header "Do it now!")))
+                                  ("nw" "Waiting "todo "WAITING" ((org-agenda-overriding-header "Still waited?")))
+                                  ("nd" "Done" todo "DONE" ((org-agenda-overriding-header "Good work!")))
+                                  ("nc" "Canceled" todo "CANCELLED" ((org-agenda-overriding-header "Ne progoddilos.")))
+                                  ("ns" "Planned" tags "planned" ((org-agenda-overriding-header "Review it.")))
+                                  ("nh" "Habbits" search "habit" ((org-agenda-overriding-header "Review it.")))
+                                  ("nP" "Problems" tags "problem" ((org-agenda-overriding-header "Solve it.")))
+                                  ("nG" "Goals" tags "goal" ((org-agenda-overriding-header "Achive it.")))))
     (org-clock-history-length 23) ;; Show lot of clocking history so it's easy to pick items off the C-F11 list
     (org-clock-in-resume t) ;; Resume clocking task on clock-in if the clock is open
     (org-clock-into-drawer t) ;; Save clock data and state changes and notes in the LOGBOOK drawer
@@ -422,29 +431,7 @@ Only used for viewing pdf
        (python . t)
        (ditaa . t)
        (plantuml . t)
-       ))
-    (setq org-agenda-custom-commands
-          '(("N" "NEXT" todo "TODO"
-             ((org-agenda-overriding-header "Do it now")
-              (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
-
-    (defun my-org-agenda-skip-all-siblings-but-first ()
-      "Skip all but the first non-done entry."
-      (let (should-skip-entry)
-        (unless (org-current-is-todo)
-          (setq should-skip-entry t))
-        (save-excursion
-          (while (and (not should-skip-entry) (org-goto-sibling t))
-            (when (org-current-is-todo)
-              (setq should-skip-entry t))))
-        (when should-skip-entry
-          (or (outline-next-heading)
-              (goto-char (point-max))))))
-
-    (defun org-current-is-todo ()
-      (string= "TODO" (org-get-todo-state)))
-
-    )
+       )))
 
 
 #+end_src
