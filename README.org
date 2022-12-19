@@ -498,47 +498,6 @@ table of contents for us.
     ;; If using org-roam-protocol
     ;; (require 'org-roam-protocol)
     )
-  ;; (use-package org-roam
-  ;;       :ensure t
-  ;;       :hook
-  ;;       (after-init . org-roam-mode)	
-  ;;       :bind (:map org-roam-mode-map
-  ;;               (("C-c n l" . org-roam)
-  ;;                ("C-c n c" . org-roam-dailies-capture-today)
-  ;;                ("C-c n C" . org-roam-capture)
-  ;;                ("C-c n f" . org-roam-find-file)
-  ;;                ("C-c n g" . org-roam-graph))
-  ;;               :map org-mode-map
-  ;;               (("C-c n i" . org-roam-insert))
-  ;;               (("C-c n I" . org-roam-insert-immediate)))
-  ;;       :custom
-  ;;       (org-roam-completion-everywhere t)
-  ;;       (org-roam-encrypt-files nil)
-  ;;       (org-roam-completion-system 'ivy)
-  ;;       (org-roam-directory "~/org/org-roam/")
-  ;;       (org-roam-dailies-directory "~/org/org-roam/daily/")
-  ;;       (org-roam-dailies-capture-templates
-  ;;       '(("d" "default" entry
-  ;;          #'org-roam-capture--get-point
-  ;;          "* %<%H:%M> %? \n%U\n%a\n%i" 
-  ;;          :file-name "daily/%<%Y-%m-%d>"
-  ;;          :head "#+title: %<%Y-%m-%d>\n\n"
-  ;;          :clock-in t :clock-resume t)
-  ;;         ("1" "sql_trade_prod" entry
-  ;;          #'org-roam-capture--get-point
-  ;;          "* %<%H:%M>\n#+begin_src sql\n%?\n#+end_src\n" 
-  ;;          :file-name "sql/%<%Y-%m-%d>-trade_prod.org"
-  ;;          :head "#+SETUPFILE: setup/prod_trade.org.gpg"
-  ;;          :clock-in t :clock-resume t
-  ;;          :unnarrowed t :jump-to-captured t)
-  ;;         ("2" "sql_exchange_prod" entry
-  ;;          #'org-roam-capture--get-point
-  ;;          "* %<%H:%M>\n#+begin_src sql\n%?\n#+end_src\n" 
-  ;;          :file-name "sql/%<%Y-%m-%d>-exchange_prod.org"
-  ;;          :head "#+SETUPFILE: setup/prod_exchange.org.gpg"
-  ;;          :clock-in t :clock-resume t
-  ;;          :unnarrowed t :jump-to-captured t)
-  ;;         )))
 #+end_src
 ** org-mime
 #+begin_src emacs-lisp
