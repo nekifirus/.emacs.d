@@ -364,6 +364,7 @@ Only used for viewing pdf
     (org-outline-path-complete-in-steps nil)
     (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)" "PHONE")))
     (org-use-fast-todo-selection t)
+    (org-tags-exclude-from-inheritance '("project"))
     (org-capture-templates
      (quote (("t" "todo" entry (file "~/org/org-roam/daily/inbox.org")
               "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
