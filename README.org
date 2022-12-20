@@ -375,6 +375,29 @@ I need to check English spelling.
            (message-mode . flyspell-mode)
            (org-mode . flyspell-mode)))
       #+end_src
+** EWW Emacs Web Browser
+I read web with Emacs often. EWW helps me a lot.
+I found this [[https://github.com/howardabrams/dot-files/blob/master/emacs-browser.org][guy]] and took part of configuration.
+
+#+begin_src emacs-lisp
+(use-package eww
+  :commands eww eww-follow-link eww-search-words
+  :init
+  (setq browse-url-browser-function 'eww-browse-url)
+  (setq eww-search-prefix "http://www.google.com/search?q=")
+
+  (defun eww-wiki (text)
+    "Function used to search wikipedia for the given text."
+    (interactive (list (read-string "Wiki for: ")))
+    (eww (format "https://en.m.wikipedia.org/wiki/Special:Search?search=%s"
+                 (url-encode-url text))))
+
+  :bind (("C-c w w" . eww)
+         ("C-c w i" . eww-wiki)
+         ("C-c w s" . eww-search-words)
+         ("C-c w l" . eww-follow-link)))
+#+end_src
+
 
 * Org
 #+begin_src emacs-lisp
