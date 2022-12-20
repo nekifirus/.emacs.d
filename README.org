@@ -366,6 +366,15 @@ Cool thing. I used google-translate package, but it's slow. This thing works ver
                              :render (gts-buffer-render)))
     :bind (("C-c g t" . gts-do-translate)))
 #+end_src
+** flyspell
+I need to check English spelling.
+
+#+begin_src emacs-lisp
+  (use-package flyspell
+    :hook ((prog-mode . flyspell-prog-mode)
+           (message-mode . flyspell-mode)
+           (org-mode . flyspell-mode)))
+      #+end_src
 
 * Org
 #+begin_src emacs-lisp
