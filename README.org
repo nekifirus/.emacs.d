@@ -383,7 +383,7 @@ I found this [[https://github.com/howardabrams/dot-files/blob/master/emacs-brows
 (use-package eww
   :commands eww eww-follow-link eww-search-words
   :init
-  (setq browse-url-browser-function 'eww-browse-url)
+  (setq browse-url-browser-function 'browse-url-default-browser)
   (setq eww-search-prefix "http://www.google.com/search?q=")
 
   (defun eww-wiki (text)
