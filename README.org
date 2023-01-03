@@ -333,8 +333,9 @@ This thing helps with pgp encryption.
 #+begin_src emacs-lisp
   (use-package epa
     :init  (setq epg-gpg-home-directory "~/.gnupg/")
-    )
+    :custom (epa-keyserver "keys.openpgp.org"))
 #+end_src
+
 ** pdf-tools
 Only used for viewing pdf
 #+begin_src elisp
