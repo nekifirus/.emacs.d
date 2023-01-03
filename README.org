@@ -400,11 +400,58 @@ I found this [[https://github.com/howardabrams/dot-files/blob/master/emacs-brows
 #+end_src
 
 
+* Clojure
+
+** clojure-mode
+Set align style.
+
+#+begin_src elisp
+  (use-package clojure-mode
+    :custom (clojure-indent-style 'align-arguments)
+    :hook (clojure-mode . clj-refactor-mode))
+#+end_src
+
+** cider
+#+begin_src emacs-lisp
+  (use-package cider)
+#+end_src
+
+** paredit
+
+#+begin_src emacs-lisp
+    (use-package paredit
+        :hook ((clojure-mode . paredit-mode)
+               (clojurescript-mode . paredit-mode)
+               (cider-mode . paredit-mode)
+               (emacs-lisp-mode . paredit-mode)))
+#+end_src
+
+** aggressive-indent
+
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :hook ((clojure-mode . aggressive-indent-mode)
+           (clojurescript-mode . aggressive-indent-mode)
+           (cider-mode . aggressive-indent-mode)
+           (emacs-lisp-mode . aggressive-indent-mode)))
+#+end_src
+
+** flycheck-kondo
+#+begin_src emacs-lisp
+  (use-package flycheck-clj-kondo)
+
+  ;; then install the checker as soon as `clojure-mode' is loaded
+  (use-package clojure-mode
+    :config
+    (require 'flycheck-clj-kondo))
+#+end_src
+
+
 * Org
 #+begin_src emacs-lisp
   (use-package org
     :custom
-    (org-default-notes-file "~/org/org-roam/daily/inbox.org") ; default refile file
+    (org-default-notes-file "~/org/org-roam/daily/inbox.org.gpg") ; default refile file
     (org-agenda-span 'day)             ; start in day view default
     (org-agenda-files '("~/org/org-roam/daily"))
     (org-refile-targets '((nil :maxlevel . 3) (org-agenda-files :maxlevel . 3))) ; where refile to
