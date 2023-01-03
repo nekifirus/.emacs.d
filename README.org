@@ -586,7 +586,9 @@ table of contents for us.
            ;; Dailies
            ("C-c n j" . org-roam-dailies-capture-today)
            ("C-c n t" . org-roam-dailies-goto-today)
-           ("C-c n y" . org-roam-dailies-goto-yesterday))
+           ("C-c n y" . org-roam-dailies-goto-yesterday)
+           ("C-c n n" . org-roam-dailies-goto-previous-note)
+           ("C-c n p" . org-roam-dailies-goto-next-note))
     :config
     (org-roam-setup)
     (org-roam-db-autosync-mode)
