@@ -370,8 +370,14 @@ Cool thing. I used google-translate package, but it's slow. This thing works ver
 ** flyspell
 I need to check English spelling.
 
+I read in comments on grishaev.me that ispell can check 2 languages at
+once. But I don't have dictonaries yet.
+(setq ispell-dictionary "ru_RU_yo,en_GB")
+
 #+begin_src emacs-lisp
   (use-package flyspell
+    :defer t
+    :diminish flyspell-mode
     :hook ((prog-mode . flyspell-prog-mode)
            (message-mode . flyspell-mode)
            (org-mode . flyspell-mode)))
@@ -847,14 +853,6 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
 #+begin_src emacs-lisp
   (use-package nix-mode)
 #+end_src
-
-** flyspell
-#+begin_src emacs-lisp
-  (use-package flyspell
-    :defer t
-    :diminish flyspell-mode
-    :hook (prog-mode-hook . flyspell-mode))
-    #+end_src
 
 ** flycheck
 #+begin_src emacs-lisp
