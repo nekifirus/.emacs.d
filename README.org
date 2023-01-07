@@ -109,7 +109,7 @@ This is configuration of emacs package itself.
     (set-face-attribute 'default
                         nil
                         :font "Iosevka Light"
-                        :height 130
+                        :height 150
                         )
     (when (fboundp 'set-fontset-font)
       (set-fontset-font "fontset-default" 'cyrillic
