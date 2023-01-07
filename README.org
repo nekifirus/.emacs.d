@@ -380,6 +380,7 @@ once. But I don't have dictonaries yet.
     :diminish flyspell-mode
     :hook ((prog-mode . flyspell-prog-mode)
            (message-mode . flyspell-mode)
+           (text-mode . flyspell-mode)
            (org-mode . flyspell-mode)))
       #+end_src
 ** EWW Emacs Web Browser
