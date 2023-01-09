@@ -382,28 +382,28 @@ once. But I don't have dictonaries yet.
            (message-mode . flyspell-mode)
            (text-mode . flyspell-mode)
            (org-mode . flyspell-mode)))
-      #+end_src
+           #+end_src
 ** EWW Emacs Web Browser
 I read web with Emacs often. EWW helps me a lot.
 I found this [[https://github.com/howardabrams/dot-files/blob/master/emacs-browser.org][guy]] and took part of configuration.
 
 #+begin_src emacs-lisp
-(use-package eww
-  :commands eww eww-follow-link eww-search-words
-  :init
-  (setq browse-url-browser-function 'browse-url-default-browser)
-  (setq eww-search-prefix "http://www.google.com/search?q=")
+  (use-package eww
+    :commands eww eww-follow-link eww-search-words
+    :init
+    (setq browse-url-browser-function 'browse-url-default-browser)
+    (setq eww-search-prefix "http://www.google.com/search?q=")
 
-  (defun eww-wiki (text)
-    "Function used to search wikipedia for the given text."
-    (interactive (list (read-string "Wiki for: ")))
-    (eww (format "https://en.m.wikipedia.org/wiki/Special:Search?search=%s"
-                 (url-encode-url text))))
+    (defun eww-wiki (text)
+      "Function used to search wikipedia for the given text."
+      (interactive (list (read-string "Wiki for: ")))
+      (eww (format "https://en.m.wikipedia.org/wiki/Special:Search?search=%s"
+                   (url-encode-url text))))
 
-  :bind (("C-c w w" . eww)
-         ("C-c w i" . eww-wiki)
-         ("C-c w s" . eww-search-words)
-         ("C-c w l" . eww-follow-link)))
+    :bind (("C-c w w" . eww)
+           ("C-c w i" . eww-wiki)
+           ("C-c w s" . eww-search-words)
+           ("C-c w l" . eww-follow-link)))
 #+end_src
 
 
@@ -426,11 +426,11 @@ Set align style.
 ** paredit
 
 #+begin_src emacs-lisp
-    (use-package paredit
-        :hook ((clojure-mode . paredit-mode)
-               (clojurescript-mode . paredit-mode)
-               (cider-mode . paredit-mode)
-               (emacs-lisp-mode . paredit-mode)))
+  (use-package paredit
+    :hook ((clojure-mode . paredit-mode)
+           (clojurescript-mode . paredit-mode)
+           (cider-mode . paredit-mode)
+           (emacs-lisp-mode . paredit-mode)))
 #+end_src
 
 ** aggressive-indent
@@ -903,8 +903,8 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
     )
 
   (use-package py-autopep8
-     :ensure t
-     :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+    :ensure t
+    :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
 
   ;;
   ;; (use-package elpy
@@ -915,7 +915,7 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
   ;; (use-package py-isort
   ;;    :init
   ;;    (add-hook 'before-save-hook #'py-isort-before-save))
-    #+end_src
+#+end_src
 ** js
 #+begin_src emacs-lisp
   (use-package vue-mode
@@ -963,37 +963,37 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
 * my functions
 ** org-insert-screenshot
 #+begin_src emacs-lisp
-   (defun choose-file (dir)
-     (let* ((files (->> (directory-files-and-attributes dir nil nil)
-                        (--filter (file-regular-p (expand-file-name (car it) dir)))
-                        (--sort (not (time-less-p (nth 6 it) (nth 6 other))))))
-            (chosen (completing-read "Choose file: " files))
-            ) (concat dir chosen)))
+  (defun choose-file (dir)
+    (let* ((files (->> (directory-files-and-attributes dir nil nil)
+                       (--filter (file-regular-p (expand-file-name (car it) dir)))
+                       (--sort (not (time-less-p (nth 6 it) (nth 6 other))))))
+           (chosen (completing-read "Choose file: " files))
+           ) (concat dir chosen)))
 
-   (defun nm/org-insert-screenshot ()
-     "Insert org-link at point with choosen screenshot form Screenshots folder."
-     (interactive)
-     (insert (concat "[[" (choose-file "~/Pictures/Screenshots/") "]]\n\n"))
-     (org-redisplay-inline-images))
-  
+  (defun nm/org-insert-screenshot ()
+    "Insert org-link at point with choosen screenshot form Screenshots folder."
+    (interactive)
+    (insert (concat "[[" (choose-file "~/Pictures/Screenshots/") "]]\n\n"))
+    (org-redisplay-inline-images))
+
 #+end_src
 ** nm/mail-subtree
 #+begin_src emacs-lisp
-   (defun nm/mail-subtree ()
-     "Compose email with subtree heading as subject and whole subtree as html-body"
-     (interactive)
-     (save-excursion
-       (org-copy-subtree)
-       (mu4e-compose-new)
-       (mu4e-compose-goto-bottom)
-       (org-paste-subtree)
-       (org-toggle-heading)
-       (back-to-indentation)
-       (kill-line)
-       (org-mime-htmlize)
-       (message-goto-subject)
-       (yank)
-       (message-goto-to)))
+  (defun nm/mail-subtree ()
+    "Compose email with subtree heading as subject and whole subtree as html-body"
+    (interactive)
+    (save-excursion
+      (org-copy-subtree)
+      (mu4e-compose-new)
+      (mu4e-compose-goto-bottom)
+      (org-paste-subtree)
+      (org-toggle-heading)
+      (back-to-indentation)
+      (kill-line)
+      (org-mime-htmlize)
+      (message-goto-subject)
+      (yank)
+      (message-goto-to)))
 
 #+end_src
 ** nm/refile-to-roam
