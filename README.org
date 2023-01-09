@@ -1013,14 +1013,25 @@ another.
       (org-roam-node-find t)
       (end-of-buffer)
       (org-yank)))
-    #+end_src
+#+end_src
 
 * ledger
 #+begin_src emacs-lisp
   (use-package ledger-mode
     :mode ("\\.dat\\'"
            "\\.ledger\\'")
-    :custom (ledger-clear-whole-transactions t))
+    :custom
+    (ledger-clear-whole-transactions t)
+    (ledger-reports '(("bal" "%(binary) -f %(ledger-file) bal")
+                      ("bal$" "%(binary) -X $ -f %(ledger-file) bal")
+                      ("Assets" "%(binary) -f %(ledger-file) bal ^Assets")
+                      ("Budget" "%(binary) -X $ -f %(ledger-file) bal ^Budget")
+                      ("Cash flow" "%(binary) -X $ -f %(ledger-file) bal ^income ^expenses")
+                      ("Net worth" "%(binary) -X $ -f %(ledger-file) bal ^assets ^liabilities")
+                      ("reg" "%(binary) -f %(ledger-file) reg")
+                      ("payee" "%(binary) -f %(ledger-file) reg @%(payee)")
+                      ("account" "%(binary) -f %(ledger-file) reg %(account)")))
+    )
 
   (use-package flycheck-ledger :after ledger-mode)
 #+end_src
