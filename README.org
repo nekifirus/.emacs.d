@@ -382,7 +382,7 @@ once. But I don't have dictonaries yet.
            (message-mode . flyspell-mode)
            (text-mode . flyspell-mode)
            (org-mode . flyspell-mode)))
-           #+end_src
+#+end_src
 ** EWW Emacs Web Browser
 I read web with Emacs often. EWW helps me a lot.
 I found this [[https://github.com/howardabrams/dot-files/blob/master/emacs-browser.org][guy]] and took part of configuration.
@@ -534,6 +534,7 @@ Set align style.
        (python . t)
        (ditaa . t)
        (plantuml . t)
+       (ledger . t)
        )))
 
 
