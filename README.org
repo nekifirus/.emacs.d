@@ -1065,3 +1065,59 @@ another.
   ("C-c C-l" . obsidian-insert-wikilink)))
 #+end_src
 
+* Claude / AI-ассистенты
+Конфигурация инструментов для работы с Claude от Anthropic.
+Пакеты установлены через NixOS (nixos/user/emacs.nix и nixos/user/claude.nix),
+здесь только настройка.
+
+API-ключ хранится в =~/.authinfo.gpg= в следующем формате:
+#+begin_example
+machine api.anthropic.com login apikey password sk-ant-...
+#+end_example
+
+** [[https://github.com/karthink/gptel][gptel]] — чат с Claude прямо из Emacs
+gptel — универсальный LLM-клиент. Поддерживает потоковый вывод,
+работу с выделенным регионом, встроенные рефакторинги.
+
+Основные команды:
+- =C-c a g= — открыть чат-буфер
+- =C-c a s= — отправить запрос / продолжить диалог
+- =C-c a r= — переписать выделенный фрагмент
+
+#+begin_src emacs-lisp
+  (use-package gptel
+    :bind
+    ;; Основная точка входа — открыть или переключиться в чат
+    ("C-c a g" . gptel)
+    ;; Отправить запрос / продолжить диалог
+    ("C-c a s" . gptel-send)
+    ;; Переписать выделенный фрагмент с помощью Claude
+    ("C-c a r" . gptel-rewrite)
+    :config
+    ;; Используем Claude Sonnet как модель по умолчанию
+    (setq gptel-model 'claude-sonnet-4-6)
+    ;; Бэкенд — Anthropic, ключ берём из ~/.authinfo.gpg
+    (setq gptel-backend
+          (gptel-make-anthropic "Claude"
+            :stream t
+            :key #'gptel-api-key-from-auth-source)))
+#+end_src
+
+** [[https://github.com/stevemolitor/claude-code.el][claude-code]] — интеграция с Claude Code CLI
+Запускает Claude Code CLI (тот самый, которым управляется этот конфиг)
+внутри Emacs в терминальном буфере. Позволяет работать с проектом
+не выходя из редактора.
+
+Основные команды после включения =claude-code-global-mode=:
+- =C-c a c= — карта команд claude-code
+- =M-x claude-code= — запустить Claude Code в текущем проекте
+
+#+begin_src emacs-lisp
+  (use-package claude-code
+    :config
+    ;; Включаем глобальный режим — claude-code будет доступен в любом буфере
+    (claude-code-global-mode 1)
+    :bind-keymap
+    ;; Все команды claude-code под префиксом C-c a c
+    ("C-c a c" . claude-code-command-map))
+#+end_src
