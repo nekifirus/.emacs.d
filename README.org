@@ -333,8 +333,14 @@ This thing helps with pgp encryption.
 #+begin_src emacs-lisp
   (use-package epa
     :init  (setq epg-gpg-home-directory "~/.gnupg/")
-    :custom (epa-keyserver "keys.openpgp.org"))
+    :custom
+    (epa-keyserver "keys.openpgp.org")
+    (epa-file-select-keys nil)
+    (epa-file-encrypt-to '("E507A0647D13C24F"))
+    )
 #+end_src
+
+#+RESULTS:
 
 ** pdf-tools
 Only used for viewing pdf
@@ -459,7 +465,7 @@ Set align style.
 #+begin_src emacs-lisp
   (use-package org
     :custom
-    (org-default-notes-file "~/org/org-roam/daily/inbox.org.gpg") ; default refile file
+    (org-default-notes-file "~/org/org-roam/daily/inbox.org") ; default refile file
     (org-agenda-span 'day)             ; start in day view default
     (org-agenda-files '("~/org/org-roam/daily"))
     (org-refile-targets '((nil :maxlevel . 3) (org-agenda-files :maxlevel . 3))) ; where refile to
@@ -469,21 +475,21 @@ Set align style.
     (org-use-fast-todo-selection t)
     (org-tags-exclude-from-inheritance '("project"))
     (org-capture-templates
-     (quote (("t" "todo" entry (file "~/org/org-roam/daily/inbox.org.gpg")
+     (quote (("t" "todo" entry (file "~/org/org-roam/daily/inbox.org")
               "* TODO %?\n%U\n%a\n%i" :clock-in t :clock-resume t)
-             ("n" "note" entry (file "~/org/org-roam/daily/inbox.org.gpg")
+             ("n" "note" entry (file "~/org/org-roam/daily/inbox.org")
               "* %? :NOTE:\n%U\n%a\n%i" :clock-in t :clock-resume t)
-             ("r" "respond" entry (file "~/org/org-roam/daily/inbox.org.gpg")
+             ("r" "respond" entry (file "~/org/org-roam/daily/inbox.org")
               "* TODO Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-             ("w" "From web" entry (file+headline "~/org/org-roam/daily/inbox.org.gpg" "From web")
+             ("w" "From web" entry (file+headline "~/org/org-roam/daily/inbox.org" "From web")
               "* %? %:annotation\n%U\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n")
-             ("W" "Link" entry (file+headline "~/org/org-roam/daily/inbox.org.gpg" "Links")
+             ("W" "Link" entry (file+headline "~/org/org-roam/daily/inbox.org" "Links")
               "* %? %:annotation\n%U\n%:annotation")
              ("c" "Current clocked" entry (clock)
               "* %:annotation\n\n#+BEGIN_QUOTE\n%i\n[[%:link][Source]]\n#+END_QUOTE\n\n" :immediate-finish t)
              ("C" "Current clocked link" entry (clock)
               "* %:annotation\n" :immediate-finish t)
-             ("p" "Phone call" entry (file "~/org/org-roam/daily/inbox.org.gpg")
+             ("p" "Phone call" entry (file "~/org/org-roam/daily/inbox.org")
               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t))))
     (org-agenda-custom-commands '(("n" . "My commands")           ; prefix discriber
                                   ("np" "Projects" tags "project" ((org-agenda-overriding-header "Move it forward!")))
@@ -904,11 +910,11 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
     (setq python-shell-completion-native-enable nil) ;; solve warning in repl
     )
 
-  (use-package py-autopep8
-    :ensure t
-    :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
+  ;; (use-package py-autopep8
+  ;;   :ensure t
+  ;;   :config (progn (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)))
 
-  ;;
+  ;; ;;
   ;; (use-package elpy
   ;;   :ensure t
   ;;   :config (progn (add-hook 'python-mode-hook 'elpy-enable)
@@ -1036,5 +1042,26 @@ another.
     )
 
   (use-package flycheck-ledger :after ledger-mode)
+#+end_src
+
+* obsidian
+
+#+begin_src emacs-lisp
+  (use-package obsidian
+  :ensure t
+  :demand t
+  :config
+  (obsidian-specify-path "~/projects/obsidian")
+  (global-obsidian-mode t)
+  :custom
+  ;; This directory will be used for `obsidian-capture' if set.
+  (obsidian-inbox-directory "Inbox")
+  :bind (:map obsidian-mode-map
+  ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+  ("C-c C-o" . obsidian-follow-link-at-point)
+  ;; Jump to backlinks
+  ("C-c C-b" . obsidian-backlink-jump)
+  ;; If you prefer you can use `obsidian-insert-link'
+  ("C-c C-l" . obsidian-insert-wikilink)))
 #+end_src
 
