@@ -818,6 +818,7 @@ Good thing from this [[https://www.masteringemacs.org/article/fixing-mark-comman
     :config
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (projectile-mode +1)
+    (projectile-load-known-projects)
     :custom
     (projectile-completion-system 'ivy))
 #+end_src
