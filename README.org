@@ -581,6 +581,7 @@ table of contents for us.
     :ensure t
     :custom
     (org-roam-v2-ack t)
+    (org-roam-database-connector 'sqlite-builtin) ;; Emacs 29+ встроенный sqlite, без C-расширения
     (org-roam-directory "~/org/org-roam/")
     (org-roam-dailies-directory "~/org/org-roam/daily/")
     (org-roam-completion-everywhere t)
@@ -1047,23 +1048,24 @@ another.
 * obsidian
 
 #+begin_src emacs-lisp
-  (use-package obsidian
-  :ensure t
-  :demand t
-  :config
-  (obsidian-specify-path "~/projects/obsidian")
-  (global-obsidian-mode t)
-  :custom
-  ;; This directory will be used for `obsidian-capture' if set.
-  (obsidian-inbox-directory "Inbox")
-  :bind (:map obsidian-mode-map
-  ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
-  ("C-c C-o" . obsidian-follow-link-at-point)
-  ;; Jump to backlinks
-  ("C-c C-b" . obsidian-backlink-jump)
-  ;; If you prefer you can use `obsidian-insert-link'
-  ("C-c C-l" . obsidian-insert-wikilink)))
+  ;; (use-package obsidian
+  ;;   :ensure t
+  ;;   :demand t
+  ;;   :config
+  ;;   (obsidian-specify-path "~/projects/obsidian")
+  ;;   (global-obsidian-mode f)
+  ;;   :custom
+  ;;   ;; This directory will be used for `obsidian-capture' if set.
+  ;;   (obsidian-inbox-directory "Inbox")
+  ;;   :bind (:map obsidian-mode-map
+  ;;               ;; Replace C-c C-o with Obsidian.el's implementation. It's ok to use another key binding.
+  ;;               ("C-c C-o" . obsidian-follow-link-at-point)
+  ;;               ;; Jump to backlinks
+  ;;               ("C-c C-b" . obsidian-backlink-jump)
+  ;;               ;; If you prefer you can use `obsidian-insert-link'
+  ;;               ("C-c C-l" . obsidian-insert-wikilink)))
 #+end_src
+
 
 * Claude / AI-ассистенты
 Конфигурация инструментов для работы с Claude от Anthropic.
@@ -1117,7 +1119,19 @@ gptel — универсальный LLM-клиент. Поддерживает 
     :config
     ;; Включаем глобальный режим — claude-code будет доступен в любом буфере
     (claude-code-global-mode 1)
+    ;; C-g по привычке убивает процесс Claude Code через SIGINT.
+    ;; Перехватываем его в eat-буфере Claude через highest-priority keymap.
+    (add-hook 'eat-mode-hook
+              (lambda ()
+                (when (string-match-p "claude\\|Claude" (buffer-name))
+                  (let ((map (make-sparse-keymap)))
+                    (define-key map (kbd "C-g") #'ignore)
+                    (setq-local minor-mode-overriding-map-alist
+                                (cons (cons t map) minor-mode-overriding-map-alist))))))
     :bind-keymap
     ;; Все команды claude-code под префиксом C-c a c
     ("C-c a c" . claude-code-command-map))
 #+end_src
+
+#+RESULTS:
+| lambda | nil | (interactive) | (use-package-autoload-keymap 'claude-code-command-map 'claude-code nil) |
