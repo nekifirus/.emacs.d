@@ -1110,7 +1110,7 @@ gptel — универсальный LLM-клиент. Поддерживает 
 внутри Emacs в терминальном буфере. Позволяет работать с проектом
 не выходя из редактора.
 
-Основные команды после включения =claude-code-global-mode=:
+Основные команды после включения =claude-code-mode=:
 - =C-c a c= — карта команд claude-code
 - =M-x claude-code= — запустить Claude Code в текущем проекте
 
@@ -1118,7 +1118,7 @@ gptel — универсальный LLM-клиент. Поддерживает 
   (use-package claude-code
     :config
     ;; Включаем глобальный режим — claude-code будет доступен в любом буфере
-    (claude-code-global-mode 1)
+    (claude-code-mode 1)
     ;; C-g по привычке убивает процесс Claude Code через SIGINT.
     ;; Перехватываем его в eat-буфере Claude через highest-priority keymap.
     (add-hook 'eat-mode-hook
