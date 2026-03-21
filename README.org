@@ -1113,6 +1113,29 @@ gptel — универсальный LLM-клиент. Поддерживает 
                     (define-key map (kbd "C-g") #'ignore)
                     (setq-local minor-mode-overriding-map-alist
                                 (cons (cons t map) minor-mode-overriding-map-alist))))))
+    ;; Фикс: после нажатия return буфер прокручивался в начало display-области.
+    ;; Причина: Claude CLI перерисовывает TUI, курсор кратко попадает в начало
+    ;; display-области, eat следует за ним. Переопределяем функцию синхронизации
+    ;; скролла так, чтобы прокрутка срабатывала только если курсор во второй
+    ;; половине буфера (т.е. это новый вывод, а не артефакт перерисовки TUI).
+    (defun claude-code--eat-synchronize-scroll (windows)
+      "Синхронизация скролла eat без прыжков в начало при перерисовке TUI."
+      (dolist (window windows)
+        (if (eq window 'buffer)
+            (goto-char (eat-term-display-cursor eat-terminal))
+          (when (not buffer-read-only)
+            (let ((cursor-pos (eat-term-display-cursor eat-terminal)))
+              (set-window-point window cursor-pos)
+              (cond
+               ((>= cursor-pos (- (point-max) 2))
+                (with-selected-window window
+                  (goto-char cursor-pos)
+                  (recenter -1)))
+               ((and (not (pos-visible-in-window-p cursor-pos window))
+                     (> cursor-pos (/ (point-max) 2)))
+                (with-selected-window window
+                  (goto-char cursor-pos)
+                  (recenter)))))))))
     :bind-keymap
     ;; Все команды claude-code под префиксом C-c a c
     ("C-c a c" . claude-code-command-map))
