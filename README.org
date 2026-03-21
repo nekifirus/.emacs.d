@@ -271,7 +271,6 @@ I replaced with it standart search-forward/backward
 Fulltext search. I use it thousands time a day
 #+begin_src emacs-lisp
   (use-package ag
-    :ensure-system-package (ag . silversearcher-ag)
     :custom
     (ag-highlight-search t "Highlight the current search term."))
 #+end_src
@@ -358,20 +357,6 @@ Only used for viewing pdf
     (require 'pdf-history)
     (require 'pdf-links)
     (pdf-tools-install :no-query))
-#+end_src
-** go-translate
-
-Cool thing. I used google-translate package, but it's slow. This thing works very fast.
-
-#+begin_src emacs-lisp
-  (use-package go-translate
-    :custom
-    (gts-translate-list '(("ru" "en") ("en" "ru") ("tr" "en")))
-    (gts-default-translator (gts-translator
-                             :picker (gts-prompt-picker)
-                             :engines (list (gts-bing-engine) (gts-google-engine))
-                             :render (gts-buffer-render)))
-    :bind (("C-c g t" . gts-do-translate)))
 #+end_src
 ** flyspell
 I need to check English spelling.
@@ -625,7 +610,6 @@ table of contents for us.
 * Email
 #+begin_src emacs-lisp
   (use-package mu4e
-    :ensure-system-package mu
     :custom
     (mail-user-agent 'mu4e-user-agent)
     (mu4e-get-mail-command "mbsync -a")
