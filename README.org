@@ -1111,31 +1111,30 @@ gptel — универсальный LLM-клиент. Поддерживает 
                 (when (string-match-p "claude\\|Claude" (buffer-name))
                   (let ((map (make-sparse-keymap)))
                     (define-key map (kbd "C-g") #'ignore)
+                    ;; M-w — копировать регион (иначе eat отправляет в терминал)
+                    (define-key map (kbd "M-w") #'kill-ring-save)
                     (setq-local minor-mode-overriding-map-alist
                                 (cons (cons t map) minor-mode-overriding-map-alist))))))
-    ;; Фикс: после нажатия return буфер прокручивался в начало display-области.
-    ;; Причина: Claude CLI перерисовывает TUI, курсор кратко попадает в начало
-    ;; display-области, eat следует за ним. Переопределяем функцию синхронизации
-    ;; скролла так, чтобы прокрутка срабатывала только если курсор во второй
-    ;; половине буфера (т.е. это новый вывод, а не артефакт перерисовки TUI).
+    ;; Фикс: после нажатия return буфер прокручивался в начало.
+    ;; Причина: Claude CLI перерисовывает TUI, курсор попадает в начало
+    ;; display-области (eat-term-display-beginning), set-window-point двигает окно.
+    ;; Решение: пропускаем обновление полностью когда курсор = display-beginning.
     (defun claude-code--eat-synchronize-scroll (windows)
-      "Синхронизация скролла eat без прыжков в начало при перерисовке TUI."
+      "Синхронизация скролла eat без прыжков при перерисовке TUI.
+Скроллим только когда курсор вышел за нижнюю границу видимой области
+(появился новый вывод). Если курсор внутри видимой области или выше —
+не трогаем окно: это перерисовка TUI, а не новый вывод."
       (dolist (window windows)
         (if (eq window 'buffer)
             (goto-char (eat-term-display-cursor eat-terminal))
           (when (not buffer-read-only)
             (let ((cursor-pos (eat-term-display-cursor eat-terminal)))
               (set-window-point window cursor-pos)
-              (cond
-               ((>= cursor-pos (- (point-max) 2))
+              ;; Скроллим только если курсор ниже нижней границы окна
+              (when (> cursor-pos (window-end window t))
                 (with-selected-window window
                   (goto-char cursor-pos)
-                  (recenter -1)))
-               ((and (not (pos-visible-in-window-p cursor-pos window))
-                     (> cursor-pos (/ (point-max) 2)))
-                (with-selected-window window
-                  (goto-char cursor-pos)
-                  (recenter)))))))))
+                  (recenter -1)))))))))
     :bind-keymap
     ;; Все команды claude-code под префиксом C-c a c
     ("C-c a c" . claude-code-command-map))
