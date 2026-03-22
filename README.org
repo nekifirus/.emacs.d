@@ -1142,3 +1142,84 @@ gptel — универсальный LLM-клиент. Поддерживает 
 
 #+RESULTS:
 | lambda | nil | (interactive) | (use-package-autoload-keymap 'claude-code-command-map 'claude-code nil) |
+
+* EXWM — оконный менеджер
+
+Загружается только в EXWM-сессии (когда переменная окружения =EXWM_ENABLED= установлена).
+Сессия запускается через GDM → "emacs-exwm".
+
+Горячие клавиши (Super/Win — префикс):
+- =s-d= — запустить приложение (rofi)
+- =s-&= — запустить команду в shell
+- =s-0..9= — переключить рабочий стол
+- =s-w= — выбрать рабочий стол интерактивно
+- =s-f= — fullscreen
+- =s-SPC= — float/tile текущее окно
+- =s-l= — заблокировать экран
+- =s-r= — сбросить состояние окна (exwm-reset)
+
+#+begin_src emacs-lisp
+  (when (getenv "EXWM_ENABLED")
+    (require 'exwm)
+    (require 'exwm-systemtray)
+    (require 'exwm-randr)
+
+    ;; Количество рабочих столов по умолчанию
+    (setq exwm-workspace-number 9)
+
+    ;; Переименование буферов по заголовку X-окна
+    (add-hook 'exwm-update-class-hook
+              (lambda ()
+                (exwm-workspace-rename-buffer exwm-class-name)))
+    (add-hook 'exwm-update-title-hook
+              (lambda ()
+                (when (or (not exwm-instance-name)
+                          (string= "gimp" exwm-instance-name))
+                  (exwm-workspace-rename-buffer exwm-title))))
+
+    ;; Клавиши, которые всегда перехватывает Emacs (даже в X-приложениях)
+    (setq exwm-input-global-keys
+          `(;; s-r — сбросить состояние окна
+            ([?\s-r] . exwm-reset)
+            ;; s-w — интерактивный выбор рабочего стола
+            ([?\s-w] . exwm-workspace-switch)
+            ;; s-f — переключить fullscreen
+            ([?\s-f] . exwm-layout-toggle-fullscreen)
+            ;; s-t — float/tile (s-SPC зарезервирован для переключения раскладки через xkb)
+            ([?\s-t] . exwm-floating-toggle-floating)
+            ;; s-d — rofi (запуск приложений)
+            ([?\s-d] . (lambda ()
+                         (interactive)
+                         (start-process-shell-command "rofi" nil "rofi -show drun")))
+            ;; s-& — запуск shell-команды
+            ([?\s-&] . (lambda (cmd)
+                         (interactive (list (read-shell-command "$ ")))
+                         (start-process-shell-command cmd nil cmd)))
+            ;; s-l — блокировка экрана
+            ([?\s-l] . (lambda ()
+                         (interactive)
+                         (start-process-shell-command "lock" nil "loginctl lock-session")))
+            ;; s-0..9 — переключение рабочих столов
+            ,@(mapcar (lambda (i)
+                        `(,(kbd (format "s-%d" i)) .
+                          (lambda ()
+                            (interactive)
+                            (exwm-workspace-switch-create ,i))))
+                      (number-sequence 0 9))))
+
+    ;; Плавающие окна для диалогов и системных апплетов
+    (setq exwm-manage-configurations
+          '(((string= exwm-class-name "Pinentry-gnome3") floating t)
+            ((string= exwm-class-name "Nm-applet") floating t)
+            ((string= exwm-class-name "Blueman-manager") floating t)
+            ((string= exwm-class-name "Pavucontrol") floating t)))
+
+    ;; Системный трей
+    (exwm-systemtray-mode 1)
+
+    ;; RandR для управления мониторами
+    (exwm-randr-mode 1)
+
+    ;; Запускаем EXWM
+    (exwm-enable))
+#+end_src
