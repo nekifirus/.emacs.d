@@ -1100,48 +1100,284 @@ gptel — универсальный LLM-клиент. Поддерживает 
 - =M-x claude-code= — запустить Claude Code в текущем проекте
 
 #+begin_src emacs-lisp
-  (use-package claude-code
-    :config
-    ;; Включаем глобальный режим — claude-code будет доступен в любом буфере
-    (claude-code-mode 1)
-    ;; C-g по привычке убивает процесс Claude Code через SIGINT.
-    ;; Перехватываем его в eat-буфере Claude через highest-priority keymap.
-    (add-hook 'eat-mode-hook
-              (lambda ()
-                (when (string-match-p "claude\\|Claude" (buffer-name))
-                  (let ((map (make-sparse-keymap)))
-                    (define-key map (kbd "C-g") #'ignore)
-                    ;; M-w — копировать регион (иначе eat отправляет в терминал)
-                    (define-key map (kbd "M-w") #'kill-ring-save)
-                    (setq-local minor-mode-overriding-map-alist
-                                (cons (cons t map) minor-mode-overriding-map-alist))))))
-    ;; Фикс: после нажатия return буфер прокручивался в начало.
-    ;; Причина: Claude CLI перерисовывает TUI, курсор попадает в начало
-    ;; display-области (eat-term-display-beginning), set-window-point двигает окно.
-    ;; Решение: пропускаем обновление полностью когда курсор = display-beginning.
-    (defun claude-code--eat-synchronize-scroll (windows)
-      "Синхронизация скролла eat без прыжков при перерисовке TUI.
-Скроллим только когда курсор вышел за нижнюю границу видимой области
-(появился новый вывод). Если курсор внутри видимой области или выше —
-не трогаем окно: это перерисовка TUI, а не новый вывод."
-      (dolist (window windows)
-        (if (eq window 'buffer)
-            (goto-char (eat-term-display-cursor eat-terminal))
-          (when (not buffer-read-only)
-            (let ((cursor-pos (eat-term-display-cursor eat-terminal)))
-              (set-window-point window cursor-pos)
-              ;; Скроллим только если курсор ниже нижней границы окна
-              (when (> cursor-pos (window-end window t))
-                (with-selected-window window
-                  (goto-char cursor-pos)
-                  (recenter -1)))))))))
-    :bind-keymap
-    ;; Все команды claude-code под префиксом C-c a c
-    ("C-c a c" . claude-code-command-map))
+    (use-package claude-code
+      :config
+      ;; Включаем глобальный режим — claude-code будет доступен в любом буфере
+      (claude-code-mode 1)
+      ;; C-g по привычке убивает процесс Claude Code через SIGINT.
+      ;; Перехватываем его в eat-буфере Claude через highest-priority keymap.
+      (add-hook 'eat-mode-hook
+                (lambda ()
+                  (when (string-match-p "claude\\|Claude" (buffer-name))
+                    (let ((map (make-sparse-keymap)))
+                      (define-key map (kbd "C-g") #'ignore)
+                      ;; M-w — копировать регион (иначе eat отправляет в терминал)
+                      (define-key map (kbd "M-w") #'kill-ring-save)
+                      ;; M-o — переключение окон (иначе eat отправляет в терминал)                                                                 
+                      (define-key map (kbd "M-o") #'other-window) 
+                      (setq-local minor-mode-overriding-map-alist
+                                  (cons (cons t map) minor-mode-overriding-map-alist))))))
+      ;; Фикс: после нажатия return буфер прокручивался в начало.
+      ;; Причина: Claude CLI перерисовывает TUI, курсор попадает в начало
+      ;; display-области (eat-term-display-beginning), set-window-point двигает окно.
+      ;; Решение: пропускаем обновление полностью когда курсор = display-beginning.
+      (defun claude-code--eat-synchronize-scroll (windows)
+        "Синхронизация скролла eat без прыжков при перерисовке TUI.
+  Скроллим только когда курсор вышел за нижнюю границу видимой области
+  (появился новый вывод). Если курсор внутри видимой области или выше —
+  не трогаем окно: это перерисовка TUI, а не новый вывод."
+        (dolist (window windows)
+          (if (eq window 'buffer)
+              (goto-char (eat-term-display-cursor eat-terminal))
+            (when (not buffer-read-only)
+              (let ((cursor-pos (eat-term-display-cursor eat-terminal)))
+                (set-window-point window cursor-pos)
+                ;; Скроллим только если курсор ниже нижней границы окна
+                (when (> cursor-pos (window-end window t))
+                  (with-selected-window window
+                    (goto-char cursor-pos)
+                    (recenter -1))))))))
+      :bind-keymap
+      ;; Все команды claude-code под префиксом C-c a c
+      ("C-c a c" . claude-code-command-map))
+      
 #+end_src
 
 #+RESULTS:
-| lambda | nil | (interactive) | (use-package-autoload-keymap 'claude-code-command-map 'claude-code nil) |
+: #[nil ((use-package-autoload-keymap 'claude-code-command-map 'claude-code nil)) nil nil nil nil]
+
+* ClickUp
+
+Интеграция с ClickUp через [[https://github.com/sganon/clickup-emacs][clickup-emacs]].
+Пакет установлен через NixOS (=nixos/user/emacs.nix=, trivialBuild).
+API токен хранится в pass: =weave/clickup-api-token=.
+
+Workspace: =9015066390=, папка со спринтами: =90153117947=.
+
+Чтобы узнать ID листов внутри папки:
+#+begin_example
+curl -s -H "Authorization: $(pass weave/clickup-api-token)" \
+  "https://api.clickup.com/api/v2/folder/90153117947/list" \
+  | jq '.lists[] | {id, name}'
+#+end_example
+
+#+begin_src emacs-lisp
+  (use-package clickup-emacs
+    :init
+    (setq clickup-emacs-api-key
+          (string-trim (shell-command-to-string "pass weave/clickup-api-token")))
+    ;; Маппинг заполняется динамически через clickup-sync-folder (см. ниже).
+    (setq clickup-emacs-list-mappings '())
+    ;; Статусы ClickUp → org TODO keywords.
+    ;; Ключи сравниваются case-insensitive, поэтому lowercase достаточно.
+    (setq clickup-emacs-status-mapping
+          '(("open"              . "OPEN")
+            ("postponed"         . "POSTPONED")
+            ("pending"           . "PENDING")
+            ("in progress"       . "IN-PROGRESS")
+            ("code review"       . "CODE-REVIEW")
+            ("ready for qa"      . "READY-QA")
+            ("qa in review"      . "QA-REVIEW")
+            ("ready for release" . "READY-RELEASE")
+            ("released/prod"     . "RELEASED")
+            ("blocked"           . "BLOCKED")
+            ("rejected"          . "REJECTED")
+            ("done"              . "DONE")))
+    ;; Статусы передаются в API as-is — точное написание как в ClickUp.
+    (setq clickup-emacs-filter-statuses
+          '("OPEN" "POSTPONED" "PENDING" "IN PROGRESS"
+            "CODE REVIEW" "READY FOR QA" "QA IN REVIEW"
+            "READY FOR RELEASE" "BLOCKED"))
+    ;; Загружать все задачи, не только мои
+    (setq clickup-emacs-filter-assigned-to-me nil)
+    :config
+    ;; Автоматически синхронизировать смену TODO-статуса обратно в ClickUp
+    (clickup-emacs-enable-status-sync))
+
+  (defun clickup-add-comment (comment-text)
+    "Добавить комментарий COMMENT-TEXT к задаче ClickUp под курсором.
+  Читает :ID-CLICKUP: из org-свойств текущего заголовка."
+    (interactive "sКомментарий: ")
+    (let ((task-id (org-entry-get (point) "ID-CLICKUP" t)))
+      (unless task-id
+        (error "Нет свойства :ID-CLICKUP: — курсор не на задаче ClickUp"))
+      (clickup-emacs--request-async
+       'POST (format "/task/%s/comment" task-id)
+       nil `(("comment_text" . ,comment-text))
+       (lambda (_) (message "Комментарий отправлен в ClickUp."))
+       (lambda (err _r _d) (message "Ошибка отправки комментария: %s" err)))))
+
+  ;; Папка со спринтами в ClickUp.
+  (defvar clickup-weave-folder-id "90153117947"
+    "ClickUp Folder ID для папки со спринтами Weave.")
+
+  ;; Состояние пагинации вынесено в defvar — иначе let-переменные
+  ;; недоступны в async-callback при динамическом связывании.
+  (defvar clickup--fetch-all-tasks nil)
+  (defvar clickup--fetch-page 0)
+  (defvar clickup--fetch-list-id nil)
+  (defvar clickup--fetch-user-id nil)
+  (defvar clickup--fetch-callback nil)
+
+  (defun clickup--fetch-next-page ()
+    "Загрузить следующую страницу задач, используя глобальное состояние clickup--fetch-*."
+    (let ((params `(("archived" . "false")
+                    ("subtasks" . "true")
+                    ("page"     . ,(number-to-string clickup--fetch-page)))))
+      (when clickup-emacs-filter-statuses
+        (dolist (s clickup-emacs-filter-statuses)
+          (push (cons "statuses[]" s) params)))
+      (when clickup--fetch-user-id
+        (push (cons "assignees[]" clickup--fetch-user-id) params))
+      (clickup-emacs--request-async
+       'GET (format "/list/%s/task" clickup--fetch-list-id) params nil
+       (lambda (response)
+         (let ((new-tasks (append (cdr (assoc 'tasks response)) nil)))
+           (if (null new-tasks)
+               (progn
+                 (message "Загружено %d задач." (length clickup--fetch-all-tasks))
+                 (funcall clickup--fetch-callback clickup--fetch-all-tasks))
+             (setq clickup--fetch-all-tasks
+                   (append clickup--fetch-all-tasks new-tasks))
+             (setq clickup--fetch-page (1+ clickup--fetch-page))
+             (message "Страница %d, всего задач: %d..."
+                      clickup--fetch-page (length clickup--fetch-all-tasks))
+             (clickup--fetch-next-page))))
+       (lambda (err _r _d)
+         (message "Ошибка загрузки задач: %s" err)
+         (funcall clickup--fetch-callback clickup--fetch-all-tasks)))))
+
+  (defun clickup--fetch-tasks-with-subtasks (list-id user-id callback)
+    "Загрузить все задачи из LIST-ID включая подзадачи, с пагинацией."
+    (setq clickup--fetch-all-tasks nil)
+    (setq clickup--fetch-page     0)
+    (setq clickup--fetch-list-id  list-id)
+    (setq clickup--fetch-user-id  user-id)
+    (setq clickup--fetch-callback callback)
+    (clickup--fetch-next-page))
+
+  (defun clickup--write-task-tree-to-file (tasks file-path list-id)
+    "Записать TASKS как иерархическое org-дерево в FILE-PATH.
+  Строит дерево по полю parent каждой задачи, уровень вложенности = уровень заголовка."
+    (let ((task-map     (make-hash-table :test 'equal))
+          (children-map (make-hash-table :test 'equal)))
+      ;; Индексируем задачи по id
+      (dolist (task tasks)
+        (puthash (cdr (assoc 'id task)) task task-map))
+      ;; Строим parent -> [children]
+      (dolist (task tasks)
+        (let ((pid (cdr (assoc 'parent task))))
+          (when (and pid
+                     (not (eq pid :json-null))
+                     (not (equal pid ""))
+                     (not (null pid)))
+            (puthash pid (append (gethash pid children-map) (list task)) children-map))))
+      ;; Корневые задачи — те, у кого нет parent или parent не в нашем наборе
+      (let ((roots (seq-filter
+                    (lambda (task)
+                      (let ((pid (cdr (assoc 'parent task))))
+                        (or (null pid)
+                            (eq pid :json-null)
+                            (equal pid "")
+                            (null (gethash pid task-map)))))
+                    tasks)))
+        (cl-labels
+            ((format-task (task level)
+               (let* ((id          (cdr (assoc 'id task)))
+                      (name        (cdr (assoc 'name task)))
+                      (status-obj  (cdr (assoc 'status task)))
+                      (status-name (or (cdr (assoc 'status status-obj)) "open"))
+                      (todo-state  (clickup-emacs--map-clickup-status-to-org status-name))
+                      (priority-obj (cdr (assoc 'priority task)))
+                      (priority-num (and priority-obj (cdr (assoc 'priority priority-obj))))
+                      (priority    (cond ((null priority-num)      "[#C]")
+                                         ((string= priority-num "1") "[#A]")
+                                         ((string= priority-num "2") "[#B]")
+                                         (t                          "[#C]")))
+                      (link        (cdr (assoc 'url task)))
+                      (due-date    (clickup-emacs--format-date-from-ms
+                                    (cdr (assoc 'due_date task))))
+                      (start-date  (clickup-emacs--format-date-from-ms
+                                    (cdr (assoc 'start_date task))))
+                      (stars       (make-string level ?*))
+                      (children    (gethash id children-map))
+                      (assignees   (append (cdr (assoc 'assignees task)) nil))
+                      (mine        (and clickup--sync-user-id
+                                        (seq-some
+                                         (lambda (a)
+                                           (equal (format "%s" (cdr (assoc 'id a)))
+                                                  (format "%s" clickup--sync-user-id)))
+                                         assignees)))
+                      (tags        (if mine ":me:" ""))
+                      (result      ""))
+                 (setq result (concat result (format "%s %s %s %s %s\n" stars todo-state priority name tags)))
+                 (setq result (concat result ":PROPERTIES:\n"))
+                 (setq result (concat result (format ":ID-CLICKUP: %s\n" id)))
+                 (when link
+                   (setq result (concat result (format ":LINK: %s\n" link))))
+                 (setq result (concat result ":END:\n"))
+                 (when (or due-date start-date)
+                   (when due-date
+                     (setq result (concat result (format "DEADLINE: <%s>\n" due-date))))
+                   (when start-date
+                     (setq result (concat result (format "SCHEDULED: <%s>\n" start-date)))))
+                 (setq result (concat result "\n"))
+                 (dolist (child children)
+                   (setq result (concat result (format-task child (1+ level)))))
+                 result)))
+          (make-directory (file-name-directory file-path) t)
+          (with-temp-buffer
+            (insert (format "#+TITLE: ClickUp — %s\n" list-id))
+            (insert (format "#+LAST-SYNC: %s\n" (format-time-string "%Y-%m-%d %H:%M:%S")))
+            (insert (concat "#+TODO: OPEN POSTPONED PENDING IN-PROGRESS CODE-REVIEW "
+                            "READY-QA QA-REVIEW READY-RELEASE BLOCKED | RELEASED REJECTED DONE\n\n"))
+            (dolist (task roots)
+              (insert (format-task task 1)))
+            (write-region (point-min) (point-max) file-path nil 'quiet)
+            (message "Синхронизировано %d задач (корневых: %d) → %s"
+                     (length tasks) (length roots) file-path))))))
+
+  ;; defvar-ы для передачи значений через async-цепочку (dynamic binding workaround)
+  (defvar clickup--sync-list-id nil)
+  (defvar clickup--sync-file-path nil)
+  (defvar clickup--sync-user-id nil)
+
+  (defun clickup--do-sync-current ()
+    "Синхронизировать список clickup--sync-list-id в файл clickup--sync-file-path."
+    (clickup-emacs-get-current-user-async
+     (lambda (user-id)
+       (setq clickup--sync-user-id user-id)
+       (clickup--fetch-tasks-with-subtasks
+        clickup--sync-list-id nil
+        (lambda (tasks)
+          (clickup--write-task-tree-to-file
+           tasks clickup--sync-file-path clickup--sync-list-id)
+          (find-file clickup--sync-file-path))))))
+
+  (defun clickup-sync-last-sprint ()
+    "Синхронизировать задачи последнего спринта (включая подзадачи) в ~/org/clickup/current-sprint.org.
+  Последний спринт определяется как последний лист в папке по порядку ClickUp."
+    (interactive)
+    (unless clickup-emacs-api-key
+      (error "clickup-emacs-api-key не задан"))
+    (message "Определяю последний спринт...")
+    (clickup-emacs--request-async
+     'GET (format "/folder/%s/list" clickup-weave-folder-id) nil nil
+     (lambda (response)
+       (let* ((lists     (append (cdr (assoc 'lists response)) nil))
+              (last-list (car (last lists)))
+              (lid       (cdr (assoc 'id last-list)))
+              (lname     (cdr (assoc 'name last-list))))
+         (setq clickup--sync-list-id  lid)
+         (setq clickup--sync-file-path (expand-file-name "~/org/clickup/current-sprint.org"))
+         (message "Последний спринт: %s (%s). Загружаю задачи..." lname lid)
+         (clickup--do-sync-current)))
+     (lambda (err _r _d)
+       (message "Ошибка при загрузке папки: %s" err))))
+#+end_src
+
+#+RESULTS:
+: clickup-sync-last-sprint
 
 * EXWM — оконный менеджер
 
