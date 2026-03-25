@@ -1087,7 +1087,125 @@ gptel — универсальный LLM-клиент. Поддерживает 
     (setq gptel-backend
           (gptel-make-anthropic "Claude"
             :stream t
-            :key #'gptel-api-key-from-auth-source)))
+            :key #'gptel-api-key-from-auth-source))
+    ;; Новые буферы gptel открываются в org-mode, модель отвечает в org-синтаксисе
+    (setq gptel-default-mode 'org-mode)
+    ;; Заголовки с одной звёздочкой вместо трёх по умолчанию
+    (setq gptel-prompt-prefix-alist
+          '((org-mode . "* ")
+            (markdown-mode . "### ")
+            (default . "### "))))
+#+end_src
+
+** gptel + org: иерархический контекст из дерева заголовков
+
+Команда =C-c a o= в org-буфере отправляет запрос в gptel, автоматически
+добавляя содержимое всех родительских заголовков как контекст. Позволяет
+углублять исследование темы: каждый подзаголовок видит весь путь к корню.
+Если накопленный контекст превышает лимит — сначала делается выжимка через gptel.
+
+#+begin_src emacs-lisp
+    ;; Максимальный размер контекста (~200k токенов) сделаем поменьше)
+    (defvar my/gptel-max-context-size 80000)
+
+    (defun my/org-collect-parent-contexts ()
+      "Собирает список (заголовок . содержимое) всех родительских секций, от корня к текущему.
+    Для каждого родителя берёт весь subtree, но обрезает до начала текущей дочерней секции —
+    чтобы не дублировать текущий раздел и не захватывать соседние ветки."
+      (when (eq major-mode 'org-mode)
+        (let ((contexts '())
+              (cutoff (point)))  ;; граница: не включаем текущую позицию
+          (save-excursion
+            (while (org-up-heading-safe)
+              (let* ((heading   (org-get-heading t t t t))
+                     (start     (save-excursion (org-end-of-meta-data t) (point)))
+                     (subtree-end (save-excursion (org-end-of-subtree t t) (point)))
+                     ;; Берём всё от начала тела до начала текущей дочерней секции
+                     (end       (min subtree-end cutoff))
+                     (content   (string-trim (buffer-substring-no-properties start end))))
+                (push (cons heading content) contexts)
+                ;; Следующая итерация обрезает до начала этого заголовка
+                (setq cutoff (point)))))
+          contexts)))
+
+    (defun my/format-contexts (contexts)
+      (mapconcat (lambda (c) (format "** %s\n%s" (car c) (cdr c)))
+                 contexts "\n\n"))
+
+    (defvar my/gptel-summary-prompt nil)
+
+    (defun my/summarize-callback (response _info)
+      (my/gptel-do-send response my/gptel-summary-prompt))
+
+    (defun my/summarize-and-send (context prompt _callback)
+      "Сжимает context через gptel, затем вызывает my/gptel-do-send."
+      (setq my/gptel-summary-prompt prompt)
+      (gptel-request
+       (format "Сделай краткую выжимку, сохранив ключевые факты и выводы:\n\n%s" context)
+       :system "Ты — ассистент для сжатия контекста. Отвечай только выжимкой."
+       :callback #'my/summarize-callback))
+
+    ;; defvar-ы для async-callback (dynamic binding workaround)
+    (defvar my/gptel-insert-buf nil)
+    (defvar my/gptel-insert-pos nil)
+    (defvar my/gptel-do-send nil)
+
+    (defun my/gptel-insert-response (response info)
+      (with-current-buffer my/gptel-insert-buf
+        (save-excursion
+          (goto-char (plist-get info :position))
+          (insert "\n" response "\n"))))
+
+    (defconst my/gptel-system-base
+      "Отвечай в формате org-mode. \
+  Не создавай заголовки (строки начинающиеся со звёздочек * ** ***) — \
+  используй только обычный текст, списки, жирный/курсив и блоки кода. \
+  Ответ размещается под текущим заголовком пользователя, новые ветки не нужны.")
+
+    (defun my/gptel-do-send (context prompt)
+      (gptel-request
+       prompt
+       :system (if (string-empty-p context)
+                   my/gptel-system-base
+                 (format "Контекст из родительских разделов:\n\n%s\n\n%s"
+                         context my/gptel-system-base))
+       :buffer my/gptel-insert-buf
+       :position my/gptel-insert-pos
+       :callback #'my/gptel-insert-response))
+
+    (defun my/gptel-send-with-org-context ()
+      "Отправить запрос gptel с иерархическим контекстом из org-дерева.
+    Заголовок текущей секции становится темой, содержимое — запросом.
+    Родительские секции передаются как контекст (при необходимости сжимаются)."
+      (interactive)
+      (unless (eq major-mode 'org-mode)
+        (user-error "Работает только в org-mode"))
+      (setq my/gptel-insert-buf (current-buffer))
+      (setq my/gptel-insert-pos (point))
+      (let* ((contexts (my/org-collect-parent-contexts))
+             (current-heading (save-excursion
+                                (org-back-to-heading t)
+                                (org-get-heading t t t t)))
+             (body (save-excursion
+                     (let ((start (save-excursion
+                                    (org-back-to-heading t)
+                                    (org-end-of-meta-data t)
+                                    (point))))
+                       (string-trim (buffer-substring-no-properties start (point))))))
+             (full-prompt (if (string-empty-p body)
+                              (format "Тема: %s" current-heading)
+                            (format "Тема: %s\n\n%s" current-heading body))))
+        (if (null contexts)
+            (my/gptel-do-send "" full-prompt)
+          (let ((formatted (my/format-contexts contexts)))
+            (if (> (length formatted) my/gptel-max-context-size)
+                (progn
+                  (message "Контекст большой (%d симв.), сжимаю..." (length formatted))
+                  (my/summarize-and-send formatted full-prompt #'my/gptel-do-send))
+              (my/gptel-do-send formatted full-prompt))))))
+
+    (with-eval-after-load 'org
+      (define-key org-mode-map (kbd "C-c a o") #'my/gptel-send-with-org-context))
 #+end_src
 
 ** [[https://github.com/stevemolitor/claude-code.el][claude-code]] — интеграция с Claude Code CLI
