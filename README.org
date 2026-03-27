@@ -1290,7 +1290,6 @@ curl -s -H "Authorization: $(pass weave/clickup-api-token)" \
     ;; Ключи сравниваются case-insensitive, поэтому lowercase достаточно.
     (setq clickup-emacs-status-mapping
           '(("open"              . "OPEN")
-            ("postponed"         . "POSTPONED")
             ("pending"           . "PENDING")
             ("in progress"       . "IN-PROGRESS")
             ("code review"       . "CODE-REVIEW")
@@ -1298,16 +1297,18 @@ curl -s -H "Authorization: $(pass weave/clickup-api-token)" \
             ("qa in review"      . "QA-REVIEW")
             ("ready for release" . "READY-RELEASE")
             ("released/prod"     . "RELEASED")
-            ("blocked"           . "BLOCKED")
-            ("rejected"          . "REJECTED")
             ("done"              . "DONE")))
     ;; Статусы передаются в API as-is — точное написание как в ClickUp.
     (setq clickup-emacs-filter-statuses
-          '("OPEN" "POSTPONED" "PENDING" "IN PROGRESS"
+          '("OPEN" "PENDING" "IN PROGRESS"
             "CODE REVIEW" "READY FOR QA" "QA IN REVIEW"
-            "READY FOR RELEASE" "BLOCKED"))
+            "READY FOR RELEASE"))
     ;; Загружать все задачи, не только мои
     (setq clickup-emacs-filter-assigned-to-me nil)
+    :bind
+    (("C-c k s" . clickup-sync-last-sprint)
+     ("C-c k c" . clickup-add-comment)
+     ("C-c k f" . clickup-fetch-comments))
     :config
     ;; Автоматически синхронизировать смену TODO-статуса обратно в ClickUp
     (clickup-emacs-enable-status-sync))
@@ -1427,13 +1428,35 @@ curl -s -H "Authorization: $(pass weave/clickup-api-token)" \
                                                   (format "%s" clickup--sync-user-id)))
                                          assignees)))
                       (tags        (if mine ":me:" ""))
+                      (custom-id   (let ((raw (cdr (assoc 'custom_id task))))
+                                     (and raw (not (eq raw :json-null)) (not (equal raw "")) raw)))
                       (result      ""))
-                 (setq result (concat result (format "%s %s %s %s %s\n" stars todo-state priority name tags)))
+                 (setq result (concat result (format "%s %s %s %s%s %s\n"
+                                                     stars todo-state priority
+                                                     (if custom-id (format "[%s] " custom-id) "")
+                                                     name tags)))
                  (setq result (concat result ":PROPERTIES:\n"))
                  (setq result (concat result (format ":ID-CLICKUP: %s\n" id)))
+                 (when custom-id
+                   (setq result (concat result (format ":CUSTOM-ID: %s\n" custom-id))))
                  (when link
                    (setq result (concat result (format ":LINK: %s\n" link))))
                  (setq result (concat result ":END:\n"))
+                 (let ((comments (gethash id clickup--current-comments-map)))
+                   (when comments
+                     (setq result (concat result ":COMMENTS:\n"))
+                     (dolist (comment (reverse comments))
+                       (let* ((text     (or (cdr (assoc 'comment_text comment)) ""))
+                              (user-obj (cdr (assoc 'user comment)))
+                              (user     (or (cdr (assoc 'username user-obj)) "?"))
+                              (date-ms  (cdr (assoc 'date comment)))
+                              (date     (if date-ms
+                                            (format-time-string "%Y-%m-%d %H:%M"
+                                              (seconds-to-time
+                                               (/ (float (string-to-number (format "%s" date-ms))) 1000)))
+                                          "?")))
+                         (setq result (concat result (format "  [%s] %s: %s\n" date user text)))))
+                     (setq result (concat result ":END:\n"))))
                  (when (or due-date start-date)
                    (when due-date
                      (setq result (concat result (format "DEADLINE: <%s>\n" due-date))))
@@ -1447,18 +1470,103 @@ curl -s -H "Authorization: $(pass weave/clickup-api-token)" \
           (with-temp-buffer
             (insert (format "#+TITLE: ClickUp — %s\n" list-id))
             (insert (format "#+LAST-SYNC: %s\n" (format-time-string "%Y-%m-%d %H:%M:%S")))
-            (insert (concat "#+TODO: OPEN POSTPONED PENDING IN-PROGRESS CODE-REVIEW "
-                            "READY-QA QA-REVIEW READY-RELEASE BLOCKED | RELEASED REJECTED DONE\n\n"))
+            (insert (concat "#+TODO: OPEN PENDING IN-PROGRESS CODE-REVIEW "
+                            "READY-QA QA-REVIEW READY-RELEASE | RELEASED DONE\n\n"))
             (dolist (task roots)
               (insert (format-task task 1)))
             (write-region (point-min) (point-max) file-path nil 'quiet)
             (message "Синхронизировано %d задач (корневых: %d) → %s"
                      (length tasks) (length roots) file-path))))))
 
+  ;; Комментарии — загружаются по требованию, вставляются в drawer :COMMENTS:
+  (defvar clickup--comments-marker nil)
+
+  (defun clickup--insert-comments (response)
+    "Вставить комментарии из RESPONSE в drawer :COMMENTS: задачи."
+    (let ((comments (append (cdr (assoc 'comments response)) nil))
+          (marker clickup--comments-marker))
+      (with-current-buffer (marker-buffer marker)
+        (save-excursion
+          (goto-char marker)
+          (org-back-to-heading t)
+          ;; Удалить существующий drawer :COMMENTS: если есть
+          (save-excursion
+            (when (re-search-forward "^[ \t]*:COMMENTS:" (org-entry-end-position) t)
+              (let ((start (match-beginning 0))
+                    (end   (progn (re-search-forward "^[ \t]*:END:" nil t)
+                                  (line-end-position))))
+                (delete-region start (1+ end)))))
+          ;; Вставить после блока свойств
+          (org-end-of-meta-data t)
+          (insert ":COMMENTS:\n")
+          (if (null comments)
+              (insert "  Нет комментариев.\n")
+            (dolist (comment (reverse comments))
+              (let* ((text     (or (cdr (assoc 'comment_text comment)) ""))
+                     (user-obj (cdr (assoc 'user comment)))
+                     (user     (or (cdr (assoc 'username user-obj)) "?"))
+                     (date-ms  (cdr (assoc 'date comment)))
+                     (date     (if date-ms
+                                   (format-time-string "%Y-%m-%d %H:%M"
+                                     (seconds-to-time (/ (float (string-to-number
+                                                                  (format "%s" date-ms))) 1000)))
+                                 "?")))
+                (insert (format "  [%s] %s: %s\n" date user text)))))
+          (insert ":END:\n")
+          (message "Комментарии загружены (%d шт.)" (length comments))))))
+
+  (defun clickup-fetch-comments ()
+    "Загрузить комментарии задачи ClickUp под курсором и вставить в drawer :COMMENTS:."
+    (interactive)
+    (let ((task-id (org-entry-get (point) "ID-CLICKUP" t)))
+      (unless task-id
+        (error "Нет свойства :ID-CLICKUP: — курсор не на задаче ClickUp"))
+      (setq clickup--comments-marker (point-marker))
+      (message "Загружаю комментарии...")
+      (clickup-emacs--request-async
+       'GET (format "/task/%s/comment" task-id) nil nil
+       #'clickup--insert-comments
+       (lambda (err _r _d) (message "Ошибка загрузки комментариев: %s" err)))))
+
+  ;; Пакетная загрузка комментариев — последовательная async-цепочка
+  (defvar clickup--batch-comments-map nil)
+  (defvar clickup--batch-comments-pending-ids nil)
+  (defvar clickup--batch-comments-current-id nil)
+  (defvar clickup--batch-comments-done-callback nil)
+  (defvar clickup--current-comments-map nil)  ; используется в format-task при записи
+
+  (defun clickup--batch-fetch-next-comments ()
+    (if (null clickup--batch-comments-pending-ids)
+        (funcall clickup--batch-comments-done-callback clickup--batch-comments-map)
+      (setq clickup--batch-comments-current-id (car clickup--batch-comments-pending-ids))
+      (setq clickup--batch-comments-pending-ids (cdr clickup--batch-comments-pending-ids))
+      (when (zerop (mod (length clickup--batch-comments-pending-ids) 20))
+        (message "Комментарии: осталось %d задач..." (length clickup--batch-comments-pending-ids)))
+      (clickup-emacs--request-async
+       'GET (format "/task/%s/comment" clickup--batch-comments-current-id) nil nil
+       (lambda (response)
+         (let ((comments (append (cdr (assoc 'comments response)) nil)))
+           (when comments
+             (puthash clickup--batch-comments-current-id comments
+                      clickup--batch-comments-map)))
+         (clickup--batch-fetch-next-comments))
+       (lambda (_err _r _d)
+         (clickup--batch-fetch-next-comments)))))
+
+  (defun clickup--fetch-comments-for-all-tasks (tasks callback)
+    "Последовательно загрузить комментарии для всех TASKS, вызвать CALLBACK с hash id→comments."
+    (setq clickup--batch-comments-map (make-hash-table :test 'equal))
+    (setq clickup--batch-comments-pending-ids
+          (mapcar (lambda (task) (cdr (assoc 'id task))) tasks))
+    (setq clickup--batch-comments-done-callback callback)
+    (message "Загружаю комментарии для %d задач..." (length tasks))
+    (clickup--batch-fetch-next-comments))
+
   ;; defvar-ы для передачи значений через async-цепочку (dynamic binding workaround)
   (defvar clickup--sync-list-id nil)
   (defvar clickup--sync-file-path nil)
   (defvar clickup--sync-user-id nil)
+  (defvar clickup--sync-tasks nil)
 
   (defun clickup--do-sync-current ()
     "Синхронизировать список clickup--sync-list-id в файл clickup--sync-file-path."
@@ -1468,9 +1576,14 @@ curl -s -H "Authorization: $(pass weave/clickup-api-token)" \
        (clickup--fetch-tasks-with-subtasks
         clickup--sync-list-id nil
         (lambda (tasks)
-          (clickup--write-task-tree-to-file
-           tasks clickup--sync-file-path clickup--sync-list-id)
-          (find-file clickup--sync-file-path))))))
+          (setq clickup--sync-tasks tasks)
+          (clickup--fetch-comments-for-all-tasks
+           clickup--sync-tasks
+           (lambda (comments-map)
+             (setq clickup--current-comments-map comments-map)
+             (clickup--write-task-tree-to-file
+              clickup--sync-tasks clickup--sync-file-path clickup--sync-list-id)
+             (find-file clickup--sync-file-path))))))))
 
   (defun clickup-sync-last-sprint ()
     "Синхронизировать задачи последнего спринта (включая подзадачи) в ~/org/clickup/current-sprint.org.
