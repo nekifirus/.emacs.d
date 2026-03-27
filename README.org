@@ -530,6 +530,7 @@ Set align style.
        )))
 
 
+
 #+end_src
 ** toc-org
 This is the package that automatically generates an up to date
@@ -607,6 +608,112 @@ table of contents for us.
                  ("C-c M-o" . org-mime-org-buffer-htmlize)))
     )
 #+end_src
+** SQL via pass
+
+В любом org-файле:
+
+#+begin_src org
+  ,#+begin_src sql :db psql-dev
+  SELECT version();
+  ,#+end_src
+#+end_src
+
+Параметры хранятся в pass-файлах `db/<name>`. Формат файла:
+
+```
+пароль
+:engine postgresql
+:dbhost localhost
+:dbport 5432
+:database mydb
+:dbuser user
+```
+
+Для MSSQL используй `:engine mssql` вместо `postgresql`.
+
+#+begin_src emacs-lisp
+  ;; Переменная для сохранения оригинального обработчика SQL
+  (defvar my/orig-org-babel-execute-sql nil
+    "Stores the original org-babel-execute:sql function.")
+
+  (defun my/db-read-connection (name)
+    "Читает параметры подключения из pass db/NAME."
+    (let* ((cmd (format "pass db/%s" (format "%s" name)))
+           (process-environment (append '("PASSWORD_STORE_DIR=/home/nekifirus/.password-store"
+                                          "GNUPGHOME=/home/nekifirus/.gnupg")
+                                        process-environment))
+           (raw (shell-command-to-string cmd))
+           (lines (split-string (string-trim raw) "\n" t)))
+      (unless lines
+        (error "my/db-read-connection: не удалось прочитать из pass"))
+      (let ((result (list (cons :dbpassword (car lines)))))
+        (dolist (line (cdr lines) result)
+          (let ((parts (split-string (string-trim line) " " t)))
+            (when (and (>= (length parts) 2) (string-prefix-p ":" (car parts)))
+              (let ((k (intern (car parts)))
+                    (v (string-join (cdr parts) " ")))
+                (push (cons k (if (eq k :dbport) (string-to-number v) v)) result))))))))
+
+  (defun my/ob-sql-execute-mssql (body params)
+    "Выполнить MSSQL запрос через freetds (tsql) и вернуть результат в формате org-table."
+    (let* ((host     (cdr (assq :dbhost params)))
+           (port     (cdr (assq :dbport params)))
+           (database (cdr (assq :database params)))
+           (user     (cdr (assq :dbuser params)))
+           (password (cdr (assq :dbpassword params))))
+      (unless (and host user database password)
+        (error "MSSQL: требуются параметры :dbhost, :dbuser, :database, :dbpassword"))
+      (let* ((port-num (if (stringp port) (string-to-number port) port))
+             (sql-with-opts (concat "SET NOCOUNT ON\nGO\n" body "\nGO\n"))
+             (temp-file (make-temp-file "mssql-" nil ".sql" sql-with-opts))
+             (cmd (format "/home/nekifirus/.nix-profile/bin/tsql -H %s -p %d -U %s -D %s -P %s < %s"
+                          (shell-quote-argument host)
+                          port-num
+                          (shell-quote-argument user)
+                          (shell-quote-argument database)
+                          (shell-quote-argument password)
+                          (shell-quote-argument temp-file))))
+        (unwind-protect
+            (let* ((raw-output (shell-command-to-string cmd))
+                   (lines (split-string (string-trim raw-output) "\n"))
+                   ;; Фильтруем служебные строки
+                   (clean-lines (seq-remove (lambda (line)
+                                              (or (string-match "^[[:space:]]*$" line)
+                                                  (string-match "^[[:space:]]*\\(Setting\\|locale\\|using\\|[0-9]>\\|.*rows affected\\)" line)))
+                                            lines)))
+              ;; Возвращаем как список списков (org-babel распознает как таблицу)
+              (mapcar (lambda (row)
+                        (split-string row "\t" t))
+                      clean-lines))
+          (delete-file temp-file)))))
+
+  (defun my/ob-sql-inject-db-params (body params)
+    "Обработчик для SQL блоков: перехватывает :db и подставляет параметры из pass."
+    (let ((db-name (cdr (assq :db params))))
+      (if (not db-name)
+          ;; Если нет :db, используем встроенный обработчик
+          (funcall my/orig-org-babel-execute-sql body params)
+        (let* ((conn (my/db-read-connection (format "%s" db-name)))
+               (conn-keys (mapcar #'car conn))
+               (filtered (seq-remove
+                         (lambda (p) (or (eq (car p) :db)
+                                         (memq (car p) conn-keys)))
+                         params))
+               (new-params (append filtered conn))
+               (engine (cdr (assq :engine new-params))))
+          (if (or (eq engine 'mssql) (equal engine "mssql"))
+              (my/ob-sql-execute-mssql body new-params)
+            ;; Для postgresql используем встроенный обработчик с новыми параметрами
+            (funcall my/orig-org-babel-execute-sql body new-params))))))
+
+  (with-eval-after-load 'ob-sql
+    ;; Сохраняем оригинальный обработчик
+    (setq my/orig-org-babel-execute-sql (symbol-function 'org-babel-execute:sql))
+    ;; Переопределяем его нашим перехватчиком
+    (defun org-babel-execute:sql (body params)
+      (my/ob-sql-inject-db-params body params)))
+#+end_src
+
 * Email
 #+begin_src emacs-lisp
   (use-package mu4e
